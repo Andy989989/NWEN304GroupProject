@@ -6,7 +6,7 @@ var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 var cors = require('cors');
 var pg = require('pg').native;
-var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs";
+var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
 var client = new pg.Client(connectionString);
 client.connect();
 
@@ -33,44 +33,18 @@ function putData(key, value){
 //GET METHODS
 //=====================================
 
-app.get('/jobs/complete', function(req,res){
-	var query = client.query("select * from jobs where complete=true");
+app.get('/', function(req,res){
+	var query = client.query("select * from items");
 	var results = '{';
 	query.on('row', function(row){
 		console.log(row);
-		results = results + JSON.stringify(row.name)+":"+JSON.stringify(row.complete)+",";
+// TODO add entry to 'results':
+//		results = results + JSON.stringify(row.name)+":"+JSON.stringify(row.complete)+",";
 	});
 
 	query.on('end', function(){
-		results = results.slice(0,-1)+"}";
-		res.json(results);
-	});
-});
-
-app.get('/jobs/incomplete', function(req,res){
-	var query = client.query("select * from jobs where complete=false");
-	var results = '{';
-	query.on('row', function(row){
-		console.log(row);
-		results = results + JSON.stringify(row.name)+":"+JSON.stringify(row.complete)+",";
-	});
-
-	query.on('end', function(){
-		results = results.slice(0,-1)+"}";
-		res.json(results);
-	});
-});
-
-app.get('/jobs', function(req,res){
-	var query = client.query("select * from jobs");
-	var results = '{';
-	query.on('row', function(row){
-		console.log(row);
-		results = results + JSON.stringify(row.name)+":"+JSON.stringify(row.complete)+",";
-	});
-
-	query.on('end', function(){
-		results = results.slice(0,-1)+"}";
+//TODO edit 'results' into valid json
+//		results = results.slice(0,-1)+"}";
 		res.json(results);
 	});
 });
@@ -79,11 +53,12 @@ app.get('/jobs', function(req,res){
 //PUT METHODS
 //=====================================
 
-app.put('/jobs/incomplete', function(req,res){
-	if(req.body.name==undefined){
+app.put('/', function(req,res){
+	if(req.body.item==undefined){
+		//Return a 'bad request' code
 		res.statusCode = 400;
 	} else{
-		putData(req.body.name, false);
+		putData(req.body.item, false);
 		res.statusCode = 200;
 	}
 	res.end();
@@ -93,21 +68,11 @@ app.put('/jobs/incomplete', function(req,res){
 //POST METHODS
 //=====================================
 
-app.post('/jobs/incomplete', function(req,res){
-	if(req.body.name==undefined){
+app.post('/', function(req,res){
+	if(req.body.item==undefined){
 		res.statusCode = 400;
 	} else{
-		postData(req.body.name, false);
-		res.statusCode = 200;
-	}
-	res.end();
-});
-
-app.post('/jobs/complete', function(req,res){
-	if(req.body.name==undefined){
-		res.statusCode = 400;
-	} else{
-		postData(req.body.name, true);
+		postData(req.body.item, true);
 		res.statusCode = 200;
 	}
 	res.end();
@@ -117,8 +82,8 @@ app.post('/jobs/complete', function(req,res){
 //DELETE METHODS
 //=====================================
 
-app.delete('/jobs*', function(req,res){
-	client.query("delete from jobs where name='"+req.body.name+"'");
+app.delete('/', function(req,res){
+	client.query("delete from cart where name='"+req.body.item+"'");
 	res.statusCode = 200;
 	res.end();
 });
