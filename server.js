@@ -11,7 +11,7 @@ var jobsFilename = './jobs.json';
 //client.connect();
 
 
-//use for accdesing local files
+//use for accesing local files
 app.use(express.static('public'));
 app.use('/public', express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/public'));
