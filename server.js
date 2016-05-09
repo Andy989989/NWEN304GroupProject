@@ -12,7 +12,7 @@ var jobsFilename = './jobs.json';
 
 
 //use for accesing local files
-app.use(express.static('public'));
+app.use(express.static('/public'));
 app.use('/public', express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/public'));
 
@@ -20,7 +20,7 @@ app.use(bp.urlencoded());
 app.use(bp.json());
 //app.use(cors());
 app.listen(port, function(){
-	console.log('Listening:');
+	console.log('Listening:' + port);
 });
 
 //=====================================
@@ -55,7 +55,7 @@ app.get('/', function(req,res){
 		res.json(results);
 	});
 */
-res.sendFile('/public/index.html');
+res.sendFile('index.html');
 });
 
 //=====================================
