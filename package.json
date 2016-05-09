@@ -2,7 +2,7 @@
   "name": "304-group-project",
   "version": "1.0.0",
   "description": "The group project for Nwen304",
-  "main": "index.js",
+  //"main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -15,15 +15,15 @@
     "express": "^4.13.4",
     "fs": "0.0.2",
     "pg": "^4.5.5",
-    "pg-native": "^1.10.0"
+    //"pg-native": "^1.10.0"
   },
   "devDependencies": {},
   "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/watsonben/304-group-project.git"
+    //"type": "git",
+    //"url": "git+ssh://git@gitlab.com/watsonben/304-group-project.git"
   },
   "bugs": {
-    "url": "https://gitlab.com/watsonben/304-group-project/issues"
+    //"url": "https://gitlab.com/watsonben/304-group-project/issues"
   },
-  "homepage": "https://gitlab.com/watsonben/304-group-project#README"
+  //"homepage": "https://gitlab.com/watsonben/304-group-project#README"
 }
