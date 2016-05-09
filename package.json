@@ -14,7 +14,8 @@
     "cors": "^2.7.1",
     "express": "^4.13.4",
     "fs": "0.0.2",
-    "pg": "^4.5.5"
+    "pg": "^4.5.5",
+    "pg-native": "^1.10.0"
   },
   "devDependencies": {},
   "repository": {

@@ -4,15 +4,21 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
-var cors = require('cors');
+//var cors = require('cors');
 var pg = require('pg').native;
-var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
+var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
 var client = new pg.Client(connectionString);
 client.connect();
 
+
+//use for accdesing local files
+app.use(express.static('public'));
+app.use('/public', express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
+
 app.use(bp.urlencoded());
 app.use(bp.json());
-app.use(cors());
+//app.use(cors());
 app.listen(port, function(){
 	console.log('Listening:');
 });
@@ -34,6 +40,7 @@ function putData(key, value){
 //=====================================
 
 app.get('/', function(req,res){
+	/*
 	var query = client.query("select * from items");
 	var results = '{';
 	query.on('row', function(row){
@@ -47,6 +54,8 @@ app.get('/', function(req,res){
 //		results = results.slice(0,-1)+"}";
 		res.json(results);
 	});
+*/
+res.sendFile('/public/index.html');
 });
 
 //=====================================
