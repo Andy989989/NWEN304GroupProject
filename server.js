@@ -5,10 +5,10 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 //var cors = require('cors');
-var pg = require('pg').native;
-var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
-var client = new pg.Client(connectionString);
-client.connect();
+//var pg = require('pg').native;
+//var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
+//var client = new pg.Client(connectionString);
+//client.connect();
 
 
 //use for accdesing local files
@@ -28,11 +28,11 @@ app.listen(port, function(){
 //=====================================
 
 function postData(key, value){
-	client.query("update jobs set complete="+value+" where name='"+key+"'");
+	//client.query("update jobs set complete="+value+" where name='"+key+"'");
 }
 
 function putData(key, value){
-	client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
+	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
 }
 
 //=====================================
@@ -63,6 +63,7 @@ res.sendFile('/public/index.html');
 //=====================================
 
 app.put('/', function(req,res){
+	/*
 	if(req.body.item==undefined){
 		//Return a 'bad request' code
 		res.statusCode = 400;
@@ -71,6 +72,7 @@ app.put('/', function(req,res){
 		res.statusCode = 200;
 	}
 	res.end();
+	*/
 });
 
 //=====================================
@@ -79,6 +81,7 @@ app.put('/', function(req,res){
 
 app.post('/', function(req,res){
 	if(req.body.item==undefined){
+
 		res.statusCode = 400;
 	} else{
 		postData(req.body.item, true);
@@ -92,7 +95,8 @@ app.post('/', function(req,res){
 //=====================================
 
 app.delete('/', function(req,res){
-	client.query("delete from cart where name='"+req.body.item+"'");
+//	client.query("delete from cart where name='"+req.body.item+"'");
 	res.statusCode = 200;
 	res.end();
 });
+
