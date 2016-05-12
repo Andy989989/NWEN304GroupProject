@@ -55,7 +55,11 @@ app.get('/', function(req,res){
 		res.json(results);
 	});
 */
-res.sendFile('index.html');
+	res.sendFile('index.html');
+});
+
+app.get('/*', function(req,res){
+	res.sendFile(__dirname +'/public/index.html')
 });
 
 //=====================================
