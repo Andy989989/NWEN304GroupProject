@@ -59,10 +59,13 @@ app.get('/', function(req,res){
 	res.sendFile('index.html');
 });
 
-app.get('/*', function(req,res){
+app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
-	console.log(query);
-	//res.sendFile(__dirname +'/public/index.html')
+});
+
+
+app.get('/*', function(req,res){
+	res.sendFile(__dirname +'/public/index.html');
 });
 
 //=====================================
