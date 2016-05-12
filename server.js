@@ -55,11 +55,14 @@ app.get('/', function(req,res){
 		res.json(results);
 	});
 */
+	console.log("get /")
 	res.sendFile('index.html');
 });
 
 app.get('/*', function(req,res){
-	res.sendFile(__dirname +'/public/index.html')
+	res.send('q: ' + req.query.q);
+	console.log(query);
+	//res.sendFile(__dirname +'/public/index.html')
 });
 
 //=====================================
