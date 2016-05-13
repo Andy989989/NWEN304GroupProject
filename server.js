@@ -3,10 +3,11 @@ var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
-var jobsFilename = './jobs.json';
 
 var auth = require('./middleware/authentication.js');
-
+var guys = require('./database/the_boyz.js');
+var girls = require('./database/the_chicks.js');
+var babies = require('./database/little_humans.js');
 
 //var cors = require('cors');
 //var pg = require('pg').native;
@@ -62,6 +63,10 @@ app.get('/', function(req,res){
 	console.log("get /")
 	res.sendFile('index.html');
 });
+
+app.get('/men*', guys.sort_it_out);
+app.get('/women*', girls.sort_it_out);
+app.get('/kids*', babies.sort_it_out);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
