@@ -4,6 +4,10 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
+
+var auth = require('./middleware/authentication.js');
+
+
 //var cors = require('cors');
 //var pg = require('pg').native;
 //var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
@@ -68,6 +72,8 @@ app.get('/*', function(req,res){
 	res.sendFile(__dirname +'/public/index.html');
 });
 
+app.get('/auth/google',auth.authenticate);
+app.get('/auth/google/callback',auth.authCallback);
 //=====================================
 //PUT METHODS
 //=====================================
@@ -109,4 +115,3 @@ app.delete('/', function(req,res){
 	res.statusCode = 200;
 	res.end();
 });
-
