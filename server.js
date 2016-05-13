@@ -11,10 +11,6 @@ var babies = require('./database/little_humans.js');
 
 //var cors = require('cors');
 //var pg = require('pg').native;
-//var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
-//var client = new pg.Client(connectionString);
-//client.connect();
-
 
 //use for accesing local files
 app.use(express.static('/public'));
