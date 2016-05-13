@@ -62,6 +62,8 @@ app.get('/', function(req,res){
 res.sendFile('index.html');
 });
 
+app.get('/auth/google',auth.authenticate);
+app.get('/auth/google/callback',auth.authCallback);
 //=====================================
 //PUT METHODS
 //=====================================
