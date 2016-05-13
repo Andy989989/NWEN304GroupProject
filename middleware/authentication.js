@@ -24,7 +24,7 @@ exports.beginAuth = function (req, res){
 
 
 exports.authenticate = function (req, res){
-  passport.authenticate('google', { scope: ['profile'] }));
+  passport.authenticate('google', { scope: ['profile'] });
   console.log("Gets into authenticate");
 };
 
