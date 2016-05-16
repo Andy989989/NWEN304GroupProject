@@ -88,7 +88,7 @@ app.get('/profile',
   function(req, res){
     res.render('profile', { user: req.user });
   });
-var port = process.env.port || 8080;
+var port = process.env.PORT;
 app.listen(port, function(){
   console.log('Listening:' + port);
 });
