@@ -1,5 +1,6 @@
 var express = require('express');
 var fs = require('fs');
+
 var app = express();
 var start = require('start');
 var port = process.env.PORT || 8080;
@@ -211,7 +212,7 @@ var lex = LEX.create({
 
 lex.onRequest = app;
 
-lex.listen([80], [443, 5001], function () {
+lex.listen([port], [443, 5001], function () {
   var protocol = ('requestCert' in this) ? 'https': 'http';
   console.log("Listening at " + protocol + '://localhost:' + this.address().port);
 });
