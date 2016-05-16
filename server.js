@@ -2,12 +2,18 @@ var express = require('express');
 var fs = require('fs');
 var cors = require('cors');
 
+// this is for authentication
+var passport = require('passport');
+var Strategy = require('passport-facebook').Strategy;
+
+
 var app = express();
 //var start = require('start');
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
+// these are used in the authentication
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
@@ -40,6 +46,34 @@ app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
 app.use(bp.json());
 app.use(cors());
+
+//=====================================
+//AUTHENTICATION SETUP
+//=====================================
+passport.use(new Strategy({
+    clientID: 261460150870678,//process.env.CLIENT_ID,
+    clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
+    callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
+  },
+  function(accessToken, refreshToken, profile, cb) {
+    return cb(null, profile);
+  }));
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
+// Configure view engine to render EJS templates.
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+
+// Initialize Passport and restore authentication state, if any, from the
+// session.
+app.use(passport.initialize());
+app.use(passport.session());
 
 //=====================================
 //HELPER METHODS
@@ -92,13 +126,32 @@ app.post('/', function(req,res){
 //=====================================
 
 app.delete('/', function(req,res){
-  
+
 });
 
 //=====================================
 //AUTHENTICATION METHODS
 //=====================================
 
+app.get('/login',
+  function(req, res){
+    //res.render('login');
+  });
+
+app.get('/login/facebook',
+  passport.authenticate('facebook'));
+
+app.get('/login/facebook/return',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/');
+  });
+
+app.get('/profile',
+  require('connect-ensure-login').ensureLoggedIn(),
+  function(req, res){
+    //res.render('profile', { user: req.user });
+});
 
 app.listen(port, function(){
 	console.log('Listening:' + port);
