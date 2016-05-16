@@ -1,12 +1,12 @@
 var express = require('express');
 var fs = require('fs');
+var cors = require('cors');
 
 var app = express();
-var start = require('start');
+//var start = require('start');
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
-
 
 app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
@@ -20,74 +20,26 @@ app.use(express.static(__dirname + '/public'));
 
 // Add headers
 app.use(function (req, res, next) {
-
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', '*');
-
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, XHR');
-
   // Request headers you wish to allow
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
   res.setHeader('Access-Control-Allow-Credentials', true);
-
   // Pass to next layer of middleware
   next();
 });
 
-
-var cors = require('cors');
-
-
 var auth = require('./middleware/authentication.js');
 var codes = require('./middleware/code.js');
 
-var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-passport.use(new GoogleStrategy({
-      clientID: codes.getClientID,
-      clientSecret: codes.getClientSecret,
-      callbackURL: "http://130.195.4.178:8080/auth/google/callback"
-    },
-    function(accessToken, refreshToken, profile, cb) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return cb(err, user);
-      });
-    }
-  ));
-
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
-
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
-
-//var cors = require('cors');
-//var pg = require('pg').native;
-//var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
-//var client = new pg.Client(connectionString);
-//client.connect();
-
-
-
-
 app.use(bp.json());
-//app.use(bp.urlencoded());
-//app.use(bp.json());
-//app.use(cors());
 app.use(cors());
-
 
 //=====================================
 //HELPER METHODS
@@ -106,62 +58,19 @@ function putData(key, value){
 //=====================================
 
 app.get('/', function(req,res){
-	/*
-	var query = client.query("select * from items");
-	var results = '{';
-	query.on('row', function(row){
-		console.log(row);
-// TODO add entry to 'results':
-//		results = results + JSON.stringify(row.name)+":"+JSON.stringify(row.complete)+",";
-	});
-
-	query.on('end', function(){
-//TODO edit 'results' into valid json
-//		results = results.slice(0,-1)+"}";
-		res.json(results);
-	});
-*/
-	//auth.beginAuth;
 	console.log("get /")
 	res.sendFile('/public/index.html');
-});
-app.get('/test',function(req,res){
-	res.send("test succesfull");
 });
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
 });
-
-
-//app.get('/', function(req,res){
-	//res.sendFile(__dirname +'/public/index.html');
-//});
-//
-app.get('/auth/google',
-	passport.authenticate('google', { scope: ['profile'] }));
-
-app.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
-  });
 //=====================================
 //PUT METHODS
 //=====================================
 
 app.put('/', function(req,res){
-	/*
-	if(req.body.item==undefined){
-		//Return a 'bad request' code
-		res.statusCode = 400;
-	} else{
-		putData(req.body.item, false);
-		res.statusCode = 200;
-	}
-	res.end();
-	*/
+
 });
 
 //=====================================
@@ -170,7 +79,6 @@ app.put('/', function(req,res){
 
 app.post('/', function(req,res){
 	if(req.body.item==undefined){
-
 		res.statusCode = 400;
 	} else{
 		postData(req.body.item, true);
@@ -184,25 +92,25 @@ app.post('/', function(req,res){
 //=====================================
 
 app.delete('/', function(req,res){
-//	client.query("delete from cart where name='"+req.body.item+"'");
-	res.statusCode = 200;
-	res.end();
+  
 });
 
-/*
-// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
+//=====================================
+//AUTHENTICATION METHODS
+//=====================================
+
+
 app.listen(port, function(){
 	console.log('Listening:' + port);
 });
-*/
+// uncommment this for a secure server with a self sign cert
+// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
 
+/*
 var https = require('https');
 var privateKey  = fs.readFileSync('key.pem', 'utf8');
 var certificate = fs.readFileSync('cert.pem', 'utf8');
-
 var credentials = {key: privateKey, cert: certificate};
-
 var httpsServer = https.createServer(credentials, app);
-
-
 httpsServer.listen(port);
+*/
