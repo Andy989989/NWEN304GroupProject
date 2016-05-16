@@ -2,10 +2,10 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
-
+var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
-var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
+var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
 var client = new pg.Client(connectionString);
 client.connect();
 
@@ -25,7 +25,7 @@ function putData(key, value){
 	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
 }
 
-function sort_it_out(req, res){
+exports.sort_it_out = function(req, res){
 	var url = req.url.split('?');
 	var array = url[0].split('/');
 	var array_max_index = array.length - 1;
@@ -35,9 +35,11 @@ function sort_it_out(req, res){
 		query = client.query("select * from kids");
 	} else if(array_max_index == 1){
 		//url is /kids/some_category
+		//TODO sanitize array[1]
 		query = client.query("select * from kids_"+array[1]);
-	 else{
+	} else{
 		//url is /kids/some_category/item_id
+		//TODO sanitize array[1] and array[2]
 		query = client.query("select * from kids_"+array[1]+" where id='"+array[2]+"'");
 	}
 	handle_query_response(query, res);
