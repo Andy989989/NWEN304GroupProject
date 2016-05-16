@@ -1,12 +1,76 @@
 var express = require('express');
 var fs = require('fs');
 var app = express();
+var start = require('start');
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
-var auth = require('./middleware/authentication.js');
 
+app.use(require('morgan')('combined'));
+app.use(require('cookie-parser')());
+app.use(require('body-parser').urlencoded({ extended: true }));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+
+//use for accesing local files
+app.use(express.static('/public'));
+app.use('/public', express.static(__dirname + '/public'));
+app.use(express.static(__dirname + '/public'));
+
+// Add headers
+app.use(function (req, res, next) {
+
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, XHR');
+
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
+  // Pass to next layer of middleware
+  next();
+});
+
+
+var cors = require('cors');
+
+
+var auth = require('./middleware/authentication.js');
+var codes = require('./middleware/code.js');
+
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+      clientID: codes.getClientID,
+      clientSecret: codes.getClientSecret,
+      callbackURL: "http://130.195.4.178:8080/auth/google/callback"
+    },
+    function(accessToken, refreshToken, profile, cb) {
+      User.findOrCreate({ googleId: profile.id }, function (err, user) {
+        return cb(err, user);
+      });
+    }
+  ));
+
+passport.serializeUser(function(user, cb) {
+  cb(null, user);
+});
+
+passport.deserializeUser(function(obj, cb) {
+  cb(null, obj);
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.set('public', __dirname + '/public');
+app.set('view engine', 'ejs');
 
 //var cors = require('cors');
 //var pg = require('pg').native;
@@ -15,17 +79,14 @@ var auth = require('./middleware/authentication.js');
 //client.connect();
 
 
-//use for accesing local files
-app.use(express.static('/public'));
-app.use('/public', express.static(__dirname + '/public'));
-app.use(express.static(__dirname + '/public'));
 
-app.use(bp.urlencoded());
+
 app.use(bp.json());
+//app.use(bp.urlencoded());
+//app.use(bp.json());
 //app.use(cors());
-app.listen(port, function(){
-	console.log('Listening:' + port);
-});
+app.use(cors());
+
 
 //=====================================
 //HELPER METHODS
@@ -59,8 +120,12 @@ app.get('/', function(req,res){
 		res.json(results);
 	});
 */
+	//auth.beginAuth;
 	console.log("get /")
-	res.sendFile('index.html');
+	res.sendFile('/public/index.html');
+});
+app.get('/test',function(req,res){
+	res.send("test succesfull");
 });
 
 app.get('/pages', function(req, res){
@@ -68,12 +133,19 @@ app.get('/pages', function(req, res){
 });
 
 
-app.get('/*', function(req,res){
-	res.sendFile(__dirname +'/public/index.html');
-});
+//app.get('/', function(req,res){
+	//res.sendFile(__dirname +'/public/index.html');
+//});
+//
+app.get('/auth/google',
+	passport.authenticate('google', { scope: ['profile'] }));
 
-app.get('/auth/google',auth.authenticate);
-app.get('/auth/google/callback',auth.authCallback);
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
 //=====================================
 //PUT METHODS
 //=====================================
@@ -114,4 +186,7 @@ app.delete('/', function(req,res){
 //	client.query("delete from cart where name='"+req.body.item+"'");
 	res.statusCode = 200;
 	res.end();
+});
+app.listen(port, function(){
+	console.log('Listening:' + port);
 });

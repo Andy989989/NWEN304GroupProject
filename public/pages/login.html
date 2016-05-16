@@ -41,6 +41,31 @@
 	</div>
 
 
+
+
  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<script src="../dist/js/bootstrap.js"></script>
+  		
+
+  	<script>
+  	var ipAddr = 'http://130.195.4.178:8080';
+	$('#submit').button().click(
+    function() {
+    	$.ajax({
+    		method:'GET',
+    		url: ipAddr+"/auth/google",
+    		//url: ipAddr+"/test",
+    		error: function(data,status) {
+     			alert("failed auth");
+     			console.log(data);
+    		},
+    		success: function(data,status){
+      			alert("succesful auth");
+      			console.log(data);
+    		}
+  		});
+  	});
+
+
+	</script>
 </body>
