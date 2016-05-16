@@ -16,11 +16,13 @@
     "express": "^4.13.4",
     "express-session": "^1.13.0",
     "fs": "0.0.2",
+    "letsencrypt-express": "^1.1.5",
     "morgan": "^1.7.0",
     "passport": "^0.3.2",
     "passport-google-oauth20": "^1.0.0",
     "pg": "^4.5.5",
     "pg-native": "^1.10.0",
+    "spdy": "^3.3.2",
     "start": "^4.0.1"
   },
   "devDependencies": {},
