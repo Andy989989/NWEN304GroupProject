@@ -1,6 +1,6 @@
-var passport = requires('passport');
+var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
-var codes = require('.code.js');
+var codes = require('./code.js');
 
 var exports = module.exports = {};
 
@@ -24,7 +24,7 @@ exports.beginAuth = function (req, res){
 
 
 exports.authenticate = function (req, res){
-  passport.authenticate('google', { scope: ['profile'] }));
+  passport.authenticate('google', { scope: ['profile'] });
   console.log("Gets into authenticate");
 };
 
@@ -34,4 +34,5 @@ exports.authCallback = function (req, res){
   function(req, res) {
     // Successful authentication, redirect home.
     res.redirect('/');
+  }
 };
