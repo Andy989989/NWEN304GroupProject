@@ -2,7 +2,7 @@ var express = require('express');
 var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 8080;
-var bp = require('body-parser');
+var bp = require('body-parser').url_encoded({extended:true});
 
 var auth = require('./middleware/authentication.js');
 var guys = require('./database/the_boyz.js');
