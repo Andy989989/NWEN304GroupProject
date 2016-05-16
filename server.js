@@ -201,7 +201,7 @@ var lex = LEX.create({
 , approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
     // Note: this is the place to check your database to get the user associated with this domain
     cb(null, {
-      domains: [hostname]
+      domains: 'https://morning-dawn-49717.herokuapp.com'
     , email: 'andy989989@gmail.com' // user@example.com
     , agreeTos: true
     });
