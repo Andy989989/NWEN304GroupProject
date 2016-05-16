@@ -190,29 +190,19 @@ app.delete('/', function(req,res){
 });
 
 /*
+// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
 app.listen(port, function(){
 	console.log('Listening:' + port);
-});*/
-
-
-var LEX = require('letsencrypt-express').testing();
-
-var lex = LEX.create({
-  configDir: require('os').homedir() + '/letsencrypt/etc'
-, approveRegistration: function (hostname, cb) { // leave `null` to disable automatic registration
-    // Note: this is the place to check your database to get the user associated with this domain
-    cb(null, {
-      domains: 'https://morning-dawn-49717.herokuapp.com'
-    , email: 'andy989989@gmail.com' // user@example.com
-    , agreeTos: true
-    });
-  }
 });
+*/
+
+var https = require('https');
+var privateKey  = fs.readFileSync('key.pem', 'utf8');
+var certificate = fs.readFileSync('cert.pem', 'utf8');
+
+var credentials = {key: privateKey, cert: certificate};
+
+var httpsServer = https.createServer(credentials, app);
 
 
-lex.onRequest = app;
-
-lex.listen([port], [443, 5001], function () {
-  var protocol = ('requestCert' in this) ? 'https': 'http';
-  console.log("Listening at " + protocol + '://localhost:' + this.address().port);
-});
+httpsServer.listen(port);
