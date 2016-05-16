@@ -12,7 +12,7 @@ var Strategy = require('passport-facebook').Strategy;
 // authentication.
 passport.use(new Strategy({
     clientID: 261460150870678,//process.env.CLIENT_ID, 
-    clientSecret: 54da0a9f6352a8adf21c359a545b2257,//process.env.CLIENT_SECRET,
+    clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
     callbackURL: 'http://localhost:3000/login/facebook/return'
   },
   function(accessToken, refreshToken, profile, cb) {
@@ -88,5 +88,7 @@ app.get('/profile',
   function(req, res){
     res.render('profile', { user: req.user });
   });
-var port = process.env.port;
-app.listen(port);
+var port = process.env.port || 8080;
+app.listen(port, function(){
+  console.log('Listening:' + port);
+});
