@@ -27,24 +27,43 @@ function putData(key, value){
 
 exports.sort_it_out = function(req, res){
 	var array = sanitize_url(req.url);
+	if(array == null){
+		//The path name was invalid
+		res.status(400);
+		res.send("400 BAD REQUEST!");
+		return;
+	}
 	var query;
 	if(array.length == 1){
 		//url is just /gender
-		query = client.query("select * from ?", [array[0]]);
+		query = client.query("select * from " + array[0]);
 	} else if(array.length == 2){
 		//url is /gender/some_category
-		query = client.query("select * from ?_?", [array[0]], [array[1]]);
+		query = client.query("select * from " + array[0] + "_" + array[1]);
 	} else {
 		//url is /gender/some_category/item_id
-		query = client.query("select * from ?_? where id='?'", [array[0]], [array[1]], [array[2]]);
+		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'");
 	}
 	handle_query(query, res);
+	res.status(200);
+	res.end();
 }
 
 function sanitize_url(url){
 	var queries_removed = url.split('?');
 	var leading_slash_removed = queries_removed[0].slice(1);
-	return leading_slash_removed.split('/');
+	var path = leading_slash_removed.split('/');
+	path = ensure_only_letters_and_numbers(path);
+	return path;
+}
+
+function ensure_only_letters_and_numbers(path){
+	for(var i = 0; i < path.length; i++){
+		if(!(/^\w+$/.test(path[i])) || path[i] == undefined){
+			return null;
+		}
+	}
+	return path;
 }
 
 function handle_query(query, res){
