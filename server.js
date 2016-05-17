@@ -6,9 +6,6 @@ var bp = require('body-parser');
 
 var auth = require('./middleware/authentication.js');
 var send_to_database_code = require('./database/access_database.js');
-var guys = require('./database/the_boyz.js');
-var girls = require('./database/the_chicks.js');
-var babies = require('./database/little_humans.js');
 
 //var cors = require('cors');
 //var pg = require('pg').native;
