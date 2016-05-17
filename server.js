@@ -5,6 +5,7 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 
 var auth = require('./middleware/authentication.js');
+var send_to_database_code = require('./database/access_database.js');
 var guys = require('./database/the_boyz.js');
 var girls = require('./database/the_chicks.js');
 var babies = require('./database/little_humans.js');
@@ -60,9 +61,9 @@ app.get('/', function(req,res){
 	res.sendFile('index.html');
 });
 
-app.get('/men*', guys.sort_it_out);
-app.get('/women*', girls.sort_it_out);
-app.get('/kids*', babies.sort_it_out);
+app.get('/men*', send_to_database_code.sort_it_out);
+app.get('/women*', send_to_database_code.sort_it_out);
+app.get('/kids*', send_to_database_code.sort_it_out);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);

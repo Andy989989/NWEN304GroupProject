@@ -2,7 +2,6 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
-var helpers = require('./supporting_functions.js');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
@@ -27,7 +26,7 @@ function putData(key, value){
 }
 
 exports.sort_it_out = function(req, res){
-	var array = helpers.sanitize_url(req.url);
+	var array = sanitize_url(req.url);
 	var query;
 	if(array.length == 1){
 		//url is just /gender
@@ -39,5 +38,21 @@ exports.sort_it_out = function(req, res){
 		//url is /gender/some_category/item_id
 		query = client.query("select * from ?_? where id='?'", [array[0]], [array[1]], [array[2]]);
 	}
-	helpers.handle_query(query, res);
+	handle_query(query, res);
+}
+
+function sanitize_url(url){
+	var queries_removed = url.split('?');
+	var leading_slash_removed = queries_removed[0].slice(1);
+	return leading_slash_removed.split('/');
+}
+
+function handle_query(query, res){
+	var query_results = [];
+	query.on('row', function(row){
+		query_results.push(row);
+	});
+	query.on('end', function(){
+		res.json(query_results);
+	});
 }
