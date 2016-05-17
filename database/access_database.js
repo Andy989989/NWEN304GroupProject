@@ -30,16 +30,14 @@ exports.sort_it_out = function(req, res){
 	var array = helpers.sanitize_url(req.url);
 	var query;
 	if(array.length == 1){
-		//url is just /women
-		//TODO sanitize array[1]
-		query = client.query("select * from women");
+		//url is just /gender
+		query = client.query("select * from ?", [array[0]]);
 	} else if(array.length == 2){
-		//url is /women/some_category
-		//TODO sanitize array[1] and array[2]
-		query = client.query("select * from womens_"+array[1]);
-	} else{
-		//url is /women/some_category/item_id
-		query = client.query("select * from womens_"+array[1]+" where id='"+array[2]+"'");
+		//url is /gender/some_category
+		query = client.query("select * from ?_?", [array[0]], [array[1]]);
+	} else {
+		//url is /gender/some_category/item_id
+		query = client.query("select * from ?_? where id='?'", [array[0]], [array[1]], [array[2]]);
 	}
 	helpers.handle_query(query, res);
 }

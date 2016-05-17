@@ -2,7 +2,7 @@ var express = require('express');
 var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 8080;
-var bp = require('body-parser').url_encoded({extended:true});
+var bp = require('body-parser');
 
 var auth = require('./middleware/authentication.js');
 var guys = require('./database/the_boyz.js');
@@ -17,7 +17,7 @@ app.use(express.static('/public'));
 app.use('/public', express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/public'));
 
-app.use(bp.urlencoded());
+app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
 //app.use(cors());
 app.listen(port, function(){

@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
+var helpers = require('./supporting_functions.js');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
@@ -9,7 +10,7 @@ var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nod
 var client = new pg.Client(connectionString);
 client.connect();
 
-app.use(bp.urlencoded());
+app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
 //app.use(cors());
 
@@ -26,14 +27,12 @@ function putData(key, value){
 }
 
 exports.sort_it_out = function(req, res){
-	var url = req.url.split('?');
-	var array = url[0].split('/');
-	var array_max_index = array.length - 1;
+	var array = helpers.sanitize_url(req.url);
 	var query;
-	if(array_max_index == 0){
+	if(array.length == 1){
 		//url is just /men
 		query = client.query("select * from men");
-	} else if(array_max_index == 1){
+	} else if(array.length == 2){
 		//url is /men/some_category
 		//TODO sanitize array[1]
 		query = client.query("select * from mens_"+array[1]);
@@ -42,15 +41,5 @@ exports.sort_it_out = function(req, res){
 		//TODO sanitize array[1] and array[2]
 		query = client.query("select * from mens_"+array[1]+" where id='"+array[2]+"'");
 	}
-	handle_query_response(query, res);
-}
-
-function handle_query(query, res){
-	var query_results = [];
-	query.on('row', function(row){
-		query_results.push(row);
-	});
-	query.on('end', function(){
-		res.json(query_results);
-	});
+	helpers.handle_query(query, res);
 }
