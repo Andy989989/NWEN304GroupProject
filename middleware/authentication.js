@@ -4,12 +4,7 @@ var jwt = require('jsonwebtoken');
 //var client = new pg.Client(connectionString);
 //client.connect();
 var secret ='secretKeyThing'
-
-
-
 var exports = module.exports = {};
-
-
 
 exports.authenticate = function (req, res){
  
