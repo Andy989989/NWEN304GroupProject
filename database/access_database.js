@@ -5,7 +5,7 @@ var bp = require('body-parser');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
-var connectionString = "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
+var connectionString = "postgres://watsonben:secure_password@depot:5432/group_2_database";
 var client = new pg.Client(connectionString);
 client.connect();
 
@@ -33,6 +33,7 @@ exports.sort_it_out = function(req, res){
 		res.send("400 BAD REQUEST!");
 		return;
 	}
+	//TODO make /kidsssss stop breaking
 	var query;
 	if(array.length == 1){
 		//url is just /gender
@@ -44,9 +45,9 @@ exports.sort_it_out = function(req, res){
 		//url is /gender/some_category/item_id
 		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'");
 	}
-	handle_query(query, res);
 	res.status(200);
-	res.end();
+	handle_query(query, res);
+//	res.end();
 }
 
 function sanitize_url(url){
