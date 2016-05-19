@@ -21,7 +21,7 @@ assuming this data is being sent from the client
 // error testing
 if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') ){
 		res.statusCode = 400;
-    	return res.send('Error 400: Post syntax incorrect.');
+    	return res.send('Error 400');
 }
 
 

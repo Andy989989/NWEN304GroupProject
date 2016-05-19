@@ -9,6 +9,7 @@ var codes = require('./middleware/code.js');
 // this is for authentication
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
+var loggedOn = require('connect-ensure-login');
 
 
 var app = express();
@@ -143,6 +144,8 @@ app.post('/newUser',user.newUser);
 
 app.post('/login',auth.login);
 
+app.post('/auth/logout',auth.authenticate,auth.logout);
+
 app.get('/login/facebook',
   passport.authenticate('facebook'));
 
@@ -154,12 +157,12 @@ app.get('/login/facebook/return',
   });
 
 app.get('/profile',
-  require('connect-ensure-login').ensureLoggedIn(),
+  loggedOn.ensureLoggedIn(),
   function(req, res){
     //res.render('profile', { user: req.user });
 });
 
-app.get( '/logout', function( request, response ) {
+app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
   });

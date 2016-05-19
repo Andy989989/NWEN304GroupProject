@@ -5,6 +5,7 @@ var jwt = require('jsonwebtoken');
 //client.connect();
 var secret ='secretKeyThing'
 var exports = module.exports = {};
+var database = [];
 
 exports.authenticate = function (req, res){
  
@@ -81,8 +82,23 @@ query.on('end', function(result){
 
 };
 
+exports.logout = function (req, res){
+if(!req.body.hasOwnProperty('token')) {
+    res.statusCode = 400;
+    return res.send('Error 400');
+  }
+
+
+};
 
 exports.newToken = function (req, res){
+	if(!req.body.hasOwnProperty('userName')) {
+    res.statusCode = 400;
+    return res.send('Error 400');
+  }
+
+
+
   	//find username
   	query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
   
@@ -117,7 +133,4 @@ exports.newToken = function (req, res){
     	}
 
 	  });
-
-
-
 };
