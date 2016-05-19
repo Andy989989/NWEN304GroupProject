@@ -50,7 +50,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js">
 	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
 	var ipAddr = '192.168.1.1';
-	var data = {};
+  	var data = {'UserName':'Andy','password':'test1'};
 	$('#submit').button().click(
 		function() {
 			$.ajax({
@@ -63,7 +63,7 @@
     			console.log(data);
     		},
     		success: function(data,status){
-    			alert("succesful Register");
+    			alert("succesful Register: " + status);
     			console.log(data);
     		}
     	});

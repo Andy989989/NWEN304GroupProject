@@ -139,7 +139,7 @@ app.delete('/', function(req,res){
 
 app.all('/auth/*', auth.authenticate);
 
-app.post('/newUser',user.newUser);
+app.post('/newUser',auth.newUser);
 
 
 app.post('/login',auth.login);
