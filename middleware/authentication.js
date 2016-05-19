@@ -57,6 +57,8 @@ exports.login = function (req, res){
  //get the hashed password from the database using the username
  //query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
 
+
+
  query.on('row', function(result){
 	 // verify hasshed passed word and then if it is correct then create token and send it back
 	var hash = result.hash;
