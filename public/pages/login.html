@@ -49,21 +49,24 @@
  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   	<script src="../dist/js/bootstrap.js"></script>
 
-<!--
+<
   	<script>
-  	var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
+  	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
+  	var ipAddr = '192.168.1.1';
+  	var data = {};
 	$('#submit').button().click(
     function() {
     	$.ajax({
-    		method:'GET',
-    		url: ipAddr+"login/facebook",
+    		method:'POST',
+    		url: ipAddr+"/login",
+    		data: data,
     		//url: ipAddr+"/test",
     		error: function(data,status) {
-     			alert("failed auth");
+     			alert("failed login");
      			console.log(data);
     		},
     		success: function(data,status){
-      			alert("succesful auth");
+      			alert("succesful login");
       			console.log(data);
     		}
   		});
@@ -71,5 +74,5 @@
 
 
 	</script>
---->
+
 </body>

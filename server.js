@@ -138,10 +138,8 @@ app.delete('/', function(req,res){
 
 app.post('/newUser',user.newUser);
 
-app.get('/login',
-  function(req, res){
-    //res.render('login');
-  });
+
+app.post('/login',auth.login);
 
 app.get('/login/facebook',
   passport.authenticate('facebook'));

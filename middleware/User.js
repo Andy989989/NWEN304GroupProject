@@ -28,7 +28,7 @@ if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') 
 // hash the pasword here then add to database
 // TODO find a way to has stuff
 // var hash = /*get hashed password using req.body.password*/
-//query = client.query('Insert into login(username, password) values($1, $2)', [req.body.username, hash]);
+//query = client.query('Insert into login(userName, password) values($1, $2)', [req.body.userName, hash]);
 
 query.on('error', function(error){
 	  	res.statusCode = 400;
