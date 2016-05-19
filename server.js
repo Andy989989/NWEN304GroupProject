@@ -2,6 +2,10 @@ var express = require('express');
 var fs = require('fs');
 var cors = require('cors');
 
+var user = require('./middleware/User.js');
+var auth = require('./middleware/authentication.js');
+var codes = require('./middleware/code.js');
+
 // this is for authentication
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
@@ -39,8 +43,7 @@ app.use(function (req, res, next) {
   next();
 });
 
-var auth = require('./middleware/authentication.js');
-var codes = require('./middleware/code.js');
+
 
 app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
@@ -133,6 +136,8 @@ app.delete('/', function(req,res){
 //AUTHENTICATION METHODS
 //=====================================
 
+app.post('/newUser',user.newUser);
+
 app.get('/login',
   function(req, res){
     //res.render('login');
@@ -145,6 +150,7 @@ app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
     res.redirect('/');
+    console.log();
   });
 
 app.get('/profile',
@@ -152,6 +158,11 @@ app.get('/profile',
   function(req, res){
     //res.render('profile', { user: req.user });
 });
+
+app.get( '/logout', function( request, response ) {
+      request.logout();
+      response.send( 'Logged out!' );
+  });
 
 app.listen(port, function(){
 	console.log('Listening:' + port);
