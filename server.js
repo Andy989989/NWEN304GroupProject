@@ -136,6 +136,8 @@ app.delete('/', function(req,res){
 //AUTHENTICATION METHODS
 //=====================================
 
+app.all('/auth/*', auth.authenticate);
+
 app.post('/newUser',user.newUser);
 
 

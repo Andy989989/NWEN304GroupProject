@@ -3,6 +3,7 @@ var jwt = require('jsonwebtoken');
 //var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
 //var client = new pg.Client(connectionString);
 //client.connect();
+var secret ='secretKeyThing'
 
 
 
@@ -10,9 +11,35 @@ var exports = module.exports = {};
 
 
 
-exports.beginAuth = function (req, res){
-  // taken from google auth2.0 github page
-  
+exports.authenticate = function (req, res){
+ 
+	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+
+	// decode token
+	if (token) {
+
+		jwt.verify(token, secret, function(error, decoded) {			
+			if (error) {
+				return res.json({ success: false, message: 'Failed to authenticate token.' });		
+			} else {
+				// if everything is good, save to request for use in other routes
+				req.decoded = decoded;	
+				// everything is fine and has been authenticated
+				next();
+			}
+		});
+
+	} else {
+
+		// if there is no token
+		// return an error
+		return res.status(403).send({ 
+			success: false, 
+			message: 'No token provided.'
+		});
+		
+	}
+
 };
 
 
@@ -79,7 +106,6 @@ exports.newToken = function (req, res){
 
 		// if user is found and password is right
 				// create a token
-				var secret ='secretKeyThing'
 				var token = jwt.sign(user, secret, {
 					expiresIn: 86400 // expires in 24 hours
 				});
