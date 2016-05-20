@@ -1,9 +1,14 @@
 var express = require('express');
 var fs = require('fs');
-var cors = require('cors');
-
+var app = express();
+var port = process.env.PORT || 8080;
+var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
+var send_to_database_code = require('./database/access_database.js');
+
+//var cors = require('cors');
+//var pg = require('pg').native;
 var codes = require('./middleware/code.js');
 
 // this is for authentication
@@ -29,6 +34,7 @@ app.use(express.static('/public'));
 app.use('/public', express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/public'));
 
+app.use(bp.urlencoded({extended:true}));
 // Add headers
 app.use(function (req, res, next) {
   // Website you wish to allow to connect
@@ -49,7 +55,6 @@ app.use(function (req, res, next) {
 app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
 app.use(bp.json());
-app.use(cors());
 
 //=====================================
 //AUTHENTICATION SETUP
@@ -99,6 +104,10 @@ app.get('/', function(req,res){
 	console.log("get /")
 	res.sendFile('/public/index.html');
 });
+
+app.get('/men*', send_to_database_code.sort_it_out);
+app.get('/women*', send_to_database_code.sort_it_out);
+app.get('/kids*', send_to_database_code.sort_it_out);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
