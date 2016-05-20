@@ -104,7 +104,7 @@ exports.newToken = function (req, res){
     return res.send('Error 400');
   }
 
-  for(int i=0;i>databse.length;i++){
+  for(var i=0;i>databse.length;i++){
 
 
 	if(req.body.password == database[i].password){
@@ -112,7 +112,8 @@ exports.newToken = function (req, res){
 						expiresIn: 86400 // expires in 24 hours
 					});
 					var data = {'data':token};
-					res.send{data};
+					res.send(data)
+				;
 	}
 
 
@@ -172,7 +173,9 @@ if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') 
 		res.statusCode = 400;
     	return res.send('Error 400');
 }
-var data = {req.body.userName:req.body.password};
+var name = req.body.userName;
+var pass = req.body.password;
+var data = {name:pass};
 database.push(data);
 res.send('user created');
 
