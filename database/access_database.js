@@ -33,21 +33,41 @@ exports.sort_it_out = function(req, res){
 		res.send("400 BAD REQUEST!");
 		return;
 	}
+	var error = false;
 	//TODO make /kidsssss stop breaking
 	var query;
 	if(array.length == 1){
 		//url is just /gender
-		query = client.query("select * from " + array[0]);
+		query = client.query("select * from " + array[0], function(err, rows, fields){
+			if(err){
+				res.status(404);
+				res.send("404 RESOURCE NOT FOUND!");
+				error = true;
+			}
+		});
 	} else if(array.length == 2){
 		//url is /gender/some_category
-		query = client.query("select * from " + array[0] + "_" + array[1]);
+		query = client.query("select * from " + array[0] + "_" + array[1], function(err, rows, fields){
+			if(err){
+				res.status(404);
+				res.send("404 RESOURCE NOT FOUND!");
+				error = true;
+			}
+		});
 	} else {
 		//url is /gender/some_category/item_id
-		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'");
+		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'", function(err, rows, fields){
+			if(err){
+				res.status(404);
+				res.send("404 RESOURCE NOT FOUND!");
+				error = true;
+			}
+		});
 	}
-	res.status(200);
-	handle_query(query, res);
-//	res.end();
+	if(!error){
+		res.status(200);
+		handle_query(query, res);
+	}
 }
 
 function sanitize_url(url){
