@@ -5,7 +5,7 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_database.js');
+var send_to_database_code = require('./database/access_products.js');
 
 //var cors = require('cors');
 //var pg = require('pg').native;

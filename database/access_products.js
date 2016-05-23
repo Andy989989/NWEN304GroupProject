@@ -5,7 +5,7 @@ var bp = require('body-parser');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
-var connectionString = "postgres://watsonben:secure_password@depot:5432/group_2_database";
+var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
 
@@ -34,7 +34,6 @@ exports.sort_it_out = function(req, res){
 		return;
 	}
 	var error = false;
-	//TODO make /kidsssss stop breaking
 	var query;
 	if(array.length == 1){
 		//url is just /gender
@@ -74,6 +73,9 @@ function sanitize_url(url){
 	var queries_removed = url.split('?');
 	var leading_slash_removed = queries_removed[0].slice(1);
 	var path = leading_slash_removed.split('/');
+	if(path[path.length - 1] == ""){
+		path = path.slice(0,-1);
+	}
 	path = ensure_only_letters_and_numbers(path);
 	return path;
 }
