@@ -25,12 +25,11 @@ function putData(key, value){
 	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
 }
 
-exports.sort_it_out = function(req, res){
+exports.get_me_something = function(req, res){
 	var array = sanitize_url(req.url);
 	if(array == null){
-		//The path name was invalid
-		res.status(400);
-		res.send("400 BAD REQUEST!");
+		//The url was invalid
+		res.status(400).send("Invalid url");
 		return;
 	}
 	var error = false;
@@ -38,35 +37,33 @@ exports.sort_it_out = function(req, res){
 	if(array.length == 1){
 		//url is just /gender
 		query = client.query("select * from " + array[0], function(err, rows, fields){
-			if(err){
-				res.status(404);
-				res.send("404 RESOURCE NOT FOUND!");
+				if(err){
+				res.status(404).send("Sorry, we can't find that.");
 				error = true;
-			}
-		});
+				}
+				});
 	} else if(array.length == 2){
 		//url is /gender/some_category
 		query = client.query("select * from " + array[0] + "_" + array[1], function(err, rows, fields){
-			if(err){
-				res.status(404);
-				res.send("404 RESOURCE NOT FOUND!");
+				if(err){
+				res.status(404).send("Sorry, we can't find that..");
 				error = true;
-			}
-		});
+				}
+				});
 	} else {
 		//url is /gender/some_category/item_id
 		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'", function(err, rows, fields){
-			if(err){
-				res.status(404);
-				res.send("404 RESOURCE NOT FOUND!");
+				if(err){
+				res.status(404).send("Sorry, we can't find that.");
 				error = true;
-			}
-		});
+				}
+				});
 	}
-	if(!error){
-		res.status(200);
-		handle_query(query, res);
+	if(error){
+		return;
 	}
+	res.statusCode = 200;
+	handle_query(query, res);
 }
 
 function sanitize_url(url){
@@ -92,9 +89,9 @@ function ensure_only_letters_and_numbers(path){
 function handle_query(query, res){
 	var query_results = [];
 	query.on('row', function(row){
-		query_results.push(row);
-	});
+			query_results.push(row);
+			});
 	query.on('end', function(){
-		res.json(query_results);
-	});
+			res.json(query_results);
+			});
 }
