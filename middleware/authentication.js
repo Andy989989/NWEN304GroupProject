@@ -108,7 +108,7 @@ exports.newToken = function (req, res){
 
 	if(req.body.password == database[0].password){
 		var token = jwt.sign(req.body.userName, secret, {
-						expiresIn: 1800 // expires in 24 hours
+						expiresIn: 1800 // expires in 30 mins
 					});
 					var data = {'data':token};
 					res.send(data)
