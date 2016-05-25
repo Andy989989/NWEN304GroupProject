@@ -174,6 +174,7 @@ app.get('/profile',
 app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
+      //res.redirect('/');
   });
 
 app.listen(port, function(){
