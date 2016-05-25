@@ -15,11 +15,8 @@ $(document).ready(function(e) {
 
 
 	$('#submit').button().click(
-		function() {
+			function() {
 			console.log("asdfsadf");
-			
-
-
 			$.ajax({
 				method:'POST',
 				url: ipAddr+"/newUser",

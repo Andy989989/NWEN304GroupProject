@@ -9,7 +9,7 @@
 	<script src="../dist/js/jquery.min.js"></script>
 	<script src="../dist/js/jquery-ui.min.js"></script>
 	<script src="../dist/js/bootstrap.js"></script>	
-	
+	<script src="./buttons.js"></script>
 
 
 </head>
@@ -43,8 +43,8 @@
 		<label for="usr">Register:</label>
 		<input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
 		<input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
-		<input id="submit" name="submit" type="submit" value="submit" class="btn">
-		<a href = "register.html">Register</a>
+		<input id="submitLogin" name="submitLogin" type="submit" value="submit" class="btn">
+		<a href = "Register.html">Register</a>
 
   		  <a href = "../../login/facebook">Login with Facebook</a>
   		 <a href = "../../facebook/logout">Logout with Facebook</a>
@@ -57,8 +57,14 @@
   	var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
   	//var ipAddr = 'localhost:8080';
   	var data = {'userName':'Andy','password':'test1'};
-	$('#submit').button().click(
+  	
+	$('#submitLogin').button().click(
+	
+
     function() {
+    	alert(data);
+    	console.log(data);
+  		alert(data.userName);
     	$.ajax({
     		method:'POST',
     		url: ipAddr+"/login",
@@ -72,7 +78,8 @@
       			alert("succesful login");
       			console.log(data);
     		}
-  		});
+  		 });
+  	
   	});
 
 

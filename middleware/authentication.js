@@ -8,7 +8,7 @@ client.connect();
 
 var secret ='secretKeyThing'
 var exports = module.exports = {};
-var database = [];
+var database = [{'userName':'Andy','password':'test1'}];
 
 exports.authenticate = function (req, res){
  
@@ -57,8 +57,7 @@ exports.login = function (req, res){
  // var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
 
 if(req.body.password == database[0].password){
-	var token = exports.newtoken(result);
-	//res.send(token);
+	var token = exports.newtoken(req,res); //res.send(token);
 }
 
 /*
@@ -104,12 +103,12 @@ exports.newToken = function (req, res){
     return res.send('Error 400');
   }
 
-  for(var i=0;i>databse.length;i++){
+  //for(var i=0;i>databse.length;i++){
 
 
-	if(req.body.password == database[i].password){
+	if(req.body.password == database[0].password){
 		var token = jwt.sign(req.body.userName, secret, {
-						expiresIn: 86400 // expires in 24 hours
+						expiresIn: 1800 // expires in 24 hours
 					});
 					var data = {'data':token};
 					res.send(data)
@@ -117,7 +116,7 @@ exports.newToken = function (req, res){
 	}
 
 
-  }
+  //}
 
 
 /*
