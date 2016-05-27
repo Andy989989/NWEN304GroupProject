@@ -1,5 +1,7 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
+var users = require('../database/access_users.js');
+
 /*
 var pg = require('pg').native;
 var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.

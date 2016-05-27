@@ -5,15 +5,9 @@ var bp = require('body-parser');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
-<<<<<<< HEAD:database/access_database.js
-var connectionString;// = "postgres://watsonben:secure_password@depot:5432/group_2_database";
-//var client = new pg.Client(connectionString);
-//client.connect();
-=======
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
->>>>>>> 727ffcdac2d9a50b83df71065b8b0ee9ad930654:database/access_products.js
 
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());

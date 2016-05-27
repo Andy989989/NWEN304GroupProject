@@ -39,9 +39,9 @@
 	</div>
 
 	<div class="form-group col-md-4 col-md-offset-4">
-		<label for="usr">Register:</label>
-		<input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
-		<input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
+		<label for="usr">Login:</label>
+		<input type="text" class="form-control" id="registerUsername" rows="5" placeholder="User ID">
+		<input type="text" class="form-control" id="registerPassword" rows="5" placeholder="Password">
 		<input id="submit" name="submit" type="submit" value="submit" class="btn">
 		<a href = "register.html">Register</a>
 
@@ -56,28 +56,50 @@
   	<script>
   	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
   	var ipAddr = 'http://130.195.4.177:8080';
-  	var data = {'userName':'Andy','password':'test1'};
+  	//var data = {'userName':'Andy','password':'test1'};
   	var token;
 	$('#submit').button().click(
     function() {
-    	$.ajax({
-    		method:'POST',
-    		url: ipAddr+"/login",
-    		data: data,
-    		//url: ipAddr+"/test",
-    		error: function(data,status) {
-     			alert("failed login");
-     			console.log(data);
+      console.log($('#registerUsername').val());
+      console.log($('#registerPassword').val());
+      //console.log($('#registerConfirmPassword').val());
+      var userName = $('#registerUsername').val();
+      var password = $('#registerPassword').val();
 
-    		},
-    		success: function(data,status){
-      			alert("succesful login");
-      			console.log(data);
-    			console.log(data.token);
-     			token = {"token":data.token};
-     			console.log(token);
-    		}
-  		});
+
+
+      if(userName == null || userName == undefined || userName == ''){
+        alert("please enter a user Name and password");
+      }else{
+
+        var data = {'userName':userName,'password':password};
+        console.log(data);
+
+
+    	 $.ajax({
+    		  method:'POST',
+    		  url: ipAddr+"/login",
+    		  data: data,
+    		  //url: ipAddr+"/test",
+    		  error: function(data,status) {
+     			  alert("failed login");
+     			  console.log(data);
+
+    		  },
+    		  success: function(data,status){
+      			 alert("succesful login");
+      		  	console.log(data);
+    			 console.log(data.token);
+     			  token = {"token":data.token};
+     			  console.log(token);
+    		  }
+  		  });
+
+      }
+
+
+
+
   	});
 
 
