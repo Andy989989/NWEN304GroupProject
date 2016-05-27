@@ -5,9 +5,9 @@ var bp = require('body-parser');
 var exports = module.exports = {};
 //var cors = require('cors');
 var pg = require('pg').native;
-var connectionString = "postgres://watsonben:secure_password@depot:5432/group_2_database";
-var client = new pg.Client(connectionString);
-client.connect();
+var connectionString;// = "postgres://watsonben:secure_password@depot:5432/group_2_database";
+//var client = new pg.Client(connectionString);
+//client.connect();
 
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
