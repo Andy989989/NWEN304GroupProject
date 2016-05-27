@@ -148,6 +148,8 @@ app.delete('/', function(req,res){
 
 app.all('/auth/*', auth.authenticate);
 
+app.post('/auth/testAuth',auth.testAuth);
+
 app.post('/newUser',auth.newUser);
 
 

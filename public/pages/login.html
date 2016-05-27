@@ -47,6 +47,7 @@
 
   		  <a href = "../../login/facebook">Login with Facebook</a>
   		 <a href = "../../facebook/logout">Logout with Facebook</a>
+  		 <input id="testAuth" name="testAuth" type="submit" value="TestAuth" class="btn">
 
 	</div>
 
@@ -56,6 +57,7 @@
   	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
   	var ipAddr = 'http://130.195.4.177:8080';
   	var data = {'userName':'Andy','password':'test1'};
+  	var token;
 	$('#submit').button().click(
     function() {
     	$.ajax({
@@ -66,13 +68,43 @@
     		error: function(data,status) {
      			alert("failed login");
      			console.log(data);
+
     		},
     		success: function(data,status){
       			alert("succesful login");
       			console.log(data);
+    			console.log(data.token);
+     			token = {"token":data.token};
+     			console.log(token);
     		}
   		});
   	});
+
+
+  	$('#testAuth').button().click(
+    function() {
+    	$.ajax({
+    		method:'POST',
+    		url: ipAddr+"/auth/testAuth",
+    		data: token,
+    		//url: ipAddr+"/test",
+    		error: function(data,status) {
+     			alert("failed auth");
+     			console.log(data);
+
+    		},
+    		success: function(data,status){
+      			alert("succesful auth");
+      			console.log(data);
+    			//console.log(data.token);
+     			//token = {"token":data.token};
+     			//console.log(token);
+    		}
+  		});
+  	});
+
+
+
 
 
 	</script>

@@ -1,4 +1,5 @@
 var jwt = require('jsonwebtoken');
+var express = require('express');
 /*
 var pg = require('pg').native;
 var connectionString; //= "postgres://watsonben:mypassword@depot:5432/watsonben_nodejs"; //TODO Create a new database.
@@ -10,7 +11,14 @@ var secret ='secretKeyThing'
 var exports = module.exports = {};
 var database = [];
 
-exports.authenticate = function (req, res){
+exports.testAuth = function(req,res){
+
+res.send("got into testAuth : authentication succesfull");
+
+}
+
+exports.authenticate = function (req, res,next){
+	console.log("gets into auth");
  
 	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
 
@@ -24,6 +32,7 @@ exports.authenticate = function (req, res){
 				// if everything is good, save to request for use in other routes
 				req.decoded = decoded;	
 				// everything is fine and has been authenticated
+				console.log("authenticated");
 				next();
 			}
 		});
@@ -54,9 +63,9 @@ exports.newToken = function (req, res){
 
 	if(req.body.password == database[i].password){
 		var token = jwt.sign({'password':req.body.password}, secret, {
-						expiresIn:1800 // expires in 24 hours
+						expiresIn:1800 // expires in 30 hours
 					});
-					var data = {'data':token};
+					var data = {'token':token};
 					res.send(data)
 				;
 	}
