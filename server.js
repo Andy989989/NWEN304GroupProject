@@ -5,8 +5,8 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_database.js');
-
+var send_to_database_code = require('./database/access_products.js');
+var try_login = require('./database/access_users.js');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
@@ -24,7 +24,7 @@ var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
 // these are used in the authentication
-app.use(require('morgan')('combined'));
+//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
@@ -85,18 +85,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //=====================================
-//HELPER METHODS
-//=====================================
-
-function postData(key, value){
-	//client.query("update jobs set complete="+value+" where name='"+key+"'");
-}
-
-function putData(key, value){
-	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
-}
-
-//=====================================
 //GET METHODS
 //=====================================
 
@@ -105,12 +93,16 @@ app.get('/', function(req,res){
 	res.sendFile('/public/index.html');
 });
 
-app.get('/men*', send_to_database_code.sort_it_out);
-app.get('/women*', send_to_database_code.sort_it_out);
-app.get('/kids*', send_to_database_code.sort_it_out);
+app.get('/men*', send_to_database_code.get_me_something);
+app.get('/women*', send_to_database_code.get_me_something);
+app.get('/kids*', send_to_database_code.get_me_something);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
+});
+
+app.get('*', function(req, res){
+	res.status(400).send("Sorry, that page doesn't exist.");
 });
 //=====================================
 //PUT METHODS
@@ -119,6 +111,8 @@ app.get('/pages', function(req, res){
 app.put('/', function(req,res){
 
 });
+
+app.put('/login', try_login.put);
 
 //=====================================
 //POST METHODS
@@ -147,6 +141,8 @@ app.delete('/', function(req,res){
 //=====================================
 
 app.all('/auth/*', auth.authenticate);
+
+app.post('/auth/testAuth',auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
