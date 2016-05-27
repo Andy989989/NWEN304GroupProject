@@ -90,9 +90,9 @@ function ensure_only_letters_and_numbers(word){
 function handle_query(query, res){
 	var query_results = [];
 	query.on('row', function(row){
-			query_results.push(row);
+			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.json(query_results);
+			res.render('Display', {results : query_results});
 			});
 }
