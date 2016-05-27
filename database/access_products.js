@@ -3,15 +3,12 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
-//var cors = require('cors');
 var pg = require('pg').native;
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
-
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
-//app.use(cors());
 
 //=====================================
 //HELPER METHODS
@@ -52,7 +49,7 @@ exports.get_me_something = function(req, res){
 				});
 	} else {
 		//url is /gender/some_category/item_id
-		query = client.query("select * from " + array[0] + "_" + array[1] +" where id='"+array[2]+"'", function(err, rows, fields){
+		query = client.query("select * from " + array[0] + " where id='"+array[2]+"'", function(err, rows, fields){
 				if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
@@ -73,17 +70,21 @@ function sanitize_url(url){
 	if(path[path.length - 1] == ""){
 		path = path.slice(0,-1);
 	}
-	path = ensure_only_letters_and_numbers(path);
+	path = test_path(path);
 	return path;
 }
 
-function ensure_only_letters_and_numbers(path){
+function test_path(path){
 	for(var i = 0; i < path.length; i++){
-		if(!(/^\w+$/.test(path[i])) || path[i] == undefined){
+		if(path[i] == undefined || !ensure_only_letters_and_numbers(path[i])){
 			return null;
 		}
 	}
 	return path;
+}
+
+function ensure_only_letters_and_numbers(word){
+	return /^\w+$/.test(word);
 }
 
 function handle_query(query, res){
