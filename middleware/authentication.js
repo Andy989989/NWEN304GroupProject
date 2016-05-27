@@ -1,6 +1,8 @@
 var jwt = require('jsonwebtoken');
 var express = require('express');
 var users = require('../database/access_users.js');
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
 
 /*
 var pg = require('pg').native;
@@ -58,12 +60,12 @@ exports.newToken = function (req, res){
  //    return res.send('Error 400');
  //  }
  console.log(req.body);
- 
+ var hash = bcrypt.hashSync(req.body.password, salt);
 
   for(var i=0;i<database.length;i++){
 
 
-	if(req.body.password == database[i].password){
+	if(hash == database[i].password){
 		var token = jwt.sign({'password':req.body.password}, secret, {
 						expiresIn:1800 // expires in 30 hours
 					});
@@ -132,12 +134,21 @@ exports.login = function (req, res){
  // var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
 console.log("gets into login");
 console.log(req.body.password);
+var hash = bcrypt.hashSync(req.body.password, salt);
+console.log(hash);
 console.log(database[0].password);
-if(req.body.password == database[0].password){
 
-	var token = exports.newToken(req,res);
-	//res.send(token);
+if(hash == database[0].password){
+	console.log("getting in hash test");
+    var token = exports.newToken(req,res);
 }
+
+// bcrypt.compareSync(database[0].password, hash, function(err, res) {
+//     // res === true
+    
+// });
+
+//console.log("hashing failed");
 
 /*
  query.on('row', function(result){
@@ -192,9 +203,14 @@ if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') 
 		res.statusCode = 400;
     	return res.send('Error 400');
 }
+
+
+var hash = bcrypt.hashSync(req.body.password, salt);
+console.log("Hashed password"+ hash);
+
 var name = req.body.userName;
 var pass = req.body.password;
-var data = {"userName":name,"password":pass};
+var data = {"userName":name,"password":hash};
 database.push(data);
 console.log(data);
 res.send('user created');

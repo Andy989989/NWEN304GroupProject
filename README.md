@@ -19,3 +19,9 @@ also [here](https://nodejs.org/api/https.html)
 https://morning-dawn-49717.herokuapp.com/
 
 https://git.heroku.com/morning-dawn-49717.git
+
+
+
+reason ffor using bcrypt:
+
+http://stackoverflow.com/questions/6951867/nodejs-bcrypt-vs-native-crypto
