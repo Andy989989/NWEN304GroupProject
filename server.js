@@ -24,7 +24,7 @@ var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
 // these are used in the authentication
-app.use(require('morgan')('combined'));
+//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
@@ -90,7 +90,7 @@ app.use(passport.session());
 
 app.get('/', function(req,res){
 	console.log("get /")
-	res.sendFile('/public/index.html');
+	res.render('index');
 });
 
 app.get('/men*', send_to_database_code.get_me_something);

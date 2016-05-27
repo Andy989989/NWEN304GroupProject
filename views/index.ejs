@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="images/dm.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+ 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  	<script src="dist/js/bootstrap.js"></script>
+    <link href="dist/css/bootstrap.css" rel="stylesheet">
+    <link href="dist/css/custom.css" rel="stylesheet">
+    <script src="index.js"></script>
+</head>
+    <% include partials/Navbar %>
+    <% include partials/Carosouel %>
+
+	<div class="form-group col-md-4 col-md-offset-4">
+	<label for="usr">Search:</label>
+		<input type="text" class="form-control" id="search-query" rows="5" placeholder="Search">
+		<input id="submit" name="submit" type="submit" value="submit" class="btn">
+	</div>
+
+	<div class="container">
+		<div class="col-sm-4">
+			<a href="/men"><h2>Men</h2></a>
+				<ol>
+					<li><a href = "#" value="casual_shirts" id="men">Casual Shirts</li>
+					<li><a href = "/men/jeans">Jeans</a></li>
+					<li><a href = "/men/t_shirts">T-Shirts</a></li>
+					<li><a href = "/men/footwear">Footwear</a></li>
+					<li><a href = "/men/shorts">Shorts</a></li>
+					<li><a href = "/men/watches">Watches</a></li>
+				</ol>
+		</div>
+		<div class="col-sm-4">
+			<a href="/women"><h2>Women</h2></a>
+				<ol>
+					<li><a href = "/women/dresses">Dresses</a></li>
+					<li><a href = "/women/churidar_suits">Churidar Suits</a></li>
+					<li><a href = "/women/kurtas">Kurtas</a></li>
+					<li><a href = "/women/sandals">Sandals</a></li>
+					<li><a href = "/women/office_wear">Office Wear</a></li>
+					<li><a href = "/women/artificial_jewellery">Artificial Jewellery</a></li>
+				</ol>
+		</div>
+		<div class="col-sm-4">
+			<a href="/kids"><h2>Kids</h2></a>
+				<ol>
+					<li><a href = "/kids/baby_apparel">Baby Apparel</a></li>
+					<li><a href = "/kids/girls_apparel">Girls Apparel</a></li>
+					<li><a href = "/kids/boys_apparel">Boys Apparel</a></li>
+					<li><a href = "/kids/kids_toys">Kids Toys</a></li>
+				</ol>
+		</div>
+	</div>
+</body>
