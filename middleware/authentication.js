@@ -41,75 +41,20 @@ exports.authenticate = function (req, res){
 
 };
 
-
-
-exports.login = function (req, res){
- /*
-	assuming this data is being sent from the client
-	{userName: "andy",password:"test1"}
-*/
-  if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
-    res.statusCode = 400;
-    return res.send('please post syntax')
-  }
-
- //get the hashed password from the database using the username
- // var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
-
-if(req.body.password == database[0].password){
-	var token = exports.newtoken(result);
-	//res.send(token);
-}
-
-/*
- query.on('row', function(result){
-	 // verify hasshed passed word and then if it is correct then create token and send it back
-	var hash = result.hash;
-	if(hash === req.body.passowrd.hash()){
-	//success
-	// TODO send token to client
-	var token = exports.newtoken(result);
-	res.send(token);
-	}else{
-		// failed 
-		res.statusCode = 401;     
-      	res.send('wrong username or password');
-    }
-}
-
-});
-
-query.on('end', function(result){
-    if(result.rowCount === 0){
-      res.statusCode = 401;     
-      res.send('wrong username or password');
-    }
-});
-*/
-
-}
-
-exports.logout = function (req, res){
-if(!req.body.hasOwnProperty('token')) {
-    res.statusCode = 400;
-    return res.send('Error 400');
-  }
-
-
-}
-
 exports.newToken = function (req, res){
-	if(!req.body.hasOwnProperty('userName')) {
-    res.statusCode = 400;
-    return res.send('Error 400');
-  }
+	// if(!req.body.hasOwnProperty('userName')) {
+ //    res.statusCode = 400;
+ //    return res.send('Error 400');
+ //  }
+ console.log(req.body);
+ 
 
-  for(var i=0;i>databse.length;i++){
+  for(var i=0;i<database.length;i++){
 
 
 	if(req.body.password == database[i].password){
-		var token = jwt.sign(req.body.userName, secret, {
-						expiresIn: 86400 // expires in 24 hours
+		var token = jwt.sign({'password':req.body.password}, secret, {
+						expiresIn:1800 // expires in 24 hours
 					});
 					var data = {'data':token};
 					res.send(data)
@@ -159,8 +104,71 @@ exports.newToken = function (req, res){
 	  */
 }
 
+
+
+exports.login = function (req, res){
+ /*
+	assuming this data is being sent from the client
+	{userName: "andy",password:"test1"}
+*/
+
+  if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
+    res.statusCode = 400;
+    return res.send('please post syntax')
+  }
+
+ //get the hashed password from the database using the username
+ // var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
+console.log("gets into login");
+console.log(req.body.password);
+console.log(database[0].password);
+if(req.body.password == database[0].password){
+
+	var token = exports.newToken(req,res);
+	//res.send(token);
+}
+
+/*
+ query.on('row', function(result){
+	 // verify hasshed passed word and then if it is correct then create token and send it back
+	var hash = result.hash;
+	if(hash === req.body.passowrd.hash()){
+	//success
+	// TODO send token to client
+	var token = exports.newtoken(result);
+	res.send(token);
+	}else{
+		// failed 
+		res.statusCode = 401;     
+      	res.send('wrong username or password');
+    }
+}
+
+});
+
+query.on('end', function(result){
+    if(result.rowCount === 0){
+      res.statusCode = 401;     
+      res.send('wrong username or password');
+    }
+});
+*/
+
+}
+
+exports.logout = function (req, res){
+if(!req.body.hasOwnProperty('token')) {
+    res.statusCode = 400;
+    return res.send('Error 400');
+  }
+
+
+}
+
+
+
 exports.newUser = function(req,res,next){
-console.log(req);
+console.log(req.body);
 console.log("Creating a new User");
 /*
 assuming this data is being sent from the client
@@ -175,8 +183,9 @@ if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') 
 }
 var name = req.body.userName;
 var pass = req.body.password;
-var data = {name:pass};
+var data = {"userName":name,"password":pass};
 database.push(data);
+console.log(data);
 res.send('user created');
 
 

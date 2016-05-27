@@ -4,8 +4,8 @@
 
 
 	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
-	var ipAddr = 'http://130.195.4.157:8080';
-	var data = {'UserName':'Andy','password':'test1'};
+	var ipAddr = 'http://130.195.4.177:8080';
+	var data = {'userName':'Andy','password':'test1'};
 
 	console.log("test");
 
