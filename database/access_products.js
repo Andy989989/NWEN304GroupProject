@@ -44,9 +44,9 @@ exports.get_me_something = function(req, res){
 				});
 	} else if(array.length == 2){
 		//url is /gender/some_category
-		query = client.query("select * from " + array[0] + "_" + array[1], function(err, rows, fields){
+		query = client.query("select * from " + array[0] + " where type='" + array[1]+"'", function(err, rows, fields){
 				if(err){
-				res.status(404).send("Sorry, we can't find that..");
+				res.status(404).send("Sorry, we can't find that.");
 				error = true;
 				}
 				});
