@@ -10,17 +10,11 @@ client.connect();
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
 
-//=====================================
-//HELPER METHODS
-//=====================================
-
-function postData(key, value){
-	//client.query("update jobs set complete="+value+" where name='"+key+"'");
-}
-
-function putData(key, value){
-	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
-}
+/*
+ * =====================================================
+ * GET
+ * =====================================================
+ */
 
 exports.get_me_something = function(req, res){
 	var array = sanitize_url(req.url);
@@ -63,6 +57,57 @@ exports.get_me_something = function(req, res){
 	handle_query(query, res);
 }
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// All of these following exports should only be able to
+// be used by an admin user.
+// From here...
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/*
+ * =====================================================
+ * DELETE
+ * =====================================================
+ */
+exports.delete_something = function(req,res){
+	res.send("Unimplemented function 'delete'.");
+}
+
+/*
+ * =====================================================
+ * POST
+ * =====================================================
+ */
+exports.update_something = function(req,res){
+	res.send("Unimplemented function 'post'.");
+}
+
+/*
+ * =====================================================
+ * PUT
+ * =====================================================
+ */
+exports.put_something_in_database = function(req,res){
+	res.send("Unimplemented function 'put'.");
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ... to here.
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/*
+ * =====================================================
+ * HELPER METHODS
+ * =====================================================
+ */
+
+function postData(key, value){
+	//client.query("update jobs set complete="+value+" where name='"+key+"'");
+}
+
+function putData(key, value){
+	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
+}
+
 function sanitize_url(url){
 	var queries_removed = url.split('?');
 	var leading_slash_removed = queries_removed[0].slice(1);
@@ -70,8 +115,7 @@ function sanitize_url(url){
 	if(path[path.length - 1] == ""){
 		path = path.slice(0,-1);
 	}
-	path = test_path(path);
-	return path;
+	return test_path(path);
 }
 
 function test_path(path){
