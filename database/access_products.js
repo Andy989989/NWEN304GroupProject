@@ -12,6 +12,53 @@ app.use(bp.json());
 
 /*
  * =====================================================
+ * SEARCH
+ * =====================================================
+ */
+
+exports.search = function(req, res){
+	var q = req.query.q;
+	if(q == undefined || q == null || !ensure_only_letters_and_numbers(q)){
+		res.status(400).send("Invalid query.");
+		return;
+	}
+	var query = client.query("select * from men where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+			if(err){
+				res.status(500).send("Could not search in database men.");
+				return;
+			}
+			});
+	var query_results = search_handle_query(query);
+	var query = client.query("select * from women where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+			if(err){
+				res.status(500).send("Could not search in database women.");
+				return;
+			}
+			});
+	query_results.push(search_handle_query(query));
+	var query = client.query("select * from kids where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+			if(err){
+				res.status(500).send("Could not search in database kids.");
+				return;
+			}
+			});
+	query_results.push(search_handle_query(query));
+	res.render('display', {results: query_results})
+}
+
+function search_handle_query(query){
+	var query_results = [];
+	query.on('row', function(row){
+			query_results.push(JSON.stringify(row));
+			});
+	query.on('end', function(){
+		return query_results;
+	});
+
+}
+
+/*
+ * =====================================================
  * GET
  * =====================================================
  */
@@ -20,7 +67,7 @@ exports.get_me_something = function(req, res){
 	var array = sanitize_url(req.url);
 	if(array == null){
 		//The url was invalid
-		res.status(400).send("Invalid url");
+		res.status(400).send("Invalid url.");
 		return;
 	}
 	var error = false;

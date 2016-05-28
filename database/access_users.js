@@ -18,9 +18,8 @@ app.use(bp.json());
  * of the error.
  */
 exports.get = function(name){
-	var name = req.body.name;
-	if(name == undefined || name == null){
-		return "ERROR: Missing value for name.";
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing valid value for name.";
 	}
 	var password = client.query("select * from users where name='"+name+"'", function(err){
 		if(err){ //User does not exist and therefore has no password to get.
@@ -65,6 +64,52 @@ exports.update_password = function(name, new_password){
 		}
 	});
 	return "Success."
+}
+
+exports.add_to_kart = function(name, item_id){
+	var missing = check_add_to_kart(name, item_id);
+	if(missing!=null){
+		return missing;
+	}
+	var ids = [];
+	var query = client.query("select item_ids from kart where name='"+name+"'", function(err){
+		if(err){
+			return "ERROR: could not get current kart items from database.";
+		}
+	});
+	query.on('row', function(row){
+		ids.push(row);
+	});
+	query.on('end', function(){
+		ids.push(item_id);
+		client.query("update kart set item_ids='"+ids+"' where name='"name"'", function(err){
+			if(err){
+				return "ERROR: could not add item to kart.";
+			}
+		});
+	});
+	return "Success.";
+}
+
+exports.get_kart = function(res, name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		res.status(400).send("Missing valid value for name.");
+		return;
+	}
+	var ids = [];
+	var query = client.query("select * from kart where name='"+name+"'", function(err){
+		if(err){
+			res.status(404).send("ERROR: could not get items from kart.");
+			return;
+		}
+	});
+	query.on('row', function(row){
+		ids.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		res.status(200);
+		res.render('display', {results: ids});
+	});
 }
 
 /*
