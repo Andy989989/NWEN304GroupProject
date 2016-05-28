@@ -54,7 +54,7 @@ exports.get_me_something = function(req, res){
 		return;
 	}
 	res.statusCode = 200;
-	handle_query(query, res);
+	handle_query(query, res, array[0]);
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -131,12 +131,12 @@ function ensure_only_letters_and_numbers(word){
 	return /^\w+$/.test(word);
 }
 
-function handle_query(query, res){
+function handle_query(query, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.render('display', {results: query_results})
+			res.render('display', {results: query_results, table: tableID})
 			});
 }
