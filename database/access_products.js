@@ -28,22 +28,24 @@ exports.search = function(req, res){
 				return;
 			}
 			});
-	var query_results = search_handle_query(query);
-	var query = client.query("select * from women where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+	var query2 = client.query("select * from women where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
 			if(err){
 				res.status(500).send("Could not search in database women.");
 				return;
 			}
 			});
-	query_results.push(search_handle_query(query));
-	var query = client.query("select * from kids where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+	var query3 = client.query("select * from kids where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
 			if(err){
 				res.status(500).send("Could not search in database kids.");
 				return;
 			}
 			});
-	query_results.push(search_handle_query(query));
-	res.render('display', {results: query_results})
+	var men = search_handle_query(query);
+	var women = search_handle_query(query2);
+	var kids = search_handle_query(query3);
+	var men_and_women = men.concat(women);
+	var everyone = men_and_women.concat(kids);
+	res.render('display', {results: everyone})
 }
 
 function search_handle_query(query){
@@ -51,10 +53,7 @@ function search_handle_query(query){
 	query.on('row', function(row){
 			query_results.push(JSON.stringify(row));
 			});
-	query.on('end', function(){
-		return query_results;
-	});
-
+	return query_results;
 }
 
 /*
