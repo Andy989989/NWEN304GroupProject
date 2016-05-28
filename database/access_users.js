@@ -11,6 +11,10 @@ client.connect();
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// METHODS FOR DEALING WITH THE USERS
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 /* Returns all occurrences (should only be one, or zero) of a given name in the database.
  * If the query is successful (ie. the user does exist in the database) then this method
  * returns the password that is associated with that name, otherwise it returns an error
@@ -66,19 +70,30 @@ exports.update_password = function(name, new_password){
 	return "Success."
 }
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// METHODS FOR DEALING WITH THE KART
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 /* Updates the kart associated with a user's name by adding the id of an item. If the update
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns a 'Success.' message, otherwise it returns an error
  * message, starting with 'ERROR: ', and followed by a short sentence describing the error.
  */
 exports.add_to_kart = function(name, item_id){
-	var missing = check_add_to_kart(name, item_id);
+	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("update kart set item_ids[array_length(item_ids)]='"+item_id+"' where name='"+name +"'", function(err){
+	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
 		if(err){
-			return "ERROR: could not add item to kart.";
+			// Either because there is no entry in the database with a name of 'name' or because of some other reason.
+			// Attempt to add into kart a new entry, in case there was none existing. If it does exist, it will throw
+			// a new error, which we will catch and return.
+			client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+				if(err){
+					return "ERROR: could not add item to kart.";
+				}
+			});
 		}
 	});
 	return "Success.";
@@ -96,7 +111,7 @@ exports.get_kart = function(res, name){
 		return;
 	}
 	var ids = [];
-	var query = client.query("select * from kart where name='"+name+"'", function(err){
+	var query = client.query("select * from karts where name='"+name+"'", function(err){
 		if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
@@ -108,6 +123,30 @@ exports.get_kart = function(res, name){
 	query.on('end', function(){
 		res.status(200);
 		res.render('display', {results: ids});
+	});
+}
+
+exports.delete_entire_kart = function(name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+	client.query("delete from karts where name='"+name+"'", function(err){
+		if(err){
+			return "ERROR: Could not delete.";
+		}
+	});
+	return "Success.";
+}
+
+exports.delete_from_kart = function(name, item_id){
+	var missing = check_for_kart(name, item_id);
+	if(missing != null){
+		return missing;
+	}
+	var query = client.query("update karts set item_ids = array_remove(item_ids,"+item_id+") where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: could not read kart items from database.";
+		}
 	});
 }
 
@@ -141,7 +180,7 @@ function check_everything_is_here(name, password){
  * message of the form 'ERROR: ' followed by a short description of the error, if one is
  * thrown. Otherwise, it returns null to signal success.
  */
-function check_add_to_kart(name, id){
+function check_for_kart(name, id){
 	//Check for valid name.
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: invalid name.";
