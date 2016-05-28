@@ -79,6 +79,19 @@ exports.add_to_kart = function(name, item_id){
 	return "Success.";
 }
 
+function check_add_to_kart(name, id){
+	//Check for valid name.
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: invalid name.";
+	}
+	//Check for valid id number.
+	if(id == undefined || id == null || !/^[0-9]+$/.test(id)){
+		return "ERROR: invalid password.";
+	}
+	//Both are valid.
+	return null;
+}
+
 exports.get_kart = function(res, name){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
