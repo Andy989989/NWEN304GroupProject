@@ -23,7 +23,7 @@ exports.search = function(req, res){
 		return;
 	}
 	var error = false;
-	var query = client.query("select * from products where description like '%"+q+"%' or name like '%"+q+"%'", function(err){
+	var query = client.query("select * from products where description ilike '%"+q+"%' or name ilike '%"+q+"%'", function(err){
 			if(err){
 			res.status(500).send("Could not search in database.");
 			error = true;
