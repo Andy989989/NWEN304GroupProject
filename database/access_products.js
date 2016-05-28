@@ -18,9 +18,6 @@ app.use(bp.json());
 
 exports.search = function(req, res){
 	var q = req.query.q;
-	if(res == undefined || res == null){
-		return null;
-	}
 	if(q == undefined || q == null || !ensure_only_letters_and_numbers(q)){
 		res.status(400).send("Invalid query.");
 		return;
@@ -36,7 +33,7 @@ exports.search = function(req, res){
 		return;
 	}
 	res.status(200);
-	handle_query(query);
+	handle_query(query, res);
 }
 
 /*
