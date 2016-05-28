@@ -70,6 +70,64 @@ exports.update_password = function(name, new_password){
 	return "Success."
 }
 
+exports.get_recommendations = function(name){
+/*
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+	client.query("select previous_items_ids from users where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: Cannot get previous items from user.";
+		}
+		var prevs = [];
+		if(rows.length != 0){
+			prevs = rows[0];
+		}
+		var previous_items_suggestion = get_suggestion_based_on_previous_items(prevs);
+		var weather_suggestion = get_suggestion_based_on_weather();
+		var suggestion = [];
+		suggestion.append(weather_suggestion);
+		if(previous_items_suggestion != weather_suggestion){
+			suggestion.append(previous_items_suggestion);
+		}
+		return suggestion;
+	});
+*/
+//TODO make recommendation based on purchase history, and weather
+}
+/*
+function get_suggestion_based_on_previous_items(prevs){
+	var types = {};
+	for(var i in prevs){
+		client.query("select type from products where id='"+prevs[i]+"'", function(err, rows, fields){
+			if(err || rows.length == 0){
+				continue;
+			}
+			var type = rows[i];
+			if(types[type] == undefined || types[type] == null){
+				types[type] = 0;
+			}
+			types[type] = types[type] + 1;
+		});
+	}
+	//TODO Get max value from types.
+	var biggest = {};
+	//TODO add the type and max value to biggest
+	var suggestion = Object.getOwnPropertyNames(biggest);
+	//Suggestion is now the a type...
+	var suggestion_array = [];
+	client.query("select id from products where type='"+suggestion+"'", function(err, rows, fields){
+		if(err || rows.length == 0){
+			return suggestion_array;
+		}
+		//TODO iterate through rows and add each id to the suggestion_array, then return it.
+	});
+}
+
+function get_suggestion_based_on_weather(){
+	//TODO implement this
+}
+*/
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // METHODS FOR DEALING WITH THE KART
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -124,6 +182,30 @@ exports.get_kart = function(res, name){
 		res.status(200);
 		res.render('display', {results: ids});
 	});
+}
+
+exports.buy_kart = function(name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+//	TODO For the item recommendations:
+/*
+	client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: Cannot get items from kart.";
+		}
+		if(rows.length == 0){
+			return "ERROR: kart is empty.";
+		}
+		var ids = rows[0];
+		client.query("update users set previous_items_ids = array_cat(previous_items_ids, "+ids+") where name='"+name+"'", function(err){
+			if(err){
+				return "ERROR: Can't update previous items of user.";
+			}
+		});
+	});
+*/
+	delete_entire_kart(name);
 }
 
 exports.delete_entire_kart = function(name){
