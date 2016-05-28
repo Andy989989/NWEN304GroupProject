@@ -92,7 +92,7 @@ function handle_query(query, res){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-				res.render('Display', {results: query_results})
+				res.render('display', {results: query_results})
 				//res.json(query_results);
 			});
 }
