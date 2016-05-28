@@ -71,22 +71,10 @@ exports.add_to_kart = function(name, item_id){
 	if(missing!=null){
 		return missing;
 	}
-	var ids = [];
-	var query = client.query("select item_ids from kart where name='"+name+"'", function(err){
+	client.query("update kart set item_ids[array_length(item_ids)]='"+item_id+"' where name='"+name +"'", function(err){
 		if(err){
-			return "ERROR: could not get current kart items from database.";
+			return "ERROR: could not add item to kart.";
 		}
-	});
-	query.on('row', function(row){
-		ids.push(row);
-	});
-	query.on('end', function(){
-		ids.push(item_id);
-		client.query("update kart set item_ids='"+ids+"' where name='"name"'", function(err){
-			if(err){
-				return "ERROR: could not add item to kart.";
-			}
-		});
 	});
 	return "Success.";
 }
