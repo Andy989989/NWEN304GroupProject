@@ -66,6 +66,11 @@ exports.update_password = function(name, new_password){
 	return "Success."
 }
 
+/* Updates the kart associated with a user's name by adding the id of an item. If the update
+ * is successful (ie. the given name and id were valid and no errors were thrown by the
+ * database) then this method returns a 'Success.' message, otherwise it returns an error
+ * message, starting with 'ERROR: ', and followed by a short sentence describing the error.
+ */
 exports.add_to_kart = function(name, item_id){
 	var missing = check_add_to_kart(name, item_id);
 	if(missing!=null){
@@ -79,19 +84,12 @@ exports.add_to_kart = function(name, item_id){
 	return "Success.";
 }
 
-function check_add_to_kart(name, id){
-	//Check for valid name.
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
-		return "ERROR: invalid name.";
-	}
-	//Check for valid id number.
-	if(id == undefined || id == null || !/^[0-9]+$/.test(id)){
-		return "ERROR: invalid password.";
-	}
-	//Both are valid.
-	return null;
-}
-
+/* Returns the items in the kart associated with a user's name. If the query is successful
+ * (ie. the given name was valid and no errors were thrown by the database) then this method
+ * returns directly to the client via the response object 'res', sending a 200-OK status code
+ * and returning the item numbers of the kart. Otherwise it returns an error code and message,
+ * detailing what went wrong.
+ */
 exports.get_kart = function(res, name){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
@@ -100,7 +98,7 @@ exports.get_kart = function(res, name){
 	var ids = [];
 	var query = client.query("select * from kart where name='"+name+"'", function(err){
 		if(err){
-			res.status(404).send("ERROR: could not get items from kart.");
+			res.status(404).send("Could not get items from kart.");
 			return;
 		}
 	});
@@ -134,6 +132,25 @@ function check_everything_is_here(name, password){
 		return "ERROR: Missing a valid password.";
 	}
 	// #winning
+	return null;
+}
+
+/* Ensures that the given name and id are valid (ie. neither are null or undefined, and the
+ * name contains only letters, numbers, and underscores (this prevents SQL injections), and
+ * the id is made up of only numbers, and is not and empty string). This returns an error
+ * message of the form 'ERROR: ' followed by a short description of the error, if one is
+ * thrown. Otherwise, it returns null to signal success.
+ */
+function check_add_to_kart(name, id){
+	//Check for valid name.
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: invalid name.";
+	}
+	//Check for valid id number.
+	if(id == undefined || id == null || !/^[0-9]+$/.test(id)){
+		return "ERROR: invalid password.";
+	}
+	//Both are valid.
 	return null;
 }
 
