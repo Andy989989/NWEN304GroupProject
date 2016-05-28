@@ -3,14 +3,12 @@
   <body>
     <% include partials/navbar %>
     <div class="row">
-        <div class="span12">
-            <% results.forEach(function(item) { %>
-                <% var name = JSON.parse(item).name %>
-                <% var description = JSON.parse(item).description %>
-                <% var price = JSON.parse(item).price %>
-                <% include partials/item_card %>
-            <% }); %>
-        </div>
+        <% results.forEach(function(item) { %>
+            <% var name = JSON.parse(item).name %>
+            <% var description = JSON.parse(item).description %>
+            <% var cost = JSON.parse(item).cost %>
+            <% include partials/item_card %>
+        <% }); %>
     </div>
   </body>
 </html>
