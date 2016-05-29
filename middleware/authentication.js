@@ -73,48 +73,7 @@ exports.newToken = function (req, res){
 					res.send(data)
 				;
 	}
-
-
   }
-
-
-/*
-  	//find username
-  	var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
-  
-
-  query.on('error', function(error){
-	  	res.statusCode = 400;
-	    res.send('username does not exist');
-	});
-
- query.on('end', function(result){
-	  	if(result.rowCount === 0){
-	  		res.statusCode = 400;
-	    	res.send('username does not exist');
-	  	}
-
-	  	var hash = result.hash;
-		if(hash === req.body.passowrd.hash()){
-
-		// if user is found and password is right
-				// create a token
-				var token = jwt.sign(user, secret, {
-					expiresIn: 86400 // expires in 24 hours
-				});
-				var data = {'data':token};
-				res.send{data};
-
-
-		}else{
-		// failed 
-		res.statusCode = 400;
-	    res.send('username does not exist');
-    	}
-
-	  });
-
-	  */
 }
 
 
@@ -131,51 +90,39 @@ exports.login = function (req, res){
   }
 
  //get the hashed password from the database using the username
- // var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
+ var userName = req.body.userName;
 
-console.log("gets into login");
+//console.log("gets into login");
 console.log(req.body.password);
 var hash = bcrypt.hashSync(req.body.password, salt);
-console.log(hash);
-console.log(database[0].password);
+//console.log(hash);
 
-if(hash == database[0].password){
+
+
+var databasePassword = users.get(userName);
+var errorCheck = databasePassword.search("ERROR:"); 
+if(databasePassword != -1){
+	// if this equals -1 that means there is no error
+	// could change to get the currentn value of errror.
+
+	// 409 - duplicate data
+
+	res.status(404).send("User Name not found in the database");
+}
+
+
+
+//TODO error checking here
+
+
+console.log(databasePassword);
+
+if(hash == databasePassword){
 	console.log("getting in hash test");
     var token = exports.newToken(req,res);
 }
 
-// bcrypt.compareSync(database[0].password, hash, function(err, res) {
-//     // res === true
-    
-// });
-
 //console.log("hashing failed");
-
-/*
- query.on('row', function(result){
-	 // verify hasshed passed word and then if it is correct then create token and send it back
-	var hash = result.hash;
-	if(hash === req.body.passowrd.hash()){
-	//success
-	// TODO send token to client
-	var token = exports.newtoken(result);
-	res.send(token);
-	}else{
-		// failed 
-		res.statusCode = 401;     
-      	res.send('wrong username or password');
-    }
-}
-
-});
-
-query.on('end', function(result){
-    if(result.rowCount === 0){
-      res.statusCode = 401;     
-      res.send('wrong username or password');
-    }
-});
-*/
 
 }
 
@@ -204,48 +151,6 @@ exports.newToken = function (req, res){
 					res.send(data)
 				;
 	}
-
-
-  //}
-
-
-/*
-  	//find username
-  	var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
-  
-
-  query.on('error', function(error){
-	  	res.statusCode = 400;
-	    res.send('username does not exist');
-	});
-
- query.on('end', function(result){
-	  	if(result.rowCount === 0){
-	  		res.statusCode = 400;
-	    	res.send('username does not exist');
-	  	}
-
-	  	var hash = result.hash;
-		if(hash === req.body.passowrd.hash()){
-
-		// if user is found and password is right
-				// create a token
-				var token = jwt.sign(user, secret, {
-					expiresIn: 86400 // expires in 24 hours
-				});
-				var data = {'data':token};
-				res.send{data};
-
-
-		}else{
-		// failed 
-		res.statusCode = 400;
-	    res.send('username does not exist');
-    	}
-
-	  });
-
-	  */
 }
 
 exports.newUser = function(req,res,next){
@@ -270,32 +175,18 @@ console.log("Hashed password"+ hash);
 var name = req.body.userName;
 var pass = req.body.password;
 var data = {"userName":name,"password":hash};
-database.push(data);
+//database.push(data);
+users.put(name,pass);
+if(databasePassword != -1){
+	// if this equals -1 that means there is no error
+	// could change to get the currentn value of errror.
+
+	// 409 - duplicate data
+
+	res.status(409).send("User Already exsists in the database");
+}
+
 console.log(data);
 res.send('user created');
 
-
-
-// hash the pasword here then add to database
-// TODO find a way to has stuff
-// var hash = /*get hashed password using req.body.password*/
-/*
-query = client.query('Insert into login(userName, password) values($1, $2)', [req.body.userName, hash]);
-
-query.on('error', function(error){
-	  	res.statusCode = 400;
-	    res.send('username already exists, please pick another');
-});
-
- query.on('end', function(result){
-	  	if(result.rowCount === 0){
-	  		res.statusCode = 400;
-	    	res.send('Error: username already exists');	
-	  	}
-
-	  	//succesfull in adding, we should then add the rest of the details into the database
-	  	// in a another table with a foreign key of the logins table
-	  	res.send('user created');
- });
-*/
 }
