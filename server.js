@@ -101,9 +101,11 @@ app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
 });
 
-app.get('*', function(req, res){
-	res.status(400).send("Sorry, that page doesn't exist.");
+app.get('/login', function(req, res){
+    res.render('login')
 });
+
+
 //=====================================
 //PUT METHODS
 //=====================================
@@ -184,3 +186,7 @@ var credentials = {key: privateKey, cert: certificate};
 var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(port);
 */
+
+app.get('*', function(req, res){
+    res.status(400).send("Sorry, that page doesn't exist.");
+});
