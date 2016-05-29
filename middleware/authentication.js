@@ -17,12 +17,17 @@ var database = [{'userName':'Andy','password':'test1'}];
 
 exports.testAuth = function(req,res){
 
+
 res.send("got into testAuth : authentication succesfull");
 
 }
 
 exports.authenticate = function (req, res,next){
 	console.log("gets into auth");
+	// TODO check to see if logged into fb first and then check to see if logged in locally
+	// TODO try to figure out the timeout problem, will log out automattically after 30mins
+	// TODO even if the person is still browsing/
+	// possibly refreshed the token if the page has not been refreshed within 30 mins
  
 	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
 
