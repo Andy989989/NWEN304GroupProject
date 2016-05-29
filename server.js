@@ -90,9 +90,10 @@ app.use(passport.session());
 
 app.get('/', function(req,res){
 	console.log("get /")
-	res.sendFile('/public/index.html');
+	res.render('index');
 });
 
+app.get('/search*', send_to_database_code.search);
 app.get('/men*', send_to_database_code.get_me_something);
 app.get('/women*', send_to_database_code.get_me_something);
 app.get('/kids*', send_to_database_code.get_me_something);

@@ -56,10 +56,16 @@
 
 
   	<script>
+<<<<<<< HEAD
   	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
   	var ipAddr = 'http://130.195.4.177:8080';
   	//var data = {'userName':'Andy','password':'test1'};
   	var token;
+=======
+  	var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
+  	//var ipAddr = 'localhost:8080';
+  	var data = {'userName':'Andy','password':'test1'};
+>>>>>>> refs/remotes/origin/master
 	$('#submit').button().click(
     function() {
       console.log($('#registerUsername').val());
@@ -118,11 +124,16 @@
 
     		},
     		success: function(data,status){
+<<<<<<< HEAD
       			alert("succesful auth");
       			console.log(data);
     			//console.log(data.token);
      			//token = {"token":data.token};
      			//console.log(token);
+=======
+      			alert("succesful login");
+      			console.log(data.token);
+>>>>>>> refs/remotes/origin/master
     		}
   		 });
   	

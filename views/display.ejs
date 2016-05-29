@@ -1,0 +1,14 @@
+<html>
+    <% include partials/header %>
+  <body>
+    <% include partials/navbar %>
+    <div class="row">
+        <% results.forEach(function(item) { %>
+            <% var name = JSON.parse(item).name %>
+            <% var description = JSON.parse(item).description %>
+            <% var cost = JSON.parse(item).cost %>
+            <% include partials/item_card %>
+        <% }); %>
+    </div>
+  </body>
+</html>
