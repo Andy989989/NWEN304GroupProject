@@ -2,18 +2,13 @@
     <% include partials/header %>
   <body>
     <% include partials/navbar %>
-    <% if(results.length < 1){%>
-        NOTHING HERE
-    <% }else if(results.length > 1){%>
-        <div class="row">
-            <% results.forEach(function(item) { %>
-                <% var jsonItem = JSON.parse(item)%>
-                <% include partials/item_card %>
-            <% }); %>
-        </div>
-    <%}else{%>
-        <% jsonItem = JSON.parse(results[0])%>
-        <% include partials/single_item_card %>
-    <%}%>
+    <div class="row">
+        <% results.forEach(function(item) { %>
+            <% var name = JSON.parse(item).name %>
+            <% var description = JSON.parse(item).description %>
+            <% var cost = JSON.parse(item).cost %>
+            <% include partials/item_card %>
+        <% }); %>
+    </div>
   </body>
 </html>

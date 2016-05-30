@@ -12,6 +12,32 @@ app.use(bp.json());
 
 /*
  * =====================================================
+ * SEARCH
+ * =====================================================
+ */
+
+exports.search = function(req, res){
+	var q = req.query.q;
+	if(q == undefined || q == null || !ensure_only_letters_and_numbers(q)){
+		res.status(400).send("Invalid query.");
+		return;
+	}
+	var error = false;
+	var query = client.query("select * from products where description ilike '%"+q+"%' or name ilike '%"+q+"%'", function(err){
+			if(err){
+			res.status(500).send("Could not search in database.");
+			error = true;
+			}
+			});
+	if(error){
+		return;
+	}
+	res.status(200);
+	handle_query(query, res);
+}
+
+/*
+ * =====================================================
  * GET
  * =====================================================
  */
@@ -20,14 +46,14 @@ exports.get_me_something = function(req, res){
 	var array = sanitize_url(req.url);
 	if(array == null){
 		//The url was invalid
-		res.status(400).send("Invalid url");
+		res.status(400).send("Invalid url.");
 		return;
 	}
 	var error = false;
 	var query;
 	if(array.length == 1){
 		//url is just /gender
-		query = client.query("select * from " + array[0], function(err, rows, fields){
+		query = client.query("select * from products where gender='" + array[0]+"'", function(err, rows, fields){
 				if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
@@ -35,7 +61,7 @@ exports.get_me_something = function(req, res){
 				});
 	} else if(array.length == 2){
 		//url is /gender/some_category
-		query = client.query("select * from " + array[0] + " where type='" + array[1]+"'", function(err, rows, fields){
+		query = client.query("select * from products where gender='" + array[0] + "' and type='" + array[1]+"'", function(err, rows, fields){
 				if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
@@ -43,7 +69,7 @@ exports.get_me_something = function(req, res){
 				});
 	} else {
 		//url is /gender/some_category/item_id
-		query = client.query("select * from " + array[0] + " where id='"+array[2]+"'", function(err, rows, fields){
+		query = client.query("select * from products where id='"+array[2]+"'", function(err, rows, fields){
 				if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;

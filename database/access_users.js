@@ -11,6 +11,10 @@ client.connect();
 app.use(bp.urlencoded({extended:true}));
 app.use(bp.json());
 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// METHODS FOR DEALING WITH THE USERS
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 /* Returns all occurrences (should only be one, or zero) of a given name in the database.
  * If the query is successful (ie. the user does exist in the database) then this method
  * returns the password that is associated with that name, otherwise it returns an error
@@ -18,9 +22,8 @@ app.use(bp.json());
  * of the error.
  */
 exports.get = function(name){
-	var name = req.body.name;
-	if(name == undefined || name == null){
-		return "ERROR: Missing value for name.";
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing valid value for name.";
 	}
 	var password = client.query("select * from users where name='"+name+"'", function(err){
 		if(err){ //User does not exist and therefore has no password to get.
@@ -67,6 +70,168 @@ exports.update_password = function(name, new_password){
 	return "Success."
 }
 
+exports.get_recommendations = function(name){
+/*
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+	client.query("select previous_items_ids from users where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: Cannot get previous items from user.";
+		}
+		var prevs = [];
+		if(rows.length != 0){
+			prevs = rows[0];
+		}
+		var previous_items_suggestion = get_suggestion_based_on_previous_items(prevs);
+		var weather_suggestion = get_suggestion_based_on_weather();
+		var suggestion = [];
+		suggestion.append(weather_suggestion);
+		if(previous_items_suggestion != weather_suggestion){
+			suggestion.append(previous_items_suggestion);
+		}
+		return suggestion;
+	});
+*/
+//TODO make recommendation based on purchase history, and weather
+}
+/*
+function get_suggestion_based_on_previous_items(prevs){
+	var types = {};
+	for(var i in prevs){
+		client.query("select type from products where id='"+prevs[i]+"'", function(err, rows, fields){
+			if(err || rows.length == 0){
+				continue;
+			}
+			var type = rows[i];
+			if(types[type] == undefined || types[type] == null){
+				types[type] = 0;
+			}
+			types[type] = types[type] + 1;
+		});
+	}
+	//TODO Get max value from types.
+	var biggest = {};
+	//TODO add the type and max value to biggest
+	var suggestion = Object.getOwnPropertyNames(biggest);
+	//Suggestion is now the a type...
+	var suggestion_array = [];
+	client.query("select id from products where type='"+suggestion+"'", function(err, rows, fields){
+		if(err || rows.length == 0){
+			return suggestion_array;
+		}
+		//TODO iterate through rows and add each id to the suggestion_array, then return it.
+	});
+}
+
+function get_suggestion_based_on_weather(){
+	//TODO implement this
+}
+*/
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// METHODS FOR DEALING WITH THE KART
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/* Updates the kart associated with a user's name by adding the id of an item. If the update
+ * is successful (ie. the given name and id were valid and no errors were thrown by the
+ * database) then this method returns a 'Success.' message, otherwise it returns an error
+ * message, starting with 'ERROR: ', and followed by a short sentence describing the error.
+ */
+exports.add_to_kart = function(name, item_id){
+	var missing = check_for_kart(name, item_id);
+	if(missing!=null){
+		return missing;
+	}
+	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
+		if(err){
+			// Either because there is no entry in the database with a name of 'name' or because of some other reason.
+			// Attempt to add into kart a new entry, in case there was none existing. If it does exist, it will throw
+			// a new error, which we will catch and return.
+			client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+				if(err){
+					return "ERROR: could not add item to kart.";
+				}
+			});
+		}
+	});
+	return "Success.";
+}
+
+/* Returns the items in the kart associated with a user's name. If the query is successful
+ * (ie. the given name was valid and no errors were thrown by the database) then this method
+ * returns directly to the client via the response object 'res', sending a 200-OK status code
+ * and returning the item numbers of the kart. Otherwise it returns an error code and message,
+ * detailing what went wrong.
+ */
+exports.get_kart = function(res, name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		res.status(400).send("Missing valid value for name.");
+		return;
+	}
+	var ids = [];
+	var query = client.query("select * from karts where name='"+name+"'", function(err){
+		if(err){
+			res.status(404).send("Could not get items from kart.");
+			return;
+		}
+	});
+	query.on('row', function(row){
+		ids.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		res.status(200);
+		res.render('display', {results: ids});
+	});
+}
+
+exports.buy_kart = function(name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+//	TODO For the item recommendations:
+/*
+	client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: Cannot get items from kart.";
+		}
+		if(rows.length == 0){
+			return "ERROR: kart is empty.";
+		}
+		var ids = rows[0];
+		client.query("update users set previous_items_ids = array_cat(previous_items_ids, "+ids+") where name='"+name+"'", function(err){
+			if(err){
+				return "ERROR: Can't update previous items of user.";
+			}
+		});
+	});
+*/
+	delete_entire_kart(name);
+}
+
+exports.delete_entire_kart = function(name){
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: Missing a valid value for name.";
+	}
+	client.query("delete from karts where name='"+name+"'", function(err){
+		if(err){
+			return "ERROR: Could not delete.";
+		}
+	});
+	return "Success.";
+}
+
+exports.delete_from_kart = function(name, item_id){
+	var missing = check_for_kart(name, item_id);
+	if(missing != null){
+		return missing;
+	}
+	var query = client.query("update karts set item_ids = array_remove(item_ids,"+item_id+") where name='"+name+"'", function(err, rows, fields){
+		if(err){
+			return "ERROR: could not read kart items from database.";
+		}
+	});
+}
+
 /*
  * =====================================================
  * HELPER METHODS
@@ -88,6 +253,25 @@ function check_everything_is_here(name, password){
 		return "ERROR: Missing a valid password.";
 	}
 	// #winning
+	return null;
+}
+
+/* Ensures that the given name and id are valid (ie. neither are null or undefined, and the
+ * name contains only letters, numbers, and underscores (this prevents SQL injections), and
+ * the id is made up of only numbers, and is not and empty string). This returns an error
+ * message of the form 'ERROR: ' followed by a short description of the error, if one is
+ * thrown. Otherwise, it returns null to signal success.
+ */
+function check_for_kart(name, id){
+	//Check for valid name.
+	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+		return "ERROR: invalid name.";
+	}
+	//Check for valid id number.
+	if(id == undefined || id == null || !/^[0-9]+$/.test(id)){
+		return "ERROR: invalid password.";
+	}
+	//Both are valid.
 	return null;
 }
 
