@@ -25,12 +25,12 @@ exports.get = function(name){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing valid value for name.";
 	}
-	var password = client.query("select * from users where name='"+name+"'", function(err){
+	var password = client.query("select password from users where name='"+name+"'", function(err, rows, fields){
 		if(err){ //User does not exist and therefore has no password to get.
 			return "ERROR: that name does not exist in the database.";
 		}
+		return rows;
 	});
-	return password;
 }
 
 /* Adds a user to the database. If the adding is successful (ie. the given name and password
