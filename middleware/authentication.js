@@ -132,7 +132,6 @@ if(!req.body.hasOwnProperty('token')) {
     return res.send('Error 400');
   }
 
-
 }
 exports.newToken = function (req, res){
 	if(!req.body.hasOwnProperty('userName')) {
@@ -174,6 +173,8 @@ console.log("Hashed password"+ hash);
 
 var name = req.body.userName;
 var pass = req.body.password;
+
+// TODO  put the data into the databse here
 var data = {"userName":name,"password":hash};
 //database.push(data);
 users.put(name,pass);

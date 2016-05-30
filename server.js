@@ -147,9 +147,11 @@ app.post('/auth/testAuth',auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
-
+// TODO check to see if a person is already logged onto facebook
 app.post('/login',auth.login);
 
+
+// TODO have a database of vaild tokens
 app.post('/auth/logout',auth.authenticate,auth.logout);
 
 app.get('/login/facebook',
