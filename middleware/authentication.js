@@ -91,6 +91,7 @@ exports.login = function (req, res){
 
  //get the hashed password from the database using the username
  var userName = req.body.userName;
+ var password = req.body.password;
 
 //console.log("gets into login");
 console.log(req.body.password);
@@ -98,17 +99,30 @@ var hash = bcrypt.hashSync(req.body.password, salt);
 //console.log(hash);
 
 
-
+console.log("UserName to get from the database:" + userName);
+console.log("password entered by the user: " + password );
+console.log("Hashed password: " + hash);
 var databasePassword = users.get(userName);
-var errorCheck = databasePassword.search("ERROR:"); 
-if(databasePassword != -1){
-	// if this equals -1 that means there is no error
-	// could change to get the currentn value of errror.
+console.log("data returned from database: " + databasePassword);
+res.status(404).send(databasePassword);
 
-	// 409 - duplicate data
+// for(var i;i<databasePassword.length;i++){
+// 	console.log(databasePassword[i]);
+// }
 
-	res.status(404).send("User Name not found in the database");
-}
+console.log(databasePassword);
+//console.log(databasePassword[0]);
+
+
+//var errorCheck = databasePassword.indexof("ERROR:");
+// if(errorCheck > -1){
+// 	// if this equals -1 that means there is no error
+// 	// could change to get the currentn value of errror.
+
+// 	// 409 - duplicate data
+// 	console.log("error gettting username from the database")
+// 	res.status(404).send("User Name not found in the database");
+// }
 
 
 
@@ -177,12 +191,19 @@ var pass = req.body.password;
 // TODO  put the data into the databse here
 var data = {"userName":name,"password":hash};
 //database.push(data);
-users.put(name,pass);
-if(databasePassword != -1){
+var user = users.put(name,hash);
+
+console.log("added the data to the database:" + user);
+
+
+var errorCheck = user.search("ERROR:"); 
+
+if(errorCheck != -1){
 	// if this equals -1 that means there is no error
 	// could change to get the currentn value of errror.
 
 	// 409 - duplicate data
+	console.log("There was a problem");
 
 	res.status(409).send("User Already exsists in the database");
 }

@@ -9,7 +9,6 @@
 	<script src="../dist/js/jquery.min.js"></script>
 	<script src="../dist/js/jquery-ui.min.js"></script>
 	<script src="../dist/js/bootstrap.js"></script>	
-	<script src="./buttons.js"></script>
 
 
 </head>
@@ -56,16 +55,10 @@
 
 
   	<script>
-<<<<<<< HEAD
   	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
-  	var ipAddr = 'http://130.195.4.177:8080';
+  	var ipAddr = 'http://130.195.4.151:8080';
   	//var data = {'userName':'Andy','password':'test1'};
   	var token;
-=======
-  	var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
-  	//var ipAddr = 'localhost:8080';
-  	var data = {'userName':'Andy','password':'test1'};
->>>>>>> refs/remotes/origin/master
 	$('#submit').button().click(
     function() {
       console.log($('#registerUsername').val());
@@ -115,7 +108,7 @@
     function() {
     	$.ajax({
     		method:'POST',
-    		url: ipAddr+"/auth/testAuth",
+    		url: ipAddr+"/auth/authenticate",
     		data: token,
     		//url: ipAddr+"/test",
     		error: function(data,status) {
@@ -124,16 +117,12 @@
 
     		},
     		success: function(data,status){
-<<<<<<< HEAD
       			alert("succesful auth");
       			console.log(data);
     			//console.log(data.token);
      			//token = {"token":data.token};
      			//console.log(token);
-=======
-      			alert("succesful login");
       			console.log(data.token);
->>>>>>> refs/remotes/origin/master
     		}
   		 });
   	

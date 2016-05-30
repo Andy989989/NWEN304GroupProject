@@ -29,8 +29,8 @@ exports.get = function(name){
 		if(err){ //User does not exist and therefore has no password to get.
 			return "ERROR: that name does not exist in the database.";
 		}
-	});
-	return password;
+	});		
+	return password;	
 }
 
 /* Adds a user to the database. If the adding is successful (ie. the given name and password
