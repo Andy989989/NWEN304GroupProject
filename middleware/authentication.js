@@ -79,64 +79,65 @@ exports.newToken = function (req, res){
 
 
 exports.login = function (req, res){
- /*
-	assuming this data is being sent from the client
-	{userName: "andy",password:"test1"}
-*/
+	 /*
+		assuming this data is being sent from the client
+		{userName: "andy",password:"test1"}
+	*/
 
-  if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
-    res.statusCode = 400;
-    return res.send('please post syntax')
-  }
+	  if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
+		res.statusCode = 400;
+		return res.send('please post syntax')
+	  }
 
- //get the hashed password from the database using the username
- var userName = req.body.userName;
- var password = req.body.password;
+	 //get the hashed password from the database using the username
+	 var userName = req.body.userName;
+	 var password = req.body.password;
 
-//console.log("gets into login");
-console.log(req.body.password);
-var hash = bcrypt.hashSync(req.body.password, salt);
-//console.log(hash);
-
-
-console.log("UserName to get from the database:" + userName);
-console.log("password entered by the user: " + password );
-console.log("Hashed password: " + hash);
-var databasePassword = users.get(userName);
-console.log("data returned from database: " + databasePassword);
-res.status(404).send(databasePassword);
-
-// for(var i;i<databasePassword.length;i++){
-// 	console.log(databasePassword[i]);
-// }
-
-console.log(databasePassword);
-//console.log(databasePassword[0]);
+	//console.log("gets into login");
+	console.log(req.body.password);
+	var hash = bcrypt.hashSync(req.body.password, salt);
+	//console.log(hash);
 
 
-//var errorCheck = databasePassword.indexof("ERROR:");
-// if(errorCheck > -1){
-// 	// if this equals -1 that means there is no error
-// 	// could change to get the currentn value of errror.
+	console.log("UserName to get from the database:" + userName);
+	console.log("password entered by the user: " + password );
+	console.log("Hashed password: " + hash);
+	var databasePassword = users.get(userName);
+	console.log("data returned from database: " + databasePassword);
+	//res.status(404).send(databasePassword);
 
-// 	// 409 - duplicate data
-// 	console.log("error gettting username from the database")
-// 	res.status(404).send("User Name not found in the database");
-// }
+	// for(var i;i<databasePassword.length;i++){
+	// 	console.log(databasePassword[i]);
+	// }
+
+	console.log(databasePassword);
+	//console.log(databasePassword[0]);
+
+
+	//var errorCheck = databasePassword.indexof("ERROR:");
+	// if(errorCheck > -1){
+	// 	// if this equals -1 that means there is no error
+	// 	// could change to get the currentn value of errror.
+
+	// 	// 409 - duplicate data
+	// 	console.log("error gettting username from the database")
+	// 	res.status(404).send("User Name not found in the database");
+	// }
 
 
 
-//TODO error checking here
+	//TODO error checking here
 
 
-console.log(databasePassword);
+	console.log(databasePassword);
 
-if(hash == databasePassword){
-	console.log("getting in hash test");
-    var token = exports.newToken(req,res);
-}
+	if(hash == databasePassword){
+		console.log("getting in hash test");
+		var token = exports.newToken(req,res);
+	}
 
-//console.log("hashing failed");
+
+	//console.log("hashing failed");
 
 }
 
@@ -161,8 +162,8 @@ exports.newToken = function (req, res){
 						expiresIn: 1800 // expires in 24 hours
 					});
 					var data = {'data':token};
-					res.send(data)
-				;
+					res.render('index', {data:data});
+
 	}
 }
 
