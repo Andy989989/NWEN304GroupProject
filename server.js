@@ -89,7 +89,6 @@ app.use(passport.session());
 //=====================================
 
 app.get('/', function(req,res){
-	console.log("get /")
 	res.render('index');
 });
 
@@ -103,6 +102,14 @@ app.get('/pages', function(req, res){
 
 app.get('/login', function(req, res){
     res.render('login')
+});
+
+app.get('/register', function (req, res) {
+    res.render('register')
+});
+
+app.get('/aboutus', function (req, res) {
+    res.render('aboutus')
 });
 
 

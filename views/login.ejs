@@ -1,48 +1,21 @@
 <!DOCTYPE html>
 <html>
-<% include partials/header %>
-<% include partials/navbar %>
+    <% include partials/header %>
+    <script src="dist/js/login.js"></script>
 
-<div class="form-group col-md-4 col-md-offset-4">
-    <label for="usr">Register:</label>
-    <input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
-    <input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
-    <input id="submit" name="submit" type="submit" value="submit" class="btn">
-    <a href = "register.html">Register</a>
-
-    <a href = "login/facebook">Login with Facebook</a>
-    <a href = "facebook/logout">Logout with Facebook</a>
-
-</div>
-<div>
-    <a href="login" class="btn btn-info" role="button" id="test">Test</a>
-</div>
-
-
-
-<script>
-    var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
-    //var ipAddr = 'localhost:8080';
-    var data = {'userName':'Andy','password':'test1'};
-    $('#submit').button().click(
-            function() {
-                $.ajax({
-                    method:'POST',
-                    url: ipAddr+"/login",
-                    data: data,
-                    //url: ipAddr+"/test",
-                    error: function(data,status) {
-                        alert("failed login");
-                        console.log(data);
-                    },
-                    success: function(data,status){
-                        alert("succesful login");
-                        console.log(data.token);
-                    }
-                });
-            });
-
-
-</script>
-
-</body>
+    <body>
+        <% include partials/navbar %>
+        <div class="form-group col-md-4 col-md-offset-4">
+            <label for="usr">Register:</label>
+            <input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
+            <input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
+            <input id="submit" name="submit" type="submit" value="submit" class="btn">
+            <a href = "register.ejs">Register</a>
+            <a href = "login/facebook">Login with Facebook</a>
+            <a href = "facebook/logout">Logout with Facebook</a>
+        </div>
+        <div>
+            <a href="login" class="btn btn-info" role="button" id="test">Test</a>
+        </div>
+    </body>
+</html>
