@@ -1,5 +1,5 @@
 $(document).ready(function(e){
-    if(sessionStorage.test == 'no token'){
+    if(sessionStorage.test == 'no token' || sessionStorage.test == undefined){
         $('#login').text('Login');
         $('#login').attr('href', '/login');
     }else{
