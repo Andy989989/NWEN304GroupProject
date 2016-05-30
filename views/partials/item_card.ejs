@@ -1,14 +1,16 @@
-<div class="row">
-    <div class="col-sm-1"></div>
-    <div class="col-sm-2">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <%= name %>
-                <%= cost %>
+<div class="col-sm-3">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <h3 class="col-md-6"><%= jsonItem.name %></h3>
+                <h3 class="text-right col-md-6"><%= jsonItem.cost %></h3>
             </div>
-            <div class="panel-body">
-                <%= description %>
-            </div>
+        </div>
+        <div class="panel-body">
+            <%= jsonItem.description %>
+        </div>
+        <div class="panel-footer">
+            <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>" class="btn btn-info" role="button">view</a>
         </div>
     </div>
 </div>

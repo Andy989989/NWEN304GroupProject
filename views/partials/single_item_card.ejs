@@ -1,0 +1,18 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <h3 class="col-md-6"><%= jsonItem.name %></h3>
+            <h3 class="text-right col-md-6"><%= jsonItem.cost %></h3>
+        </div>
+    </div>
+    <div class="panel-body">
+        <%= jsonItem.description %>
+    </div>
+    <div class="panel-footer">
+        <div class="row">
+            <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>" class="btn btn-info" role="button">Add to cart</a>
+            <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>" class="btn btn-info" role="button">Delete</a>
+            <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>" class="btn btn-info" role="button">Buy</a>
+        </div>
+    </div>
+</div>
