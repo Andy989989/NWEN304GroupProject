@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 
 
 	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
@@ -67,3 +68,5 @@ $(document).ready(function(e) {
 
 
 
+=======
+>>>>>>> gareth

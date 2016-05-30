@@ -89,7 +89,6 @@ app.use(passport.session());
 //=====================================
 
 app.get('/', function(req,res){
-	console.log("get /")
 	res.render('index');
 });
 
@@ -102,9 +101,19 @@ app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
 });
 
-app.get('*', function(req, res){
-	res.status(400).send("Sorry, that page doesn't exist.");
+app.get('/login', function(req, res){
+    res.render('login')
 });
+
+app.get('/register', function (req, res) {
+    res.render('register')
+});
+
+app.get('/aboutus', function (req, res) {
+    res.render('aboutus')
+});
+
+
 //=====================================
 //PUT METHODS
 //=====================================
@@ -190,3 +199,7 @@ var credentials = {key: privateKey, cert: certificate};
 var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(port);
 */
+
+app.get('*', function(req, res){
+    res.status(400).send("Sorry, that page doesn't exist.");
+});

@@ -1,1 +1,21 @@
-<a href="/login/facebook">Log In with Facebook</a>
+<!DOCTYPE html>
+<html>
+    <% include partials/header %>
+    <script src="dist/js/login.js"></script>
+
+    <body>
+        <% include partials/navbar %>
+        <div class="form-group col-md-4 col-md-offset-4">
+            <label for="usr">Register:</label>
+            <input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
+            <input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
+            <input id="submit" name="submit" type="submit" value="submit" class="btn">
+            <a href = "register.ejs">Register</a>
+            <a href = "login/facebook">Login with Facebook</a>
+            <a href = "facebook/logout">Logout with Facebook</a>
+        </div>
+        <div>
+            <a href="login" class="btn btn-info" role="button" id="test">Test</a>
+        </div>
+    </body>
+</html>
