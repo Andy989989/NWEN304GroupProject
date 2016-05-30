@@ -1,11 +1,11 @@
 var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
-//var ipAddr = 'localhost:8080';
+//var ipAddr = 'st:8080';
 var data = {'userName':'Andy','password':'test1'};
 console.log("test");
 
 $(document).ready(function(e) {
 //var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
-    var ipAddr = 'http://130.195.4.151:8080';
+    var ipAddr = 'http://127.0.0.1:8080';
     //var data = {'userName':'Andy','password':'test1'};
     var token;
     $('#submitLogin').button().click(

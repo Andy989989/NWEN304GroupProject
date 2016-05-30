@@ -1,0 +1,2 @@
+
+curl -H "Content-Type: application/json" -X POST -d '{"userName":"gareth", "password":"ben"}' 130.195.4.170:8080/login
