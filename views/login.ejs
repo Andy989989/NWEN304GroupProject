@@ -6,13 +6,14 @@
     <body>
         <% include partials/navbar %>
         <div class="form-group col-md-4 col-md-offset-4">
-            <label for="usr">Register:</label>
-            <input type="text" class="form-control" id="register-query" rows="5" placeholder="User ID">
-            <input type="text" class="form-control" id="register-query" rows="5" placeholder="Password">
-            <input id="submit" name="submit" type="submit" value="submit" class="btn">
-            <a href = "register.ejs">Register</a>
+            <label for="usr">Login:</label>
+            <input type="text" class="form-control" id="registerUsername" rows="5" placeholder="User ID">
+            <input type="text" class="form-control" id="registerPassword" rows="5" placeholder="Password">
+            <input id="submitLogin" name="submit" type="submit" value="submit" class="btn">
             <a href = "login/facebook">Login with Facebook</a>
             <a href = "facebook/logout">Logout with Facebook</a>
+                     <input id="testAuth" name="testAuth" type="submit" value="TestAuth" class="btn">
+
         </div>
         <div>
             <a href="login" class="btn btn-info" role="button" id="test">Test</a>

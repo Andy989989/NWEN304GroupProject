@@ -4,6 +4,6 @@ $(document).ready(function(e){
         $('#login').attr('href', '/login');
     }else{
         $('#login').text('Logout');
-        $('#login').attr('href', '/login');
+        $('#login').attr('href', '/auth/logout');
     }
 });

@@ -152,11 +152,15 @@ app.delete('/', function(req,res){
 
 app.all('/auth/*', auth.authenticate);
 
+app.post('/auth/testAuth',auth.testAuth);
+
 app.post('/newUser',auth.newUser);
 
-
+// TODO check to see if a person is already logged onto facebook
 app.post('/login',auth.login);
 
+
+// TODO have a database of vaild tokens
 app.post('/auth/logout',auth.authenticate,auth.logout);
 
 app.get('/login/facebook',
@@ -178,6 +182,7 @@ app.get('/profile',
 app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
+      //res.redirect('/');
   });
 
 app.listen(port, function(){
