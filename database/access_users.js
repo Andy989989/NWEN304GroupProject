@@ -21,7 +21,7 @@ app.use(bp.json());
  * message, starting with 'ERROR: ', and followed by a short sentence describing the nature
  * of the error.
  */
-exports.get = function(name){
+exports.get = function(name, res, callback){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing valid value for name.";
 	}
@@ -29,7 +29,7 @@ exports.get = function(name){
 		if(err){ //User does not exist and therefore has no password to get.
 			return "ERROR: that name does not exist in the database.";
 		}
-		return rows;
+		callback(res, rows.rows[0].password);
 	});
 }
 

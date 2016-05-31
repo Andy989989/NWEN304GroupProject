@@ -5,8 +5,8 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_products.js');
-var try_login = require('./database/access_users.js');
+var products = require('./database/access_products.js');
+var users = require('./database/access_users.js');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
@@ -92,10 +92,19 @@ app.get('/', function(req,res){
 	res.render('index');
 });
 
-app.get('/search*', send_to_database_code.search);
-app.get('/men*', send_to_database_code.get_me_something);
-app.get('/women*', send_to_database_code.get_me_something);
-app.get('/kids*', send_to_database_code.get_me_something);
+app.get('/search*', products.search);
+app.get('/men*', products.get_me_something);
+app.get('/women*', products.get_me_something);
+app.get('/kids*', products.get_me_something);
+//TODO REMOVE! Andy, this is how you need to call the users.get method: passing it
+// a res (which I might change to not require) and a callback (necessary).
+app.get('/hi', function(req, res){
+	var password = users.get('ben', res, deal_with_password);
+});
+
+function deal_with_password(res, password){
+	res.status(200).send(password);
+}
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
@@ -122,7 +131,7 @@ app.put('/', function(req,res){
 
 });
 
-app.put('/login', try_login.put);
+app.put('/login', users.put);
 
 //=====================================
 //POST METHODS
