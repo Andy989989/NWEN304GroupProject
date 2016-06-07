@@ -127,6 +127,7 @@ exports.login = function (req, res){
 		}
 	}
 	//TODO error checking here
+	console.log(hash);
 	console.log(returnedPassword);
 	if(hash == returnedPassword){
 		console.log("getting in hash test");
@@ -145,10 +146,10 @@ if(!req.body.hasOwnProperty('token')) {
 
 }
 exports.newToken = function (req, res){
-	if(!req.body.hasOwnProperty('userName')) {
-    res.statusCode = 400;
-    return res.send('Error 400');
-  	}
+	// if(!req.body.hasOwnProperty('userName')) {
+ //    res.statusCode = 400;
+ //    return res.send('Error 400');
+ //  	}
   	var token = jwt.sign(req.body.userName, secret, {
 						expiresIn: 1800 // expires in 24 hours
 					});
