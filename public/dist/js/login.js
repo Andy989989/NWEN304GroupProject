@@ -1,9 +1,9 @@
-var ipAddr = 'https://127.0.0.1:8080:8080';
+//var ipAddr = 'https://127.0.0.1:8080';
 //var data = {'userName':'Andy','password':'test1'};
 //console.log("test");
+var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
 
 $(document).ready(function(e) {
-//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
     //var ipAddr = 'http://130.195.4.164:8080';
     //var data = {'userName':'Andy','password':'test1'};
     var token;
