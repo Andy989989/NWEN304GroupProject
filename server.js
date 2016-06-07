@@ -166,7 +166,7 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
-app.all('/auth/*', checkAuth ,auth.authenticate);
+app.all('/auth/*',auth.authenticate);
 
 app.post('/auth/testAuth',auth.testAuth);
 
@@ -187,7 +187,7 @@ app.get('/login/facebook/return',
   function(req, res) {
           var data = {'data':req.user.access_token};
           //'res.render('index', {data:data});
-          res.render('index', {'data':data});
+          res.render('index', {data:data});
           console.log(req.user.access_token);
   });
 
