@@ -182,11 +182,11 @@ app.get('/login/facebook/return',
     console.log();
   });
 
-app.get('/profile',
-  loggedOn.ensureLoggedIn(),
-  function(req, res){
-    //res.render('profile', { user: req.user });
-});
+//app.get('/profile',
+//  loggedOn.ensureLoggedIn(),
+//  function(req, res){
+//    //res.render('profile', { user: req.user });
+//});
 
 
 
