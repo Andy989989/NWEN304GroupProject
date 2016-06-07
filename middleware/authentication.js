@@ -109,22 +109,12 @@ exports.login = function (req, res){
 	//console.log(hash);
 
 
-<<<<<<< HEAD
-console.log("UserName to get from the database:" + userName);
-console.log("password entered by the user: " + password );
-console.log("Hashed password: " + hash);
-var databasePassword = users.get(userName);
-console.log("data returned from database: " + databasePassword);
-//res.status(404).send(databasePassword);
-=======
 	console.log("UserName to get from the database:" + userName);
 	console.log("password entered by the user: " + password );
 	console.log("Hashed password: " + hash);
 	var databasePassword = users.get(userName);
 	console.log("data returned from database: " + databasePassword);
 	//res.status(404).send(databasePassword);
->>>>>>> bf1ab015fd1804bbb74635b324a214d19512efe9
-
 	// for(var i;i<databasePassword.length;i++){
 	// 	console.log(databasePassword[i]);
 	// }

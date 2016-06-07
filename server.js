@@ -177,7 +177,7 @@ app.post('/login', auth.login);
 
 
 // TODO have a database of vaild tokens
-app.post('/auth/logout',auth.authenticate,auth.logout);
+app.post('/auth/logout',auth.logout);
 
 app.get('/login/facebook',
   passport.authenticate('facebook'));
