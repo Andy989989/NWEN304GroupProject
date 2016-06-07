@@ -114,7 +114,7 @@ exports.login = function (req, res){
 	console.log("Hashed password: " + hash);
 	var databasePassword = users.get(userName,res,function(res,returnedPassword){
 	console.log("data returned from database: " + returnedPassword);
-	
+
 	console.log(returnedPassword);
 	if(returnedPassword!=undefined){
 		var errorCheck = returnedPassword.search("ERROR:"); 
@@ -148,19 +148,14 @@ exports.newToken = function (req, res){
 	if(!req.body.hasOwnProperty('userName')) {
     res.statusCode = 400;
     return res.send('Error 400');
-  }
-
-  //for(var i=0;i>databse.length;i++){
-
-
-	if(req.body.password == database[0].password){
-		var token = jwt.sign(req.body.userName, secret, {
+  	}
+  	var token = jwt.sign(req.body.userName, secret, {
 						expiresIn: 1800 // expires in 24 hours
 					});
 					var data = {'data':token};
 					res.render('index', {data:data});
 
-	}
+	
 }
 
 exports.newUser = function(req,res,next){
