@@ -81,7 +81,7 @@ exports.login = function (req, res){
 
 	//console.log("gets into login");
 	console.log(req.body.password);
-	var hash = bcrypt.hashSync(req.body.password, salt);
+	var hash = bcrypt.hashSync(password, salt);
 	//console.log(hash);
 
 
@@ -107,7 +107,11 @@ exports.login = function (req, res){
 	console.log(returnedPassword);
 	if(hash == returnedPassword){
 		console.log("getting in hash test");
-		var token = exports.newToken(req,res);
+		var token = jwt.sign(userName, secret, {
+						expiresIn: '1800' // expires in 24 hours
+					});
+					var data = {'data':token};
+					res.render('index', {data:data});
 	}
 	});
 }
@@ -121,12 +125,12 @@ if(!req.body.hasOwnProperty('token')) {
   }
 
 }
-exports.newToken = function (req, res){
+exports.newToken = function (res, username){
 	// if(!req.body.hasOwnProperty('userName')) {
  //    res.statusCode = 400;
  //    return res.send('Error 400');
  //  	}
-  	var token = jwt.sign(req.body.userName, secret, {
+  	var token = jwt.sign(username, secret, {
 						expiresIn: 1800 // expires in 24 hours
 					});
 					var data = {'data':token};
