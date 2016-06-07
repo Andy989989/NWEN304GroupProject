@@ -107,8 +107,9 @@ exports.login = function (req, res){
 	console.log(returnedPassword);
 	if(hash == returnedPassword){
 		console.log("getting in hash test");
-		var token = jwt.sign(userName, secret, {
-						expiresIn: '1800' // expires in 24 hours
+		var userData= {'userName':userName};
+		var token = jwt.sign(userData, secret, {
+						expiresIn: 1800 // expires in 24 hours
 					});
 					var data = {'data':token};
 					res.render('index', {data:data});
