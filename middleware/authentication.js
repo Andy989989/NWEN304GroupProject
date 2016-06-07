@@ -111,8 +111,9 @@ exports.login = function (req, res){
 		var token = jwt.sign(userData, secret, {
 						expiresIn: 1800 // expires in 24 hours
 					});
-					var data = {'data':token};
-					res.render('index', {data:data});
+					//var data = {'data':token};
+					res.send({'token':token});
+					//res.render('index', {'token':token});
 	}else{
 		res.status(404).send("Error when checking password");
 	}
