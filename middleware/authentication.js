@@ -48,10 +48,10 @@ exports.authenticate = function (req, res,next){
 
 	} 
 
-	if (req.isAuthenticated()){
+	else if (req.isAuthenticated()){
 		console.log("authenticated with facebook");
     	return next();
-  	}
+  	}else{
  		// if there is no token
 		// return an error
 		//return res.status(403).send({ 
@@ -59,8 +59,8 @@ exports.authenticate = function (req, res,next){
 		//	message: 'No token provided.'});
 	
 	// if gets here that means authentication failed
-	res.status(401).send("Failed to authenticate: please login")
-
+	 return res.status(401).send("Failed to authenticate: please login");
+}
 
 };
 
