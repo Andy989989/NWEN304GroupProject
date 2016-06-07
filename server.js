@@ -185,8 +185,11 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
+    console.log(req.data);
+    console.log(req);
           var data = {'data':req.user.access_token};
           //'res.render('index', {data:data});
+
           res.render('index', {data:data});
           console.log(req.user.access_token);
   });
