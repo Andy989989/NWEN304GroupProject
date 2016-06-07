@@ -103,15 +103,6 @@ app.get('/search*', products.search);
 app.get('/men*', products.get_me_something);
 app.get('/women*', products.get_me_something);
 app.get('/kids*', products.get_me_something);
-//TODO REMOVE! Andy, this is how you need to call the users.get method: passing it
-// a res (which I might change to not require) and a callback (necessary).
-app.get('/hi', function(req, res){
-	var password = users.get('ben', res, deal_with_password);
-});
-
-function deal_with_password(res, password){
-	res.status(200).send(password);
-}
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
