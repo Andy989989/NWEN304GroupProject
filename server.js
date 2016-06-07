@@ -5,8 +5,8 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_products.js');
-var try_login = require('./database/access_users.js');
+var products = require('./database/access_products.js');
+var users = require('./database/access_users.js');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
@@ -89,15 +89,22 @@ app.use(passport.session());
 //=====================================
 //GET METHODS
 //=====================================
+app.get('*',function(req,res,next){
+  if(req.headers['x-forwarded-proto']!='https'&&process.env.NODE_ENV === 'production')
+    res.redirect('https://'+req.hostname+req.url)
+  else
+    next() 
+});
+
 
 app.get('/', function(req,res){
 	res.render('index');
 });
 
-app.get('/search*', send_to_database_code.search);
-app.get('/men*', send_to_database_code.get_me_something);
-app.get('/women*', send_to_database_code.get_me_something);
-app.get('/kids*', send_to_database_code.get_me_something);
+app.get('/search*', products.search);
+app.get('/men*', products.get_me_something);
+app.get('/women*', products.get_me_something);
+app.get('/kids*', products.get_me_something);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
@@ -129,7 +136,7 @@ app.put('/', function(req,res){
 
 });
 
-app.put('/login', try_login.put);
+app.put('/login', users.put);
 
 //=====================================
 //POST METHODS
@@ -166,7 +173,7 @@ app.post('/auth/testAuth',auth.testAuth);
 app.post('/newUser',auth.newUser);
 
 // TODO check to see if a person is already logged onto facebook
-app.post('/login',auth.login);
+app.post('/login', auth.login);
 
 
 // TODO have a database of vaild tokens
@@ -178,7 +185,7 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-       var data = {'data':req.user.access_token};
+          var data = {'data':req.user.access_token};
           //'res.render('index', {data:data});
           res.render('index', {'data':data});
           console.log(req.user.access_token);
