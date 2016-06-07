@@ -133,6 +133,18 @@ exports.login = function (req, res){
 	// 	res.status(404).send("User Name not found in the database");
 	// }
 
+	if(user!=undefined){
+		var errorCheck = databasePassword.search("ERROR:"); 
+		if(errorCheck != -1){
+		// if this equals -1 that means there is no error
+		// could change to get the currentn value of errror.
+
+		// 409 - duplicate data
+		console.log("There was a problem");
+		res.status(409).send("User doesnt exsists in the database");
+		}
+	}
+
 
 
 	//TODO error checking here
@@ -205,18 +217,19 @@ var user = users.put(name,hash);
 
 console.log("added the data to the database:" + user);
 
-
-var errorCheck = user.search("ERROR:"); 
-
-if(errorCheck != -1){
+if(user!=undefined){
+	var errorCheck = user.search("ERROR:"); 
+	if(errorCheck != -1){
 	// if this equals -1 that means there is no error
 	// could change to get the currentn value of errror.
 
 	// 409 - duplicate data
 	console.log("There was a problem");
-
 	res.status(409).send("User Already exsists in the database");
+	}
 }
+
+
 
 console.log(data);
 res.send('user created');
