@@ -14,7 +14,9 @@ var codes = require('./middleware/code.js');
 // this is for authentication
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
-var loggedOn = require('connect-ensure-login');
+//var loggedOn = require('connect-ensure-login');
+var geoip = require('geoip-lite');
+
 
 
 var app = express();
@@ -113,6 +115,11 @@ app.get('/aboutus', function (req, res) {
     res.render('aboutus')
 });
 
+app.get('getRecommendations',function (req, res) {
+  var ip = req.ip;
+  var geo = geoip.lookup(ip);
+  console.log(geo);
+});
 
 //=====================================
 //PUT METHODS
@@ -150,7 +157,9 @@ app.delete('/', function(req,res){
 //AUTHENTICATION METHODS
 //=====================================
 
-app.all('/auth/*', auth.authenticate);
+
+//check to see if loggedon with fb and then locally
+app.all('/auth/*', checkAuth ,auth.authenticate);
 
 app.post('/auth/testAuth',auth.testAuth);
 
@@ -179,11 +188,25 @@ app.get('/profile',
     //res.render('profile', { user: req.user });
 });
 
-app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
+
+
+app.get( '/auth/facebook/logout',function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
       //res.redirect('/');
   });
+
+function checkAuth(req, res, next) {
+  if (req.isAuthenticated()){
+    return next();
+  }
+  else{
+    // Return error content: res.jsonp(...) or redirect: res.redirect('/login')
+    // failure redirect. 
+    res.status(401).send("Failed to authenticate: please login")
+  }
+}
+
 
 app.listen(port, function(){
 	console.log('Listening:' + port);
