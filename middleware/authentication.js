@@ -86,8 +86,8 @@ exports.login = function (req, res){
 
 
 	console.log("UserName to get from the database:" + userName);
-	console.log("password entered by the user: " + password );
-	console.log("Hashed password: " + hash);
+	console.log("password entered by the user:" + password );
+	console.log("Hashed password:" + hash);
 	var databasePassword = users.get(userName,res,function(res,returnedPassword){
 	console.log("data returned from database: " + returnedPassword);
 
@@ -112,7 +112,10 @@ exports.login = function (req, res){
 					});
 					var data = {'data':token};
 					res.render('index', {data:data});
+	}else{
+		res.status(404).send("Error when checking password");
 	}
+
 	});
 }
 
@@ -124,19 +127,6 @@ if(!req.body.hasOwnProperty('token')) {
     return res.send('Error 400');
   }
 
-}
-exports.newToken = function (res, username){
-	// if(!req.body.hasOwnProperty('userName')) {
- //    res.statusCode = 400;
- //    return res.send('Error 400');
- //  	}
-  	var token = jwt.sign(username, secret, {
-						expiresIn: 1800 // expires in 24 hours
-					});
-					var data = {'data':token};
-					res.render('index', {data:data});
-
-	
 }
 
 exports.newUser = function(req,res,next){
@@ -153,16 +143,17 @@ if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') 
 		res.statusCode = 400;
     	return res.send('Error 400');
 }
-
-
-var hash = bcrypt.hashSync(req.body.password, salt);
-console.log("Hashed password"+ hash);
-
 var name = req.body.userName;
 var pass = req.body.password;
 
+
+var hash = bcrypt.hashSync(pass, salt);
+console.log("Hashed password"+ hash);
+
+
+
 // TODO  put the data into the databse here
-var data = {"userName":name,"password":hash};
+//var data = {"userName":name,"password":hash};
 //database.push(data);
 var user = users.put(name,hash);
 
