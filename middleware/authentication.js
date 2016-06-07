@@ -157,7 +157,7 @@ console.log("Hashed password"+ hash);
 //database.push(data);
 var user = users.put(name,hash);
 
-console.log("added the data to the database:" + user);
+console.log("added the data to the database:"+name+":"+pass);
 
 if(user!=undefined){
 	var errorCheck = user.search("ERROR:"); 
@@ -173,7 +173,7 @@ if(user!=undefined){
 
 
 
-console.log(data);
+//console.log(data);
 res.send('user created');
 
 }
