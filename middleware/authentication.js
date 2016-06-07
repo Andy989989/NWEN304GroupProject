@@ -64,30 +64,6 @@ exports.authenticate = function (req, res,next){
 
 };
 
-exports.newToken = function (req, res){
-	// if(!req.body.hasOwnProperty('userName')) {
- //    res.statusCode = 400;
- //    return res.send('Error 400');
- //  }
- console.log(req.body);
- var hash = bcrypt.hashSync(req.body.password, salt);
-
-  for(var i=0;i<database.length;i++){
-
-
-	if(hash == database[i].password){
-		var token = jwt.sign({'password':req.body.password}, secret, {
-						expiresIn:1800 // expires in 30 hours
-					});
-					var data = {'token':token};
-					res.send(data)
-				;
-	}
-  }
-}
-
-
-
 exports.login = function (req, res){
 	 /*
 		assuming this data is being sent from the client
