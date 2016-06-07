@@ -87,6 +87,13 @@ app.use(passport.session());
 //=====================================
 //GET METHODS
 //=====================================
+app.get('*',function(req,res,next){
+  if(req.headers['x-forwarded-proto']!='https'&&process.env.NODE_ENV === 'production')
+    res.redirect('https://'+req.hostname+req.url)
+  else
+    next() 
+});
+
 
 app.get('/', function(req,res){
 	res.render('index');
@@ -178,8 +185,10 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
-    console.log();
+          var data = {'data':req.user.access_token};
+          //'res.render('index', {data:data});
+          res.render('index', {'data':data});
+          console.log(req.user.access_token);
   });
 
 app.get('/profile',
