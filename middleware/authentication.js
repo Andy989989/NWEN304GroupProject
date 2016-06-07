@@ -41,21 +41,26 @@ exports.authenticate = function (req, res,next){
 				// if everything is good, save to request for use in other routes
 				req.decoded = decoded;	
 				// everything is fine and has been authenticated
-				console.log("authenticated");
-				next();
+				console.log("authenticated with logon");
+				return next();
 			}
 		});
 
-	} else {
+	} 
 
-		// if there is no token
+	if (req.isAuthenticated()){
+		console.log("authenticated with facebook");
+    	return next();
+  	}
+ 		// if there is no token
 		// return an error
-		return res.status(403).send({ 
-			success: false, 
-			message: 'No token provided.'
-		});
-		
-	}
+		//return res.status(403).send({ 
+		//	success: false, 
+		//	message: 'No token provided.'});
+	
+	// if gets here that means authentication failed
+	res.status(401).send("Failed to authenticate: please login")
+
 
 };
 
@@ -109,7 +114,7 @@ console.log("password entered by the user: " + password );
 console.log("Hashed password: " + hash);
 var databasePassword = users.get(userName);
 console.log("data returned from database: " + databasePassword);
-res.status(404).send(databasePassword);
+//res.status(404).send(databasePassword);
 
 // for(var i;i<databasePassword.length;i++){
 // 	console.log(databasePassword[i]);

@@ -178,8 +178,10 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
-    console.log();
+       var data = {'data':req.user.access_token};
+          //'res.render('index', {data:data});
+          res.render('index', {'data':data});
+          console.log(req.user.access_token);
   });
 
 //app.get('/profile',
@@ -201,8 +203,8 @@ function checkAuth(req, res, next) {
     return next();
   }
   else{
-    // Return error content: res.jsonp(...) or redirect: res.redirect('/login')
-    // failure redirect. 
+    //return next();  
+
     res.status(401).send("Failed to authenticate: please login")
   }
 }
