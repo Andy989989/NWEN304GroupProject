@@ -112,55 +112,30 @@ exports.login = function (req, res){
 	console.log("UserName to get from the database:" + userName);
 	console.log("password entered by the user: " + password );
 	console.log("Hashed password: " + hash);
-	var databasePassword = users.get(userName);
-	console.log("data returned from database: " + databasePassword);
-	//res.status(404).send(databasePassword);
-	// for(var i;i<databasePassword.length;i++){
-	// 	console.log(databasePassword[i]);
-	// }
-
-	console.log(databasePassword);
-	//console.log(databasePassword[0]);
-
-
-	//var errorCheck = databasePassword.indexof("ERROR:");
-	// if(errorCheck > -1){
-	// 	// if this equals -1 that means there is no error
-	// 	// could change to get the currentn value of errror.
-
-	// 	// 409 - duplicate data
-	// 	console.log("error gettting username from the database")
-	// 	res.status(404).send("User Name not found in the database");
-	// }
-
-	if(databasePassword!=undefined){
-		var errorCheck = databasePassword.search("ERROR:"); 
+	var databasePassword = users.get(userName,res,function(res,returnedPassword){
+	console.log("data returned from database: " + returnedPassword);
+	
+	console.log(returnedPassword);
+	if(returnedPassword!=undefined){
+		var errorCheck = returnedPassword.search("ERROR:"); 
 		if(errorCheck != -1){
 		// if this equals -1 that means there is no error
 		// could change to get the currentn value of errror.
-
 		// 409 - duplicate data
 		console.log("There was a problem");
 		res.status(409).send("User doesnt exsists in the database");
 		}
 	}
-
-
-
 	//TODO error checking here
-
-
-	console.log(databasePassword);
-
-	if(hash == databasePassword){
+	console.log(returnedPassword);
+	if(hash == returnedPassword){
 		console.log("getting in hash test");
 		var token = exports.newToken(req,res);
 	}
-
-
-	//console.log("hashing failed");
-
+	});
 }
+
+
 
 exports.logout = function (req, res){
 if(!req.body.hasOwnProperty('token')) {
