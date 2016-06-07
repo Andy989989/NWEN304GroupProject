@@ -133,7 +133,7 @@ exports.login = function (req, res){
 	// 	res.status(404).send("User Name not found in the database");
 	// }
 
-	if(user!=undefined){
+	if(databasePassword!=undefined){
 		var errorCheck = databasePassword.search("ERROR:"); 
 		if(errorCheck != -1){
 		// if this equals -1 that means there is no error

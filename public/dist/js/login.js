@@ -56,7 +56,7 @@ $(document).ready(function(e) {
     function() {
         $.ajax({
             method:'POST',
-            url: ipAddr+"/auth/authenticate",
+            url: ipAddr+"/auth/testAuth",
             data: token,
             //url: ipAddr+"/test",
             error: function(data,status) {
