@@ -105,7 +105,7 @@ exports.login = function (req, res){
 	//TODO error checking here
 	console.log(hash);
 	console.log(returnedPassword);
-	if(hash == returnedPassword){
+	if(bcrypt.compareSync(password, hash)){
 		console.log("getting in hash test");
 		var userData= {'userName':userName};
 		var token = jwt.sign(userData, secret, {
