@@ -2,7 +2,7 @@
 
 
 	//var ipAddr = 'https://morning-dawn-49717.herokuapp.com/';
-	var ipAddr = 'http://127.0.0.1:8080';
+	var ipAddr = 'https://127.0.0.1:8080';
 
 	console.log("test");
 

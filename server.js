@@ -1,7 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var app = express();
-var port = process.env.PORT || 8080;
+var port = process.env.PORT ;//|| 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
@@ -90,7 +90,7 @@ app.use(passport.session());
 //GET METHODS
 //=====================================
 app.get('*',function(req,res,next){
-  if(req.headers['x-forwarded-proto']!='https'&&process.env.NODE_ENV === 'production')
+  if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
     res.redirect('https://'+req.hostname+req.url)
   else
     next() 
