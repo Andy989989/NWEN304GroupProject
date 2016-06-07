@@ -17,8 +17,9 @@ var database = [{'userName':'Andy','password':'test1'}];
 
 exports.testAuth = function(req,res){
 
-
-res.send("got into testAuth : authentication succesfull");
+//console.log(req.user.access_token);
+var data={'text':'got into testAuth : authentication succesfull','token':req.user.access_token };
+res.send(data);
 
 }
 

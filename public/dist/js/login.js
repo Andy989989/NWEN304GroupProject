@@ -66,7 +66,8 @@ $(document).ready(function(e) {
             },
             success: function(data,status){
                 alert("succesful auth");
-                console.log(data);
+                console.log(data.text);
+                
                 //console.log(data.token);
                 //token = {"token":data.token};
                 //console.log(token);
