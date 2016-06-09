@@ -1,7 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var app = express();
-var port = process.env.PORT ;//|| 8080;
+var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
@@ -17,11 +17,6 @@ var Strategy = require('passport-facebook').Strategy;
 //var loggedOn = require('connect-ensure-login');
 var geoip = require('geoip-lite');
 
-
-
-var app = express();
-//var start = require('start');
-var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
@@ -89,12 +84,12 @@ app.use(passport.session());
 //=====================================
 //GET METHODS
 //=====================================
-app.get('*',function(req,res,next){
-  if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
-    res.redirect('https://'+req.hostname+req.url)
-  else
-    next() 
-});
+// app.get('*',function(req,res,next){
+//   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
+//     res.redirect('https://'+req.hostname+req.url)
+//   else
+//     next() 
+// });
 
 
 app.get('/', function(req,res){
