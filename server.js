@@ -117,10 +117,11 @@ app.get('/aboutus', function (req, res) {
     res.render('aboutus')
 });
 
-app.get('getRecommendations',function (req, res) {
+app.get('/getRecommendations',function (req, res) {
   var ip = req.ip;
   var geo = geoip.lookup(ip);
   console.log(geo);
+  res.send({'geo':geo,'ip':ip});
 });
 
 //=====================================
