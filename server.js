@@ -189,11 +189,11 @@ app.get('/login/facebook/return',
           console.log(req.user.access_token);
   });
 
-//app.get('/profile',
+app.get('/profile',
 //  loggedOn.ensureLoggedIn(),
-//  function(req, res){
-//    //res.render('profile', { user: req.user });
-//});
+  function(req, res){
+  res.render('profile', { user: req.user });
+});
 
 
 
