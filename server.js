@@ -7,6 +7,7 @@ var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
+var passport = require('passport');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
