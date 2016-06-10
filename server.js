@@ -5,8 +5,8 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_database.js');
-
+var products = require('./database/access_products.js');
+var users = require('./database/access_users.js');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
@@ -14,17 +14,14 @@ var codes = require('./middleware/code.js');
 // this is for authentication
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
-var loggedOn = require('connect-ensure-login');
+//var loggedOn = require('connect-ensure-login');
+var geoip = require('geoip-lite');
 
-
-var app = express();
-//var start = require('start');
-var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
 // these are used in the authentication
-app.use(require('morgan')('combined'));
+//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
@@ -85,33 +82,48 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //=====================================
-//HELPER METHODS
-//=====================================
-
-function postData(key, value){
-	//client.query("update jobs set complete="+value+" where name='"+key+"'");
-}
-
-function putData(key, value){
-	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
-}
-
-//=====================================
 //GET METHODS
 //=====================================
+// app.get('*',function(req,res,next){
+//   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
+//     res.redirect('https://'+req.hostname+req.url)
+//   else
+//     next() 
+// });
+
 
 app.get('/', function(req,res){
-	console.log("get /")
-	res.sendFile('/public/index.html');
+	res.render('index');
 });
 
-app.get('/men*', send_to_database_code.sort_it_out);
-app.get('/women*', send_to_database_code.sort_it_out);
-app.get('/kids*', send_to_database_code.sort_it_out);
+app.get('/search*', products.search);
+app.get('/men*', products.get_me_something);
+app.get('/women*', products.get_me_something);
+app.get('/kids*', products.get_me_something);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
 });
+
+app.get('/login', function(req, res){
+    res.render('login')
+});
+
+app.get('/register', function (req, res) {
+    res.render('register')
+});
+
+app.get('/aboutus', function (req, res) {
+    res.render('aboutus')
+});
+
+app.get('/getRecommendations',function (req, res) {
+  var ip = req.ip;
+  var geo = geoip.lookup(ip);
+  console.log(geo);
+  res.send({'geo':geo,'ip':ip});
+});
+
 //=====================================
 //PUT METHODS
 //=====================================
@@ -119,6 +131,8 @@ app.get('/pages', function(req, res){
 app.put('/', function(req,res){
 
 });
+
+app.put('/login', users.put);
 
 //=====================================
 //POST METHODS
@@ -146,14 +160,20 @@ app.delete('/', function(req,res){
 //AUTHENTICATION METHODS
 //=====================================
 
-app.all('/auth/*', auth.authenticate);
+
+//check to see if loggedon with fb and then locally
+app.all('/auth/*',auth.authenticate);
+
+app.post('/auth/testAuth',auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
+// TODO check to see if a person is already logged onto facebook
+app.post('/login', auth.login);
 
-app.post('/login',auth.login);
 
-app.post('/auth/logout',auth.authenticate,auth.logout);
+// TODO have a database of vaild tokens
+app.post('/auth/logout',auth.logout);
 
 app.get('/login/facebook',
   passport.authenticate('facebook'));
@@ -161,21 +181,40 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
-    console.log();
+    console.log(req.data);
+    console.log(req);
+          var data = {'data':req.user.access_token};
+          //'res.render('index', {data:data});
+
+          res.render('index', {data:data});
+          console.log(req.user.access_token);
   });
 
 app.get('/profile',
-  loggedOn.ensureLoggedIn(),
+//  loggedOn.ensureLoggedIn(),
   function(req, res){
-    //res.render('profile', { user: req.user });
+  res.render('profile', { user: req.user });
 });
 
-app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
+
+
+app.get( '/auth/facebook/logout',function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
       //res.redirect('/');
   });
+
+function checkAuth(req, res, next) {
+  if (req.isAuthenticated()){
+    return next();
+  }
+  else{
+    //return next();  
+
+    res.status(401).send("Failed to authenticate: please login")
+  }
+}
+
 
 app.listen(port, function(){
 	console.log('Listening:' + port);
@@ -191,3 +230,7 @@ var credentials = {key: privateKey, cert: certificate};
 var httpsServer = https.createServer(credentials, app);
 httpsServer.listen(port);
 */
+
+app.get('*', function(req, res){
+    res.status(400).send("Sorry, that page doesn't exist.");
+});
