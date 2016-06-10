@@ -1,7 +1,7 @@
 // load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
 var facebookStrategy = require('passport-facebook').Strategy;
-var passport = require('passport');
+
 var users = require('../database/access_users.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
@@ -13,7 +13,7 @@ module.exports = function(passport) {
 //=====================================
 //AUTHENTICATION SETUP
 //=====================================
-passport.use(new FacebookStrategy({
+passport.use(new FStrategy({
     clientID: 261460150870678,//process.env.CLIENT_ID,
     clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
     callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
