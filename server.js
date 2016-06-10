@@ -12,8 +12,7 @@ var users = require('./database/access_users.js');
 var codes = require('./middleware/code.js');
 
 // this is for authentication
-var passport = require('passport');
-var Strategy = require('passport-facebook').Strategy;
+
 //var loggedOn = require('connect-ensure-login');
 var geoip = require('geoip-lite');
 
@@ -53,24 +52,10 @@ app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
 app.use(bp.json());
 
-//=====================================
-//AUTHENTICATION SETUP
-//=====================================
-passport.use(new Strategy({
-    clientID: 261460150870678,//process.env.CLIENT_ID,
-    clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
-    callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
-  },
-  function(accessToken, refreshToken, profile, cb) {
-    return cb(null, profile);
-  }));
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
+// this is the passprt authentication methods
+require('./middleware/Config.js')(passport);
 
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
+
 
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
@@ -183,11 +168,11 @@ app.get('/login/facebook/return',
   function(req, res) {
     console.log(req.data);
     console.log(req);
-          var data = {'data':req.user.access_token};
+          var data = {'data':req.user.accessToken};
           //'res.render('index', {data:data});
 
           res.render('index', {data:data});
-          console.log(req.user.access_token);
+          console.log(req.user.accessToken);
   });
 
 app.get('/profile',
