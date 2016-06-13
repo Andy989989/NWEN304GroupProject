@@ -22,6 +22,12 @@ exports.search = function(req, res){
 		res.status(400).send("Invalid query.");
 		return;
 	}
+	//Replaces all underscores with spaces (so multiple words can be passed in a query).
+	for(var i = 0, len = q.length; i!=len; i++){
+		if(q.charAt(i) == '_'){
+			q = q.substr(0, i) + ' ' + q.substr(i + 1);
+		}
+	}
 	var error = false;
 	var query = client.query("select * from products where description ilike '%"+q+"%' or name ilike '%"+q+"%'", function(err){
 			if(err){
@@ -33,7 +39,7 @@ exports.search = function(req, res){
 		return;
 	}
 	res.status(200);
-	handle_query(query, res);
+	handle_query(query, res, null);
 }
 
 /*
@@ -160,9 +166,9 @@ function ensure_only_letters_and_numbers(word){
 function handle_query(query, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
-			query_results.push(JSON.stringify(row));
-			});
+		query_results.push(JSON.stringify(row));
+	});
 	query.on('end', function(){
-			res.render('display', {results: query_results, table: tableID})
-			});
+		res.render('display', {results: query_results, table: tableID})
+	});
 }

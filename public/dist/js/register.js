@@ -46,20 +46,8 @@ $(document).ready(function(e) {
     					alert("succesful Register: " + status);
     					console.log(data);
     			}
-
-    			});
-
-			}
-
-			
-
-			
-
-
-
-
-		});
-
-
+    		});
+		}
+	});
 });
 

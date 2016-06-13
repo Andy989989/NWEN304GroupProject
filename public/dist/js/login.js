@@ -43,15 +43,9 @@ $(document).ready(function(e) {
                   console.log(token);
               }
           });
-
       }
-
-
-
-
     });
-
-
+    
     $('#testAuth').button().click(
     function() {
         $.ajax({
@@ -76,11 +70,6 @@ $(document).ready(function(e) {
          });
     
     });
-
-
-
-
-
   $('#test').button().click(
         function(){
             if(sessionStorage.test != 'token'){
