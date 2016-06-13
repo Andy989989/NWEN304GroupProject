@@ -1,0 +1,39 @@
+@media only screen and (min-width : 481px) {
+    .flex-row.row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .flex-row.row > [class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
+    .flex-row.row:after,
+    .flex-row.row:before {
+        display: flex;
+    }
+}
+
+.ic-image {
+    max-width: 100%;
+}
+
+.ic-header-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-height: 16px;     /* fallback */
+    max-height: 32px;      /* fallback */
+    -webkit-line-clamp: 2; /* number of lines to show */
+    -webkit-box-orient: vertical;
+}
+
+.ic-description-text {
+    padding-top: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    line-height: 16px;     /* fallback */
+    max-height: 64px;      /* fallback */
+    -webkit-line-clamp: 3; /* number of lines to show */
+    -webkit-box-orient: vertical;
+}
