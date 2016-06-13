@@ -23,7 +23,7 @@ exports.search = function(req, res){
 		return;
 	}
 	//Replaces all underscores with spaces (so multiple words can be passed in a query).
-	for(var i = 0, var len = q.length; i!=len; i++){
+	for(var i = 0, len = q.length; i!=len; i++){
 		if(q.charAt(i) == '_'){
 			q = q.substr(0, i) + ' ' + q.substr(index + 1);
 		}
