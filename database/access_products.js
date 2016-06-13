@@ -169,7 +169,6 @@ function handle_query(query, res, tableID){
 		query_results.push(JSON.stringify(row));
 	});
 	query.on('end', function(){
-		console.log(query_results)
 		res.render('display', {results: query_results, table: tableID})
 	});
 }
