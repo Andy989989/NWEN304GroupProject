@@ -5,8 +5,8 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
 var auth = require('./middleware/authentication.js');
-var send_to_database_code = require('./database/access_products.js');
-var try_login = require('./database/access_users.js');
+var products = require('./database/access_products.js');
+var users = require('./database/access_users.js');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
@@ -14,12 +14,9 @@ var codes = require('./middleware/code.js');
 // this is for authentication
 var passport = require('passport');
 var Strategy = require('passport-facebook').Strategy;
-var loggedOn = require('connect-ensure-login');
+//var loggedOn = require('connect-ensure-login');
+var geoip = require('geoip-lite');
 
-
-var app = express();
-//var start = require('start');
-var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
@@ -87,15 +84,22 @@ app.use(passport.session());
 //=====================================
 //GET METHODS
 //=====================================
+// app.get('*',function(req,res,next){
+//   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
+//     res.redirect('https://'+req.hostname+req.url)
+//   else
+//     next() 
+// });
+
 
 app.get('/', function(req,res){
 	res.render('index');
 });
 
-app.get('/search*', send_to_database_code.search);
-app.get('/men*', send_to_database_code.get_me_something);
-app.get('/women*', send_to_database_code.get_me_something);
-app.get('/kids*', send_to_database_code.get_me_something);
+app.get('/search*', products.search);
+app.get('/men*', products.get_me_something);
+app.get('/women*', products.get_me_something);
+app.get('/kids*', products.get_me_something);
 
 app.get('/pages', function(req, res){
 	res.send('q: ' + req.query.q);
@@ -113,6 +117,12 @@ app.get('/aboutus', function (req, res) {
     res.render('aboutus')
 });
 
+app.get('/getRecommendations',function (req, res) {
+  var ip = req.ip;
+  var geo = geoip.lookup(ip);
+  console.log(geo);
+  res.send({'geo':geo,'ip':ip});
+});
 
 //=====================================
 //PUT METHODS
@@ -122,7 +132,7 @@ app.put('/', function(req,res){
 
 });
 
-app.put('/login', try_login.put);
+app.put('/login', users.put);
 
 //=====================================
 //POST METHODS
@@ -150,18 +160,20 @@ app.delete('/', function(req,res){
 //AUTHENTICATION METHODS
 //=====================================
 
-app.all('/auth/*', auth.authenticate);
+
+//check to see if loggedon with fb and then locally
+app.all('/auth/*',auth.authenticate);
 
 app.post('/auth/testAuth',auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
 // TODO check to see if a person is already logged onto facebook
-app.post('/login',auth.login);
+app.post('/login', auth.login);
 
 
 // TODO have a database of vaild tokens
-app.post('/auth/logout',auth.authenticate,auth.logout);
+app.post('/auth/logout',auth.logout);
 
 app.get('/login/facebook',
   passport.authenticate('facebook'));
@@ -169,21 +181,40 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
-    console.log();
+    console.log(req.data);
+    console.log(req);
+          var data = {'data':req.user.access_token};
+          //'res.render('index', {data:data});
+
+          res.render('index', {data:data});
+          console.log(req.user.access_token);
   });
 
 app.get('/profile',
-  loggedOn.ensureLoggedIn(),
+//  loggedOn.ensureLoggedIn(),
   function(req, res){
-    //res.render('profile', { user: req.user });
+  res.render('profile', { user: req.user });
 });
 
-app.get( '/facebook/logout',loggedOn.ensureLoggedIn() ,function( request, response ) {
+
+
+app.get( '/auth/facebook/logout',function( request, response ) {
       request.logout();
       response.send( 'Logged out!' );
       //res.redirect('/');
   });
+
+function checkAuth(req, res, next) {
+  if (req.isAuthenticated()){
+    return next();
+  }
+  else{
+    //return next();  
+
+    res.status(401).send("Failed to authenticate: please login")
+  }
+}
+
 
 app.listen(port, function(){
 	console.log('Listening:' + port);
