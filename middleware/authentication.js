@@ -69,7 +69,7 @@ exports.login = function (req, res){
 	 /*
 		assuming this data is being sent from the client
 		{userName: "andy",password:"test1"}
-	*/
+	 */
 
 	  if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
 		res.statusCode = 400;
