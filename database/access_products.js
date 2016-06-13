@@ -166,9 +166,9 @@ function ensure_only_letters_and_numbers(word){
 function handle_query(query, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
-		query_results.push(JSON.stringify(row));
-	});
+			query_results.push(JSON.stringify(row));
+			});
 	query.on('end', function(){
-		res.render('display', {results: query_results, table: tableID})
-	});
+			res.render('display', {results: query_results, table: tableID})
+			});
 }
