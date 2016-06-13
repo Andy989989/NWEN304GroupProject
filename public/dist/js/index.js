@@ -1,13 +1,13 @@
 $(document).ready(function(e) {
     $('#search').button().click(function(){
         var query = $('#search-query');
-        query.val().replace(" ", "_");
-        window.location.href = "/search?q="+query.val()
+        queryString = query.val().replace(/ /g,"_");
+        window.location.href = "/search?q="+queryString;
     });
     $('#search-query').bind("enterKey", function(){
         var query = $('#search-query');
-        query.val().replace(" ", "_");
-        window.location.href = "/search?q="+query.val()
+        queryString = query.val().replace(/ /g,"_");
+        window.location.href = "/search?q="+queryString;
     });
     $('#search-query').keyup(function(e){
         if(e.keyCode == 13)        {
