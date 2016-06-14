@@ -86,40 +86,67 @@ exports.login = function (req, res){
 	//console.log(hash);
 
 
-	console.log("UserName to get from the database:" + userName);
-	console.log("password entered by the user:" + password );
-	console.log("Hashed password:" + hash);
-	var databasePassword = users.get(userName,res,function(res,returnedPassword){
-	console.log("data returned from database: " + returnedPassword);
+	// console.log("UserName to get from the database:" + userName);
+	// console.log("password entered by the user:" + password );
+	// console.log("Hashed password:" + hash);
+	// var databasePassword = users.get(userName,res,function(res,returnedPassword){
+	// console.log("data returned from database: " + returnedPassword);
 
-	console.log(returnedPassword);
-	if(returnedPassword!=undefined){
-		var errorCheck = returnedPassword.search("ERROR:"); 
-		if(errorCheck != -1){
-		// if this equals -1 that means there is no error
-		// could change to get the currentn value of errror.
-		// 409 - duplicate data
-		console.log("There was a problem");
-		res.status(409).send("User doesnt exsists in the database");
-		}
-	}
-	//TODO error checking here
-	console.log(hash);
-	console.log(returnedPassword);
-	if(bcrypt.compareSync(password, returnedPassword)){
-		console.log("getting in hash test");
-		var userData= {'userName':userName};
-		var token = jwt.sign(userData, secret, {
-						expiresIn: 1800 // expires in 24 hours
-					});
-					//var data = {'data':token};
-					res.send({'token':token});
-					//res.render('index', {'token':token});
-	}else{
-		res.status(404).send("Error when checking password");
-	}
+	// console.log(returnedPassword);
+	// if(returnedPassword!=undefined){
+	// 	var errorCheck = returnedPassword.search("ERROR:"); 
+	// 	if(errorCheck != -1){
+	// 	// if this equals -1 that means there is no error
+	// 	// could change to get the currentn value of errror.
+	// 	// 409 - duplicate data
+	// 	console.log("There was a problem");
+	// 	res.status(409).send("User doesnt exsists in the database");
+	// 	}
+	// }
+	// //TODO error checking here
+	// console.log(hash);
+	// console.log(returnedPassword);
+	// if(bcrypt.compareSync(password, returnedPassword)){
+	// 	console.log("getting in hash test");
+	// 	var userData= {'userName':userName};
+	// 	var token = jwt.sign(userData, secret, {
+	// 					expiresIn: 1800 // expires in 24 hours
+	// 				});
+	// 				//var data = {'data':token};
+	// 				res.send({'token':token});
+	// 				//res.render('index', {'token':token});
+	// }else{
+	// 	res.status(404).send("Error when checking password");
+	// }
+	// });
+  	passport.authenticate('local', function(err, username, info) {
+    	if (err) {
+      		return next(err);
+    	}    
+    	if (!username) {
+      	// print out error .message at the other end
+      	return res.render('/login');
+    	}
+    // If everything's OK
+    	req.logIn(username, function(err) {
+      	if (err) {
+        	req.session.messages = "Error";
+        	return next(err);
+      	}
+      	// Set the message
+      	req.session.messages = "successful login";
 
-	});
+      	// Set the displayName 
+      	var data = { userName : username };
+      	console.log(req.user.passport);
+      	console.log(req.user.passport.user);
+      	//return res.render('/index');
+      	return res.render('index', {data:data});
+    });    
+  })(req, res, next);
+
+
+
 }
 
 

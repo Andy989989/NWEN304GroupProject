@@ -1,6 +1,6 @@
 // load all the things we need
 var LocalStrategy   = require('passport-local').Strategy;
-var facebookStrategy = require('passport-facebook').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 
 var users = require('../database/access_users.js');
 var bcrypt = require('bcrypt');
