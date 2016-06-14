@@ -125,12 +125,14 @@ exports.login = function (req, res){
     	}    
     	if (!username) {
       	// print out error .message at the other end
+      	req.session.messages = "Error";//info.message;
       	return res.render('/login');
     	}
     // If everything's OK
     	req.logIn(username, function(err) {
       	if (err) {
         	req.session.messages = "Error";
+        	//console.log('loginPost Error');
         	return next(err);
       	}
       	// Set the message
@@ -140,6 +142,7 @@ exports.login = function (req, res){
       	var data = { userName : username };
       	console.log(req.user.passport);
       	console.log(req.user.passport.user);
+      	req.session.passport.user = data;
       	//return res.render('/index');
       	return res.render('index', {data:data});
     });    
