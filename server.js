@@ -127,8 +127,12 @@ var ipAddr = req.headers["x-forwarded-for"];
   }
   //var ip = req.ip;
   var geo = geoip.lookup(ipAddr);
-  console.log(geo);
-  res.send({'geo':geo,'ip':ipAddr});
+	var country = geo.country;
+	var name = 'ben'; //TODO change this, it's temporary
+	users.get_recommendations(name, country, function(results){
+		console.log(results);
+		res.send({done: results});
+	});
 });
 
 //=====================================
