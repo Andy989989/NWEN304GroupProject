@@ -94,7 +94,7 @@ exports.get_recommendations = function(name, loc, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0];
 			}
-			console.log("got previous items: "+prev+"\n";
+			console.log("got previous items\n";
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});
 }
