@@ -1,4 +1,10 @@
 $(document).ready(function(e) {
+
+    console.log("inside index");
+
+    if(token != null){
+        console.log(token);
+    }
     $('#search').button().click(function(){
         var query = $('#search-query');
         queryString = query.val().replace(/ /g,"_");
