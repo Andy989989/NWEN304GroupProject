@@ -161,6 +161,7 @@ app.post('/newUser',auth.newUser);
 app.post('/login', login);
 
 function login(req,res,next){
+   console.log("GETS INTO LOGIN");
     if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
     res.statusCode = 400;
     return res.send('please post syntax')
@@ -177,11 +178,15 @@ function login(req,res,next){
     passport.authenticate('local', function(err, username, info) {
       if (err) {
           return next(err);
+      }
+      if(password){
+        console.log("password exsits");
       }    
       if (!username) {
+        console.log("notUsername");
         // print out error .message at the other end
         req.session.messages = "Error";//info.message;
-        return res.render('/login');
+        return res.render('/');
       }
     // If everything's OK
       req.logIn(username, function(err) {
