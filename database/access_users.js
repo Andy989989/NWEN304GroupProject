@@ -112,6 +112,10 @@ exports.get_recommendations = function(name, loc, callback){
 function get_suggestion_based_on_previous_item(prev, loc, callback){
 	console.log("in suggestion_based_on_previous \n");
 	var types = {};
+	if(prev == -1){
+		//Ignore the previous item and just get the information from the location
+		return get_suggestion_based_on_weather(loc, null, callback);
+	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
 			console.log("error in getting products by id\n");
@@ -120,7 +124,7 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 			}
 			if(rows.length!=0){
 			console.log("successfully got products by id\n");
-			var type = rows.rows[0];
+			var type = rows.rows[0].type;
 			console.log("got type: "+type+"\n");
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
 					if(e || r.rows.length==0){
@@ -140,6 +144,9 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  */
 function get_suggestion_based_on_weather(loc, suggestions, callback){
 	console.log("in weather suggestion\n");
+	if(suggestions == null){
+		suggestions = [];
+	}
 	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
 			if(err){
 			console.log("error getting product by location\n");
