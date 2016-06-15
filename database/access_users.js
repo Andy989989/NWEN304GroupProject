@@ -134,27 +134,35 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 // METHODS FOR DEALING WITH THE KART
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-/* Updates the kart associated with a user's name by adding the id of an item. If the update
+/* Initializes a kart associated with a user's name by storing the id of an item. If the add
  * is successful (ie. the given name and id were valid and no errors were thrown by the
- * database) then this method returns nothign, otherwise it returns an error message, starting
- * with 'ERROR: ', and followed by a short sentence describing the error.
+ * database) then this method returns nothing, otherwise it returns an error object.
  */
 exports.add_to_kart = function(name, item_id){
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
+	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
-			// Either because there is no entry in the database with a name of 'name' or because of some other reason.
-			// Attempt to add into kart a new entry, in case there was none existing. If it does exist, it will throw
-			// a new error, which we will catch and return.
-			client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
-					if(err){
-					return err;
-					}
-					});
+			return err;
 			}
+			});
+}
+
+/* Updates the kart associated with a user's name by adding the id of an item. If the update
+ * is successful (ie. the given name and id were valid and no errors were thrown by the
+ * database) then this method returns nothing, otherwise it returns an error object.
+ */
+exports.update_kart = function(name, item_id){
+	var missing = check_for_kart(name, item_id);
+	if(missing != null){
+		return missing;
+	}
+	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
+		if(err){
+			return err;
+		}
 			});
 }
 
