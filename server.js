@@ -11,6 +11,9 @@ var passport = require('passport');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
+var users = require('../database/access_users.js');
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
 
 // this is for authentication
 
