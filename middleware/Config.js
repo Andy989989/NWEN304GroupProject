@@ -26,7 +26,7 @@ passport.use('facebook',new FacebookStrategy({
     clientID: 261460150870678,//process.env.CLIENT_ID,
     clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
     callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
-    passReqToCallback : true,
+   //passReqToCallback : true,
 
   },
   function(accessToken, refreshToken, profile, cb) {
