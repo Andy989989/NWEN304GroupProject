@@ -118,7 +118,6 @@ app.get('/aboutus', function (req, res) {
 		});
 
 app.get('/getRecommendations',function (req, res) {
-		console.log("server-side getRecommendations function\n");
 		var ipAddr = req.headers["x-forwarded-for"];
 		if (ipAddr){
 		var list = ipAddr.split(",");
@@ -126,16 +125,10 @@ app.get('/getRecommendations',function (req, res) {
 		} else {
 		ipAddr = req.connection.remoteAddress;
 		}
-		//var ip = req.ip;
 		var geo = geoip.lookup(ipAddr);
-		console.log("got geo: "+geo+"\n");
 		var country = geo.country;
-		console.log("got country: "+country+"\n");
 		var name = 'gareth'; //TODO change this, it's temporary
-		console.log("got name: "+name+"\n");
 		users.get_recommendations(name, country, function(results){
-				console.log("in callback function\n");
-				console.log("got results: "+results+"\n");
 				res.send({done: results});
 				});
 		});
