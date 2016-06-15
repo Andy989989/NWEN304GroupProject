@@ -92,12 +92,8 @@ exports.get_recommendations = function(name, loc, callback){
 			console.log("successful query\n");
 			var prev = -1;
 			if(rows.length != 0){
-			prev = rows.rows[0];
+			prev = rows.rows[0].previous_item_id;
 			}
-			console.log("rows, rows.rows, and rows.rows[0]\n");
-			console.log(rows);
-			console.log(rows.rows);
-			console.log(rows.rows[0]);
 			if(prev == undefined || prev == -1){
 				console.log("no previous items in database\n");
 				callback(null);
