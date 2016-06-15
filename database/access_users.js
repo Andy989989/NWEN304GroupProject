@@ -133,7 +133,7 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 			return err;
 			}
 			for(var i in rows.rows){
-			suggestions.push(rows.rows[i]);
+			suggestions.push(rows.rows[0].id);
 			}
 			callback(suggestions);
 			});
@@ -213,8 +213,8 @@ exports.buy_kart = function(name){
 			if(rows.length == 0){
 			return;
 			}
-			var ids = rows[0];
-			client.query("update users set previous_items_ids = array_cat(previous_items_ids, "+ids+") where name='"+name+"'", function(err){
+			var ids = rows.rows[0].item_ids;
+			client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
 					if(err){
 					return err;
 					}
