@@ -68,10 +68,9 @@ passport.use('local',new LocalStrategy({
 	 var password = password;
 
 	//console.log("gets into login");
-	console.log(req.body.password);
 	var hash = bcrypt.hashSync(password, salt);
 
-     var databasePassword = users.get(userName,res,function(res,returnedPassword){
+     var databasePassword = users.get(userName,null,function(res,returnedPassword){
 	console.log("data returned from database: " + returnedPassword);
 
 	console.log(returnedPassword);

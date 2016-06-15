@@ -177,6 +177,7 @@ function login(req,res,next){
 
     passport.authenticate('local', function(err, username, info) {
       if (err) {
+        console.log("error in loacl login");
           return next(err);
       }
       if(password){
@@ -192,7 +193,7 @@ function login(req,res,next){
       req.logIn(username, function(err) {
         if (err) {
           req.session.messages = "Error";
-          //console.log('loginPost Error');
+          console.log('loginPost Error');
           return next(err);
         }
         // Set the message
