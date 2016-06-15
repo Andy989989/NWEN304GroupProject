@@ -84,23 +84,22 @@ exports.get_recommendations = function(name, loc, callback){
 		return "ERROR: Missing a valid value for loc.";
 	}
 	console.log("got valid loc in get_recommendations function\n");
-	client.query("select previous_item_ids from users where name='"+name+"'", function(err, rows, fields){
+	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
 			console.log("previous item error\n");
 			return err;
 			}
 			console.log("successful query\n");
-			var prev = [];
+			var prev = -1;
 			if(rows.length != 0){
 			prev = rows.rows[0];
 			}
-			if(prev == undefined || prev == null){
+			if(prev == undefined || prev == -1){
 				console.log("no previous items in database\n");
 				callback(null);
 				return;
 			}
-			console.log("got previous items: \n");
-			console.log(prevs);
+			console.log("got previous item: "+prev+"\n");
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});
 }
@@ -113,7 +112,7 @@ exports.get_recommendations = function(name, loc, callback){
 function get_suggestion_based_on_previous_item(prev, loc, callback){
 	console.log("in suggestion_based_on_previous \n");
 	var types = {};
-	client.query("select type from products where id='"+prev[0]+"'", function(err, rows, fields){
+	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
 			console.log("error in getting products by id\n");
 			return err;
