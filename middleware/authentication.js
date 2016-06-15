@@ -3,6 +3,15 @@ var express = require('express');
 var users = require('../database/access_users.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
+// load all the things we need
+var LocalStrategy   = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
+
+var users = require('../database/access_users.js');
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
+
+
 
 /*
 var pg = require('pg').native;
@@ -65,7 +74,7 @@ exports.authenticate = function (req, res,next){
 
 };
 
-exports.login = function (req, res){
+exports.login = function (req, res,passport){
 	 /*
 		assuming this data is being sent from the client
 		{userName: "andy",password:"test1"}

@@ -4,7 +4,7 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
-var auth = require('./middleware/authentication.js');
+
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
 var passport = require('passport');
@@ -55,7 +55,7 @@ app.use(bp.json());
 
 // this is the passprt authentication methods
 require('./middleware/Config.js')(passport);
-
+var auth = require('./middleware/authentication.js')(passport);
 
 
 // Configure view engine to render EJS templates.
