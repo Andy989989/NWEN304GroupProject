@@ -27,7 +27,7 @@ exports.get = function(name, res, callback){
 	}
 	var password = client.query("select password from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
-			return "ERROR: that name does not exist in the database.";
+			return err;
 			}
 			callback(res, rows.rows[0].password);
 			});
@@ -44,7 +44,7 @@ exports.put = function(name, password){
 	if(missing == null){
 		client.query("insert into users (name, password) values ('"+name+"','"+password+"')", function(err){
 				if(err){
-				return "ERROR: User already exists.";
+				return err;
 				}
 				});
 	}
@@ -63,7 +63,7 @@ exports.update_password = function(name, new_password){
 	}
 	client.query("update users set password='"+new_password+"' where name='"+name+"'", function(err){
 			if(err){
-			return "ERROR: that name is not in the database.";
+			return err;
 			}
 			});
 }
@@ -83,7 +83,7 @@ exports.get_recommendations = function(name, loc, callback){
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
-			return "ERROR: Cannot get previous item from user.";
+			return err;
 			}
 			var prev = [];
 			if(rows.length != 0){
@@ -102,14 +102,14 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 	var types = {};
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err || rows.length == 0){
-			return "ERROR: cannot get type of previous from products";
+			return err;
 			}
 			var type = rows.rows[0];
-			client.query("select id from products where type='"+type+"'", function(err, rows, fields){
-					if(err || rows.rows.length==0){
-					return "ERROR: invalid type of previous product";
+			client.query("select id from products where type='"+type+"'", function(e, r, f){
+					if(e || r.rows.length==0){
+					return e;
 					}
-					return get_suggestion_based_on_weather(loc, rows.rows, callback);
+					return get_suggestion_based_on_weather(loc, r.rows, callback);
 					});
 			});
 }
@@ -121,7 +121,7 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 function get_suggestion_based_on_weather(loc, suggestions, callback){
 	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
 			if(err){
-			return "ERROR: could not read locations from products";
+			return err;
 			}
 			for(var i in rows.rows){
 			suggestions.push(rows.rows[i]);
@@ -134,27 +134,35 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 // METHODS FOR DEALING WITH THE KART
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-/* Updates the kart associated with a user's name by adding the id of an item. If the update
+/* Initializes a kart associated with a user's name by storing the id of an item. If the add
  * is successful (ie. the given name and id were valid and no errors were thrown by the
- * database) then this method returns nothign, otherwise it returns an error message, starting
- * with 'ERROR: ', and followed by a short sentence describing the error.
+ * database) then this method returns nothing, otherwise it returns an error object.
  */
 exports.add_to_kart = function(name, item_id){
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
+	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
-			// Either because there is no entry in the database with a name of 'name' or because of some other reason.
-			// Attempt to add into kart a new entry, in case there was none existing. If it does exist, it will throw
-			// a new error, which we will catch and return.
-			client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
-					if(err){
-					return "ERROR: could not add item to kart.";
-					}
-					});
+			return err;
 			}
+			});
+}
+
+/* Updates the kart associated with a user's name by adding the id of an item. If the update
+ * is successful (ie. the given name and id were valid and no errors were thrown by the
+ * database) then this method returns nothing, otherwise it returns an error object.
+ */
+exports.update_kart = function(name, item_id){
+	var missing = check_for_kart(name, item_id);
+	if(missing != null){
+		return missing;
+	}
+	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
+		if(err){
+			return err;
+		}
 			});
 }
 
@@ -191,15 +199,15 @@ exports.buy_kart = function(name){
 	}
 	client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
 			if(err){
-			return "ERROR: Cannot get items from kart.";
+			return err;
 			}
 			if(rows.length == 0){
-			return "ERROR: kart is empty.";
+			return;
 			}
 			var ids = rows[0];
 			client.query("update users set previous_items_ids = array_cat(previous_items_ids, "+ids+") where name='"+name+"'", function(err){
 					if(err){
-					return "ERROR: Can't update previous items of user.";
+					return err;
 					}
 					});
 			});
@@ -212,7 +220,7 @@ exports.delete_entire_kart = function(name){
 	}
 	client.query("delete from karts where name='"+name+"'", function(err){
 			if(err){
-			return "ERROR: Could not delete.";
+			return err;
 			}
 			});
 }
@@ -224,7 +232,7 @@ exports.delete_from_kart = function(name, item_id){
 	}
 	var query = client.query("update karts set item_ids = array_remove(item_ids,"+item_id+") where name='"+name+"'", function(err, rows, fields){
 			if(err){
-			return "ERROR: could not read kart items from database.";
+			return err;
 			}
 			});
 }
