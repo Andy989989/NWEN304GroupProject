@@ -75,20 +75,26 @@ exports.update_password = function(name, new_password){
  * fails.
  */
 exports.get_recommendations = function(name, loc, callback){
+	console.log("in get_recommendations function\n");
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
+	console.log("got valid name in get_recommendations function\n");
 	if(loc == null || loc == undefined || !ensure_only_letters_and_numbers(loc)){
 		return "ERROR: Missing a valid value for loc.";
 	}
-	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
+	console.log("got valid loc in get_recommendations function\n");
+	client.query("select previous_item_ids from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
+			console.log("previous item error\n");
 			return err;
 			}
+			console.log("successful query\n");
 			var prev = [];
 			if(rows.length != 0){
 			prev = rows.rows[0];
 			}
+			console.log("got previous items: "+prev+"\n";
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});
 }
@@ -99,18 +105,26 @@ exports.get_recommendations = function(name, loc, callback){
  * nothing is returned, and instead, the callback method is called (by get_suggestion_based_on_weather).
  */
 function get_suggestion_based_on_previous_item(prev, loc, callback){
+	console.log("in suggestion_based_on_previous \n");
 	var types = {};
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
-			if(err || rows.length == 0){
+			if(err){
+			console.log("error in getting products by id\n");
 			return err;
 			}
+			if(rows.length!=0){
+			console.log("successfully got products by id\n");
 			var type = rows.rows[0];
+			console.log("got type: "+type+"\n");
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
 					if(e || r.rows.length==0){
+					console.log("error in getting id from type\n");
 					return e;
 					}
+					console.log("successfully got ids\n");
 					return get_suggestion_based_on_weather(loc, r.rows, callback);
 					});
+			}
 			});
 }
 
@@ -119,13 +133,17 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  * descriptive error is thrown.
  */
 function get_suggestion_based_on_weather(loc, suggestions, callback){
+	console.log("in weather suggestion\n");
 	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
 			if(err){
+			console.log("error getting product by location\n");
 			return err;
 			}
+			console.log("got all recommendations\n");
 			for(var i in rows.rows){
 			suggestions.push(rows.rows[i]);
 			}
+			console.log("calling callback\n");
 			callback(suggestions);
 			});
 }
@@ -160,9 +178,9 @@ exports.update_kart = function(name, item_id){
 		return missing;
 	}
 	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
-		if(err){
+			if(err){
 			return err;
-		}
+			}
 			});
 }
 
