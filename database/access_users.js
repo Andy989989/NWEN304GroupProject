@@ -94,6 +94,11 @@ exports.get_recommendations = function(name, loc, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0];
 			}
+			if(prev == undefined || prev == null){
+				console.log("no previous items in database\n");
+				callback(null);
+				return;
+			}
 			console.log("got previous items: "+prev+"\n");
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});

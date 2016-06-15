@@ -131,7 +131,7 @@ app.get('/getRecommendations',function (req, res) {
 		console.log("got geo: "+geo+"\n");
 		var country = geo.country;
 		console.log("got country: "+country+"\n");
-		var name = 'ben'; //TODO change this, it's temporary
+		var name = 'gareth'; //TODO change this, it's temporary
 		console.log("got name: "+name+"\n");
 		users.get_recommendations(name, country, function(results){
 				console.log("in callback function\n");
