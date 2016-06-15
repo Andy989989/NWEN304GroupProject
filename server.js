@@ -232,13 +232,13 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    console.log(req.data);
-    console.log(req);
+    //console.log(req.data);
+    console.log(req.user);
           var data = {'data':req.user.accessToken};
           //'res.render('index', {data:data});
 
           res.render('index', {data:data});
-          console.log(req.user.accessToken);
+          //console.log(req.user.accessToken);
   });
 
 app.get('/profile',
