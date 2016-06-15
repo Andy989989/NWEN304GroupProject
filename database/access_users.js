@@ -99,7 +99,8 @@ exports.get_recommendations = function(name, loc, callback){
 				callback(null);
 				return;
 			}
-			console.log("got previous items: "+prev+"\n");
+			console.log("got previous items: \n");
+			console.log(prevs);
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});
 }
@@ -112,7 +113,7 @@ exports.get_recommendations = function(name, loc, callback){
 function get_suggestion_based_on_previous_item(prev, loc, callback){
 	console.log("in suggestion_based_on_previous \n");
 	var types = {};
-	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
+	client.query("select type from products where id='"+prev[0]+"'", function(err, rows, fields){
 			if(err){
 			console.log("error in getting products by id\n");
 			return err;
