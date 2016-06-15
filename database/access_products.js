@@ -39,7 +39,7 @@ exports.search = function(req, res){
 		return;
 	}
 	res.status(200);
-	handle_query(query, res, null);
+	handle_query(query, res, sanitize_url(req.url)[0]);
 }
 
 /*
