@@ -114,7 +114,11 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 					if(e || r.rows.length==0){
 					return e;
 					}
-					return get_suggestion_based_on_weather(loc, r.rows, callback);
+					var suggestions = [];
+					for(var i in r.rows){
+					suggestions.push(r.rows[i].id);
+					}
+					return get_suggestion_based_on_weather(loc, suggestions, callback);
 					});
 			}
 			});
@@ -133,7 +137,7 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 			return err;
 			}
 			for(var i in rows.rows){
-			suggestions.push(rows.rows[0].id);
+			suggestions.push(rows.rows[i].id);
 			}
 			callback(suggestions);
 			});
