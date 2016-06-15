@@ -126,10 +126,10 @@ app.get('/getRecommendations',function (req, res) {
 		ipAddr = req.connection.remoteAddress;
 		}
 		var geo = geoip.lookup(ipAddr);
-		var country = geo.country;
+		var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 		var name = 'gareth'; //TODO change this, it's temporary
 		users.get_recommendations(name, country, function(results){
-				res.send({done: results});
+				res.send({recommendation: results, place: country});
 				});
 		});
 
