@@ -201,9 +201,9 @@ function login(req,res,next){
 
         // Set the displayName 
         var data = { userName : username };
-        console.log(req.user.passport);
-        console.log(req.user.passport.user);
-        req.session.passport.user = data;
+        //console.log(req.user.passport);
+        //console.log(req.user.passport.user);
+        //req.session.passport.user = data;
         //return res.render('/index');
         return res.render('index', {data:data});
     });    
