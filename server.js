@@ -129,7 +129,7 @@ app.get('/getRecommendations',function (req, res) {
 		var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 		var name = 'gareth'; //TODO change this, it's temporary
 		users.get_recommendations(name, country, function(results){
-				res.send({recommendation: results, place: country});
+				res.send({recommendation: results});
 				});
 		});
 
