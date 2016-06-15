@@ -139,8 +139,20 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 			for(var i in rows.rows){
 			suggestions.push(rows.rows[i].id);
 			}
-			callback(suggestions);
+			callback(remove_duplicates(suggestions));
 			});
+}
+
+function remove_duplicates(array){
+	var temp = {};
+	for(var i = 0; i < array.length; i++){
+		temp[array[i]] = true;
+	}
+	var to_return = [];
+	for(var j in temp){
+		to_return.push(j);
+	}
+	return to_return;
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
