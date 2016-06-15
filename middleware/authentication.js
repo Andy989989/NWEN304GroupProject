@@ -7,9 +7,7 @@ var salt = bcrypt.genSaltSync(10);
 var LocalStrategy   = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
-var users = require('../database/access_users.js');
-var bcrypt = require('bcrypt');
-var salt = bcrypt.genSaltSync(10);
+
 
 
 
@@ -172,7 +170,7 @@ if(!req.body.hasOwnProperty('token')) {
 }
 
 exports.newToken = function (req, res){
-	if(!req.body.hasOwnProperty('userName')) {
+	if(!req.body.hasOwnProperty('username')) {
     res.statusCode = 400;
     return res.send('Error 400');
   }
@@ -242,11 +240,11 @@ assuming this data is being sent from the client
 //var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
 
 // error testing
-if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password') ){
+if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password') ){
 		res.statusCode = 400;
     	return res.send('Error 400');
 }
-var name = req.body.userName;
+var name = req.body.username;
 var pass = req.body.password;
 
 

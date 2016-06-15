@@ -21,7 +21,7 @@ $(document).ready(function(e) {
         alert("please enter a user Name and password");
       }else{
 
-        var data = {'userName':userName,'password':password};
+        var data = {'username':userName,'password':password};
         console.log(data);
 
 

@@ -162,13 +162,13 @@ app.post('/login', login);
 
 function login(req,res,next){
    console.log("GETS INTO LOGIN");
-    if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
+    if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password')){
     res.statusCode = 400;
     return res.send('please post syntax')
     }
 
    //get the hashed password from the database using the username
-   var userName = req.body.userName;
+   var userName = req.body.username;
    var password = req.body.password;
 
   //console.log("gets into login");
