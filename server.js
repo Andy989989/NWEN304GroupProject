@@ -118,10 +118,17 @@ app.get('/aboutus', function (req, res) {
 });
 
 app.get('/getRecommendations',function (req, res) {
-  var ip = req.ip;
-  var geo = geoip.lookup(ip);
-  console.log('geo: '+geo+", port: "+req.port);
-  res.send({'geo':geo,'ip':ip});
+var ipAddr = req.headers["x-forwarded-for"];
+  if (ipAddr){
+    var list = ipAddr.split(",");
+    ipAddr = list[list.length-1];
+  } else {
+    ipAddr = req.connection.remoteAddress;
+  }
+  //var ip = req.ip;
+  var geo = geoip.lookup(ipAddr);
+  console.log(geo);
+  res.send({'geo':geo,'ip':ipAddr});
 });
 
 //=====================================
