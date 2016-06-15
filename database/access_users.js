@@ -94,6 +94,10 @@ exports.get_recommendations = function(name, loc, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0];
 			}
+			console.log("rows, rows.rows, and rows.rows[0]\n");
+			console.log(rows);
+			console.log(rows.rows);
+			console.log(rows.rows[0]);
 			if(prev == undefined || prev == -1){
 				console.log("no previous items in database\n");
 				callback(null);
@@ -115,6 +119,7 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
 			console.log("error in getting products by id\n");
+			console.log(err);
 			return err;
 			}
 			if(rows.length!=0){
