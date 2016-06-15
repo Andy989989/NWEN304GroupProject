@@ -49,7 +49,7 @@ passport.use('facebook',new FacebookStrategy({
 	// }
 	//}
 	console.log(profile.id);
-	console,log(profile.displayName);
+	console.log(profile.displayName);
 
     return cb(null, profile);
   }));

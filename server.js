@@ -120,7 +120,7 @@ app.get('/getRecommendations',function (req, res) {
   //var ip = req.ip;
   var geo = geoip.lookup(ipAddr);
   console.log(geo);
-  res.send({'geo':geo,'ip':ip});
+  res.send({'geo':geo,'ip':ipAddr});
 });
 
 //=====================================
