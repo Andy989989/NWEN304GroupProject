@@ -55,7 +55,7 @@ app.use(bp.json());
 
 // this is the passprt authentication methods
 require('./middleware/Config.js')(passport);
-var auth = require('./middleware/authentication.js')(passport);
+var auth = require('./middleware/authentication.js');
 
 
 // Configure view engine to render EJS templates.
@@ -155,7 +155,53 @@ app.post('/auth/testAuth',auth.testAuth);
 app.post('/newUser',auth.newUser);
 
 // TODO check to see if a person is already logged onto facebook
-app.post('/login', auth.login);
+app.post('/login', login);
+
+function login(req,res,next){
+    if(!req.body.hasOwnProperty('userName') || !req.body.hasOwnProperty('password')){
+    res.statusCode = 400;
+    return res.send('please post syntax')
+    }
+
+   //get the hashed password from the database using the username
+   var userName = req.body.userName;
+   var password = req.body.password;
+
+  //console.log("gets into login");
+  console.log(req.body.password);
+  var hash = bcrypt.hashSync(password, salt);
+
+    passport.authenticate('local', function(err, username, info) {
+      if (err) {
+          return next(err);
+      }    
+      if (!username) {
+        // print out error .message at the other end
+        req.session.messages = "Error";//info.message;
+        return res.render('/login');
+      }
+    // If everything's OK
+      req.logIn(username, function(err) {
+        if (err) {
+          req.session.messages = "Error";
+          //console.log('loginPost Error');
+          return next(err);
+        }
+        // Set the message
+        req.session.messages = "successful login";
+
+        // Set the displayName 
+        var data = { userName : username };
+        console.log(req.user.passport);
+        console.log(req.user.passport.user);
+        req.session.passport.user = data;
+        //return res.render('/index');
+        return res.render('index', {data:data});
+    });    
+  })(req, res, next);
+
+
+}
 
 
 // TODO have a database of vaild tokens
