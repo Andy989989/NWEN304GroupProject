@@ -211,9 +211,9 @@ function login(req,res,next){
 
         // Set the displayName 
         var data = { userName : username };
-        //console.log(req.user.passport);
+        console.log(req.user.passport);
         //console.log(req.user.passport.user);
-        //req.session.passport.user = data;
+        req.session.passport.user = data;
         //return res.render('/index');
         return res.render('index', {data:data});
     });    
@@ -232,13 +232,11 @@ app.get('/login/facebook',
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    //console.log(req.data);
     console.log(req.user);
-          var data = {'data':req.user.accessToken};
-          //'res.render('index', {data:data});
-
-          res.render('index', {data:data});
-          //console.log(req.user.accessToken);
+    var data = {'user':req.user};
+    //res.render('index', {data:data});
+    res.render('index', {'user':req.user});
+    //console.log(req.user.accessToken);
   });
 
 app.get('/profile',

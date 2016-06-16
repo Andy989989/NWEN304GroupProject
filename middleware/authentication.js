@@ -42,18 +42,19 @@ exports.authenticate = function (req, res,next){
 	// decode token
 	if (token) {
 
-		jwt.verify(token, secret, function(error, decoded) {			
-			if (error) {
-				return res.json({ success: false, message: 'Failed to authenticate token.' });		
-			} else {
-				// if everything is good, save to request for use in other routes
-				req.decoded = decoded;	
-				// everything is fine and has been authenticated
-				console.log("authenticated with logon");
-				return next();
-			}
-		});
+		// jwt.verify(token, secret, function(error, decoded) {			
+		// 	if (error) {
+		// 		return res.json({ success: false, message: 'Failed to authenticate token.' });		
+		// 	} else {
+		// 		// if everything is good, save to request for use in other routes
+		// 		req.decoded = decoded;	
+		// 		// everything is fine and has been authenticated
+		// 		console.log("authenticated with logon");
+		// 		return next();
+		// 	}
+		// });
 
+		console.log("TOKEN EXSISTS WHEN IT SHOULDNT");
 	} 
 
 	else if (req.isAuthenticated()){
@@ -166,7 +167,6 @@ if(!req.body.hasOwnProperty('token')) {
     res.statusCode = 400;
     return res.send('Error 400');
   }
-
 }
 
 exports.newToken = function (req, res){
