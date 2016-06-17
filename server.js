@@ -57,31 +57,11 @@ app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
 app.use(bp.json());
 
-<<<<<<< HEAD
 // this is the passprt authentication methods
 require('./middleware/Config.js')(passport);
 var auth = require('./middleware/authentication.js');
 
-=======
-//=====================================
-//AUTHENTICATION SETUP
-//=====================================
-passport.use(new Strategy({
-clientID: 261460150870678,//process.env.CLIENT_ID,
-clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
-callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
-},
-function(accessToken, refreshToken, profile, cb) {
-return cb(null, profile);
-}));
-passport.serializeUser(function(user, cb) {
-		cb(null, user);
-		});
 
-passport.deserializeUser(function(obj, cb) {
-		cb(null, obj);
-		});
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
 
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
@@ -106,13 +86,9 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
-<<<<<<< HEAD
 	res.render('index',{'user':req.user});
 });
-=======
-		res.render('index');
-		});
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
+
 
 app.get('/search*', products.search);
 app.get('/men*', products.get_me_something);
@@ -120,7 +96,6 @@ app.get('/women*', products.get_me_something);
 app.get('/kids*', products.get_me_something);
 
 app.get('/login', function(req, res){
-<<<<<<< HEAD
   res.render('login',{'user':req.user})
 });
 
@@ -144,50 +119,20 @@ app.get('/local', function (req, res) {
 });
 
 app.get('/getRecommendations',function (req, res) {
-  var ipAddr = req.headers["x-forwarded-for"];
-  if (ipAddr){
+var ipAddr = req.headers["x-forwarded-for"];
+    if (ipAddr){
     var list = ipAddr.split(",");
     ipAddr = list[list.length-1];
-  } else {
+    } else {
     ipAddr = req.connection.remoteAddress;
-  }
-
-
-
-  //var ip = req.ip;
-  var geo = geoip.lookup(ipAddr);
-  console.log(geo);
-  res.send({'geo':geo,'ip':ipAddr});
+    }
+    var geo = geoip.lookup(ipAddr);
+    var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+    var name = 'gareth'; //TODO change this, it's temporary
+    users.get_recommendations(name, country, function(results){
+        res.send({recommendation: results});
+        });
 });
-=======
-		res.render('login')
-		});
-
-app.get('/register', function (req, res) {
-		res.render('register')
-		});
-
-app.get('/aboutus', function (req, res) {
-		res.render('aboutus')
-		});
-
-app.get('/getRecommendations',function (req, res) {
-		var ipAddr = req.headers["x-forwarded-for"];
-		if (ipAddr){
-		var list = ipAddr.split(",");
-		ipAddr = list[list.length-1];
-		} else {
-		ipAddr = req.connection.remoteAddress;
-		}
-		var geo = geoip.lookup(ipAddr);
-		var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-		var name = 'gareth'; //TODO change this, it's temporary
-		users.get_recommendations(name, country, function(results){
-				res.send({recommendation: results});
-				});
-		});
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
-
 //=====================================
 //PUT METHODS
 //=====================================
@@ -278,7 +223,6 @@ app.get('/login/facebook',
 passport.authenticate('facebook'));
 
 app.get('/login/facebook/return',
-<<<<<<< HEAD
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
     //console.log(req.data);
@@ -294,29 +238,12 @@ app.get('/profile',
 //  connect.ensureLoggedIn(),
 function(req, res){
   res.render('profile', { user: req.user });
-=======
-passport.authenticate('facebook', { failureRedirect: '/login' }),
-function(req, res) {
-console.log(req.data);
-console.log(req);
-var data = {'data':req.user.access_token};
-//'res.render('index', {data:data});
 
-res.render('index', {data:data});
-console.log(req.user.access_token);
-});
-
-app.get('/profile',
-//  loggedOn.ensureLoggedIn(),
-function(req, res){
-res.render('profile', { user: req.user });
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
 });
 
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-<<<<<<< HEAD
   request.logout();
   response.send( 'Logged out!' );
       //res.redirect('/');
@@ -329,47 +256,15 @@ function checkAuth(req, res, next) {
   else{
     res.status(401).send("Failed to authenticate: please login")
   }
-=======
-request.logout();
-response.send( 'Logged out!' );
-//res.redirect('/');
-});
 
-function checkAuth(req, res, next) {
-if (req.isAuthenticated()){
-return next();
-}
-else{
-//return next();  
-
-res.status(401).send("Failed to authenticate: please login")
-}
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
 }
 
 
 app.listen(port, function(){
 console.log('Listening:' + port);
 });
-<<<<<<< HEAD
 
 app.get('*', function(req, res){
   res.status(400).send("Sorry, that page doesn't exist.");
 });
-=======
-// uncommment this for a secure server with a self sign cert
-// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
 
-/*
-var https = require('https');
-var privateKey  = fs.readFileSync('key.pem', 'utf8');
-var certificate = fs.readFileSync('cert.pem', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(port);
-			   */
-
-app.get('*', function(req, res){
-		res.status(400).send("Sorry, that page doesn't exist.");
-		});
->>>>>>> 2ad39f44ff5635427576f7323550f61469b82502
