@@ -28,7 +28,12 @@ var jobsFilename = './jobs.json';
 //app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true,maxAge :20000 }));
+
+// app.use(express.session({secret:'andyisawesome',  
+//                             cookie: { maxAge : 20000 } //1 Hour
+//                             }));
+
 
 //use for accesing local files
 app.use(express.static('/public'));
@@ -71,6 +76,10 @@ app.set('view engine', 'ejs');
 // session.
 app.use(passport.initialize());
 app.use(passport.session());
+// app.use(passport.session({  
+//                             cookie: { maxAge : 20000 } //1 Hour
+//                             }));
+
 
 //=====================================
 //GET METHODS
@@ -119,19 +128,28 @@ app.get('/local', function (req, res) {
 });
 
 app.get('/getRecommendations',function (req, res) {
-var ipAddr = req.headers["x-forwarded-for"];
+    var ipAddr = req.headers["x-forwarded-for"];
+    
     if (ipAddr){
     var list = ipAddr.split(",");
     ipAddr = list[list.length-1];
     } else {
     ipAddr = req.connection.remoteAddress;
     }
+    //var ipAddr = "130.195.6.167";
+    console.log(ipAddr);
     var geo = geoip.lookup(ipAddr);
     var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-    var name = 'gareth'; //TODO change this, it's temporary
-    users.get_recommendations(name, country, function(results){
+    
+
+    var name = req.user.name; //TODO change this, it's temporary
+     if(name!==undefined){
+        users.get_recommendations(name, country, function(results){
         res.send({recommendation: results});
         });
+     }
+
+  
 });
 //=====================================
 //PUT METHODS
