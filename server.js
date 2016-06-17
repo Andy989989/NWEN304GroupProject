@@ -97,6 +97,7 @@ app.get('/', function(req,res){
 		});
 
 app.get('/search*', products.search);
+app.get('/id/*', products.get_from_id);
 app.get('/men*', products.get_me_something);
 app.get('/women*', products.get_me_something);
 app.get('/kids*', products.get_me_something);

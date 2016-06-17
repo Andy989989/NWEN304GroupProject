@@ -104,7 +104,7 @@ exports.get_from_id(req, res){
 				return err;
 			}
 		});
-		handle_query(query, res, null/*TODO*/);
+		handle_query(query, res, null);
 	} else{
 		res.status(400).send("Invalid id.");
 		return;
