@@ -4,16 +4,20 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
-var auth = require('./middleware/authentication.js');
+var connect = require('connect-ensure-login');
+
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
+var passport = require('passport');
 //var cors = require('cors');
 //var pg = require('pg').native;
 var codes = require('./middleware/code.js');
+//var users = require('../database/access_users.js');
+var bcrypt = require('bcrypt');
+var salt = bcrypt.genSaltSync(10);
 
 // this is for authentication
-var passport = require('passport');
-var Strategy = require('passport-facebook').Strategy;
+
 //var loggedOn = require('connect-ensure-login');
 var geoip = require('geoip-lite');
 
@@ -24,7 +28,12 @@ var jobsFilename = './jobs.json';
 //app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
-app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true }));
+app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true,maxAge :20000 }));
+
+// app.use(express.session({secret:'andyisawesome',  
+//                             cookie: { maxAge : 20000 } //1 Hour
+//                             }));
+
 
 //use for accesing local files
 app.use(express.static('/public'));
@@ -53,24 +62,11 @@ app.set('public', __dirname + '/public');
 app.set('view engine', 'ejs');
 app.use(bp.json());
 
-//=====================================
-//AUTHENTICATION SETUP
-//=====================================
-passport.use(new Strategy({
-clientID: 261460150870678,//process.env.CLIENT_ID,
-clientSecret: '54da0a9f6352a8adf21c359a545b2257',//process.env.CLIENT_SECRET,
-callbackURL: 'https://morning-dawn-49717.herokuapp.com/login/facebook/return'
-},
-function(accessToken, refreshToken, profile, cb) {
-return cb(null, profile);
-}));
-passport.serializeUser(function(user, cb) {
-		cb(null, user);
-		});
+// this is the passprt authentication methods
+require('./middleware/Config.js')(passport);
+var auth = require('./middleware/authentication.js');
 
-passport.deserializeUser(function(obj, cb) {
-		cb(null, obj);
-		});
+
 
 // Configure view engine to render EJS templates.
 app.set('views', __dirname + '/views');
@@ -80,10 +76,16 @@ app.set('view engine', 'ejs');
 // session.
 app.use(passport.initialize());
 app.use(passport.session());
+// app.use(passport.session({  
+//                             cookie: { maxAge : 20000 } //1 Hour
+//                             }));
+
 
 //=====================================
 //GET METHODS
 //=====================================
+
+
 // app.get('*',function(req,res,next){
 //   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
 //     res.redirect('https://'+req.hostname+req.url)
@@ -93,8 +95,9 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
-		res.render('index');
-		});
+	res.render('index',{'user':req.user});
+});
+
 
 app.get('/search*', products.search);
 app.get('/id/*', products.get_from_id);
@@ -103,33 +106,52 @@ app.get('/women*', products.get_me_something);
 app.get('/kids*', products.get_me_something);
 
 app.get('/login', function(req, res){
-		res.render('login')
-		});
+  res.render('login',{'user':req.user})
+});
+
+app.get('/logout', function(req, res){
+  req.logout();
+  req.user = undefined;
+  console.log(req.user);
+  res.render('index',{'user':req.user});
+});
 
 app.get('/register', function (req, res) {
-		res.render('register')
-		});
+  res.render('register',{'user':req.user})
+});
 
 app.get('/aboutus', function (req, res) {
-		res.render('aboutus')
-		});
+  res.render('aboutus',{'user':req.user})
+});
+
+app.get('/local', function (req, res) {
+  res.render('local',{user:req.user})
+});
 
 app.get('/getRecommendations',function (req, res) {
-		var ipAddr = req.headers["x-forwarded-for"];
-		if (ipAddr){
-		var list = ipAddr.split(",");
-		ipAddr = list[list.length-1];
-		} else {
-		ipAddr = req.connection.remoteAddress;
-		}
-		var geo = geoip.lookup(ipAddr);
-		var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-		var name = 'gareth'; //TODO change this, it's temporary
-		users.get_recommendations(name, country, function(results){
-				res.send({recommendation: results});
-				});
-		});
+    var ipAddr = req.headers["x-forwarded-for"];
+    
+    if (ipAddr){
+    var list = ipAddr.split(",");
+    ipAddr = list[list.length-1];
+    } else {
+    ipAddr = req.connection.remoteAddress;
+    }
+    //var ipAddr = "130.195.6.167";
+    console.log(ipAddr);
+    var geo = geoip.lookup(ipAddr);
+    var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+    
 
+    var name = req.user.name; //TODO change this, it's temporary
+     if(name!==undefined){
+        users.get_recommendations(name, country, function(results){
+        res.send({recommendation: results});
+        });
+     }
+
+  
+});
 //=====================================
 //PUT METHODS
 //=====================================
@@ -168,15 +190,50 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
-app.all('/auth/*',auth.authenticate);
+ app.all('/auth/*',checkAuth);
+//app.all('/auth/*', connect.ensureLoggedIn();
 
 				app.post('/auth/testAuth',auth.testAuth);
 
 				app.post('/newUser',auth.newUser);
 
-// TODO check to see if a person is already logged onto facebook
-app.post('/login', auth.login);
 
+app.post('/login', function(req,res, next){
+    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+      console.log("gets into loacl auth");
+      console.log(user);
+
+        if(user!=false){
+            console.log("user exists");
+            console.log("username :" + user);
+            req.session.username = "'" + user + "'";
+            req.session.save();
+            //return res.redirect('/');
+        }
+        else{
+            console.log("Login unsucessful");
+            //res.send({redirect: '/'});
+            //res.status(401).send(user);
+        }
+
+
+        req.logIn(user, function(err) {
+          if (err) {
+            req.session.messages = "Error";
+            console.log('login Error');
+            return res.status(401).send(user +" :   " +err);
+
+          }
+          req.session.messages = "Login successfully";
+          var data = { 'name' : user };
+          req.session.passport.user = data;
+          console.log(data +" : " +user);
+
+          console.log('login successful');
+          res.render('index',{'user':req.user});
+      });  
+    })(req,res,next);
+});
 
 // TODO have a database of vaild tokens
 app.post('/auth/logout',auth.logout);
@@ -185,58 +242,52 @@ app.get('/login/facebook',
 passport.authenticate('facebook'));
 
 app.get('/login/facebook/return',
-passport.authenticate('facebook', { failureRedirect: '/login' }),
-function(req, res) {
-console.log(req.data);
-console.log(req);
-var data = {'data':req.user.access_token};
-//'res.render('index', {data:data});
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    //console.log(req.data);
 
-res.render('index', {data:data});
-console.log(req.user.access_token);
-});
+
+          var data = { 'name' : req.user.displayName };
+          req.session.passport.user = data;
+          //console.log(req.user.displayName);
+    //var data = {'data':req.user.accessToken};
+          //'res.render('index', {data:data});
+
+          res.render('index', {'user':data});
+          //console.log(req.user.accessToken);
+        });
 
 app.get('/profile',
-//  loggedOn.ensureLoggedIn(),
+//  connect.ensureLoggedIn(),
 function(req, res){
-res.render('profile', { user: req.user });
+  res.render('profile', { user: req.user });
+
 });
 
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-request.logout();
-response.send( 'Logged out!' );
-//res.redirect('/');
+  request.logout();
+  response.send( 'Logged out!' );
+      //res.redirect('/');
 });
 
 function checkAuth(req, res, next) {
-if (req.isAuthenticated()){
-return next();
-}
-else{
-//return next();  
+  if (req.isAuthenticated()){
+    return next();
+  }
+  else{
+    res.status(401).send("Failed to authenticate: please login")
+  }
 
-res.status(401).send("Failed to authenticate: please login")
-}
 }
 
 
 app.listen(port, function(){
 console.log('Listening:' + port);
 });
-// uncommment this for a secure server with a self sign cert
-// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
-
-/*
-var https = require('https');
-var privateKey  = fs.readFileSync('key.pem', 'utf8');
-var certificate = fs.readFileSync('cert.pem', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(port);
-			   */
 
 app.get('*', function(req, res){
-		res.status(400).send("Sorry, that page doesn't exist.");
-		});
+  res.status(400).send("Sorry, that page doesn't exist.");
+});
+

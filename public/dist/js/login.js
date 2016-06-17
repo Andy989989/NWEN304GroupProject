@@ -1,7 +1,7 @@
-//var ipAddr = 'https://127.0.0.1:8080';
+var ipAddr = 'http://127.0.0.1:8080';
 //var data = {'userName':'Andy','password':'test1'};
 //console.log("test");
-var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
+//var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
 
 $(document).ready(function(e) {
     //var ipAddr = 'http://130.195.4.164:8080';
@@ -21,8 +21,9 @@ $(document).ready(function(e) {
         alert("please enter a user Name and password");
       }else{
 
-        var data = {'userName':userName,'password':password};
+        var data = {'username':userName,'password':password};
         console.log(data);
+        console.log(ipAddr);
 
 
          $.ajax({
@@ -36,11 +37,11 @@ $(document).ready(function(e) {
 
               },
               success: function(data,status){
-                 alert("succesful login");
+                alert("succesful login");
                 console.log(data);
-                 console.log(data.token);
-                  token = {"token":data.token};
-                  console.log(token);
+                 //console.log(data.token);
+                  //token = {"token":data.token};
+                  //console.log(token);
               }
           });
       }

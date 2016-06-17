@@ -31,7 +31,7 @@ $(document).ready(function(e) {
 			if(userName == null || userName == undefined || userName == ''){
 				alert("please enter a user Name and password");
 			}else{
-				var data = {'userName':userName,'password':password};
+				var data = {'username':userName,'password':password};
 				console.log(data);
 				$.ajax({	
 					method:'POST',
