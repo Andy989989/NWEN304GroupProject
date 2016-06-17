@@ -89,7 +89,7 @@ exports.get_me_something = function(req, res){
 	handle_query(query,req, res, array[0]);
 }
 
-exports.get_from_id(req, res){
+exports.get_from_id = function(req, res){
 	var array = sanitize_url(req.url);
 	if(array == null){
 		res.status(400).send("Invalid url.");
