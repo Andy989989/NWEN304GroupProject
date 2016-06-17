@@ -4,6 +4,7 @@ var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var user = require('./middleware/User.js');
+var connect = require('connect-ensure-login');
 
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
@@ -73,6 +74,8 @@ app.use(passport.session());
 //=====================================
 //GET METHODS
 //=====================================
+
+
 // app.get('*',function(req,res,next){
 //   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
 //     res.redirect('https://'+req.hostname+req.url)
@@ -82,7 +85,7 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
-	res.render('index');
+	res.render('index',{'user':req.user});
 });
 
 app.get('/search*', products.search);
@@ -95,15 +98,26 @@ app.get('/pages', function(req, res){
 });
 
 app.get('/login', function(req, res){
-    res.render('login')
+  res.render('login',{'user':req.user})
+});
+
+app.get('/logout', function(req, res){
+  req.logout();
+  req.user = undefined;
+  console.log(req.user);
+  res.render('index',{'user':req.user});
 });
 
 app.get('/register', function (req, res) {
-    res.render('register')
+  res.render('register',{'user':req.user})
 });
 
 app.get('/aboutus', function (req, res) {
-    res.render('aboutus')
+  res.render('aboutus',{'user':req.user})
+});
+
+app.get('/local', function (req, res) {
+  res.render('local',{user:req.user})
 });
 
 app.get('/getRecommendations',function (req, res) {
@@ -114,7 +128,7 @@ app.get('/getRecommendations',function (req, res) {
   } else {
     ipAddr = req.connection.remoteAddress;
   }
- 
+
 
 
   //var ip = req.ip;
@@ -161,67 +175,50 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
-app.all('/auth/*',auth.authenticate);
+ app.all('/auth/*',checkAuth);
+//app.all('/auth/*', connect.ensureLoggedIn();
 
 app.post('/auth/testAuth',auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
-// TODO check to see if a person is already logged onto facebook
-app.post('/login', login);
 
-function login(req,res,next){
-   console.log("GETS INTO LOGIN");
-    if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password')){
-    res.statusCode = 400;
-    return res.send('please post syntax')
-    }
+app.post('/login', function(req,res, next){
+    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+      console.log("gets into loacl auth");
+      console.log(user);
 
-   //get the hashed password from the database using the username
-   var userName = req.body.username;
-   var password = req.body.password;
-
-  //console.log("gets into login");
-  console.log(req.body.password);
-  var hash = bcrypt.hashSync(password, salt);
-
-    passport.authenticate('local', function(err, username, info) {
-      if (err) {
-        console.log("error in loacl login");
-          return next(err);
-      }
-      if(password){
-        console.log("password exsits");
-      }    
-      if (!username) {
-        console.log("notUsername");
-        // print out error .message at the other end
-        req.session.messages = "Error";//info.message;
-        return res.render('/');
-      }
-    // If everything's OK
-      req.logIn(username, function(err) {
-        if (err) {
-          req.session.messages = "Error";
-          console.log('loginPost Error');
-          return next(err);
+        if(user!=false){
+            console.log("user exists");
+            console.log("username :" + user);
+            req.session.username = "'" + user + "'";
+            req.session.save();
+            //return res.redirect('/');
         }
-        // Set the message
-        req.session.messages = "successful login";
-
-        // Set the displayName 
-        var data = { userName : username };
-        //console.log(req.user.passport);
-        //console.log(req.user.passport.user);
-        //req.session.passport.user = data;
-        //return res.render('/index');
-        return res.render('index', {data:data});
-    });    
-  })(req, res, next);
+        else{
+            console.log("Login unsucessful");
+            //res.send({redirect: '/'});
+            //res.status(401).send(user);
+        }
 
 
-}
+        req.logIn(user, function(err) {
+          if (err) {
+            req.session.messages = "Error";
+            console.log('login Error');
+            return res.status(401).send(user +" :   " +err);
 
+          }
+          req.session.messages = "Login successfully";
+          var data = { 'name' : user };
+          req.session.passport.user = data;
+          console.log(data +" : " +user);
+
+          console.log('login successful');
+          res.render('index',{'user':req.user});
+      });  
+    })(req,res,next);
+});
 
 // TODO have a database of vaild tokens
 app.post('/auth/logout',auth.logout);
@@ -234,34 +231,32 @@ app.get('/login/facebook/return',
   function(req, res) {
     //console.log(req.data);
     console.log(req.user);
-          var data = {'data':req.user.accessToken};
+    var data = {'data':req.user.accessToken};
           //'res.render('index', {data:data});
 
           res.render('index', {data:data});
           //console.log(req.user.accessToken);
-  });
+        });
 
 app.get('/profile',
-//  loggedOn.ensureLoggedIn(),
-  function(req, res){
+//  connect.ensureLoggedIn(),
+function(req, res){
   res.render('profile', { user: req.user });
 });
 
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-      request.logout();
-      response.send( 'Logged out!' );
+  request.logout();
+  response.send( 'Logged out!' );
       //res.redirect('/');
-  });
+});
 
 function checkAuth(req, res, next) {
   if (req.isAuthenticated()){
     return next();
   }
   else{
-    //return next();  
-
     res.status(401).send("Failed to authenticate: please login")
   }
 }
@@ -270,18 +265,7 @@ function checkAuth(req, res, next) {
 app.listen(port, function(){
 	console.log('Listening:' + port);
 });
-// uncommment this for a secure server with a self sign cert
-// https://docs.nodejitsu.com/articles/HTTP/servers/how-to-create-a-HTTPS-server/
-
-/*
-var https = require('https');
-var privateKey  = fs.readFileSync('key.pem', 'utf8');
-var certificate = fs.readFileSync('cert.pem', 'utf8');
-var credentials = {key: privateKey, cert: certificate};
-var httpsServer = https.createServer(credentials, app);
-httpsServer.listen(port);
-*/
 
 app.get('*', function(req, res){
-    res.status(400).send("Sorry, that page doesn't exist.");
+  res.status(400).send("Sorry, that page doesn't exist.");
 });
