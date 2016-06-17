@@ -54,84 +54,37 @@ passport.use('facebook',new FacebookStrategy({
     return cb(null, profile);
   }));
 
-passport.use('local',new LocalStrategy({
-		usernameField: 'username',
-		passwordField: 'password',		
-	},
 
-	function(username, password, done){
+passport.use('local', new LocalStrategy({
+	 username : 'username',
+     password : 'password',
+	passReqToCallBack : true
+}, function(username, password, done) {
+	console.log("getting into the local start");
 
-		console.log('in local auth username: ' + username + '. password: ' + password);
-		// from tutuorial website
-        // User.findOne({ 'local.email' :  email }, function(err, user) {
-        //     // if there are any errors, return the error before anything else
-        //     if (err)
-        //         return done(err);
+	process.nextTick(function() {
 
-        //     // if no user is found, return the message
-        //     if (!user)
-        //         return done(null, false, {message: "Message: email not found in database"}); // req.flash is the way to set flashdata using connect-flash
+		console.log(password);
+		console.log(username);
 
-        //     // if the user is found but the password is wrong
-        //     if (!user.validPassword(password))
-        //         return done(null, false,{message: "Message: email not found in database"}); // create the loginMessage and save it to session as flashdata
+		var databasePassword = users.get(username,null,function(res,returnedPassword){
+			console.log("data returned from database: " + returnedPassword);
+			//console.log(req.body.password);
+			console.log(password.toString());
+			if(bcrypt.compareSync(password, returnedPassword)){
+				console.log("getting in hash test");
+				return done(null, username);
+			}else{
+				return done(null, false, {message: "Message: email not found in database"});
 
-        //     // all is well, return successful user
-        //     return done(null, user);
-        // });
-         //get the hashed password from the database using the username
-	 var userName = username;
-	 var password = password;
+			}
 
-	//console.log("gets into login");
-	var hash = bcrypt.hashSync(password, salt);
+		});
+		console.log("database lookup failed : "+databasePassword);
 
-     var databasePassword = users.get(userName,null,function(res,returnedPassword){
-	console.log("data returned from database: " + returnedPassword);
-
-	console.log(returnedPassword);
-	if(returnedPassword!=undefined){
-		var errorCheck = returnedPassword.search("ERROR:"); 
-		if(errorCheck != -1){
-		// if this equals -1 that means there is no error
-		// could change to get the currentn value of errror.
-		// 409 - duplicate data
-
-		//console.log("There was a problem");
-		//res.status(409).send("User doesnt exsists in the database");
-		return done(null, false,{message: returnedPassword}); // failed 
-		}
-	}
-	//TODO error checking here
-	console.log(hash);
-	console.log(returnedPassword);
-	if(bcrypt.compareSync(password, returnedPassword)){
-		console.log("getting in hash test");
-
-		return done(null, userName);
-
-
-		// var userData= {'userName':userName};
-		// var token = jwt.sign(userData, secret, {
-		// 				expiresIn: 1800 // expires in 24 hours
-		// 			});
-		// 			//var data = {'data':token};
-		// 			res.send({'token':token});
-		// 			//res.render('index', {'token':token});
-	}else{
-		return done(null, false, {message: "Message: email not found in database"});
-		//res.status(404).send("Error when checking password");
-	}
-
-	});
-
-
-	}
-));
-
-
-
-
-
+	});			//res.status(404).send("Error when checking password");
+		//console.log(hash);
+		//console.log(returnedPassword);
+}));
 
 }

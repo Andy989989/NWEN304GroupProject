@@ -85,9 +85,9 @@ exports.get_recommendations = function(name, loc, callback){
 			if(err){
 			return err;
 			}
-			var prev = [];
+			var prev = -1;
 			if(rows.length != 0){
-			prev = rows.rows[0];
+			prev = rows.rows[0].previous_item_id;
 			}
 			return get_suggestion_based_on_previous_item(prev, loc, callback);
 			});
@@ -100,17 +100,27 @@ exports.get_recommendations = function(name, loc, callback){
  */
 function get_suggestion_based_on_previous_item(prev, loc, callback){
 	var types = {};
+	if(prev == -1){
+		//Ignore the previous item and just get the information from the location
+		return get_suggestion_based_on_weather(loc, null, callback);
+	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
-			if(err || rows.length == 0){
+			if(err){
 			return err;
 			}
-			var type = rows.rows[0];
+			if(rows.length!=0){
+			var type = rows.rows[0].type;
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
 					if(e || r.rows.length==0){
 					return e;
 					}
-					return get_suggestion_based_on_weather(loc, r.rows, callback);
+					var suggestions = [];
+					for(var i in r.rows){
+					suggestions.push(r.rows[i].id);
+					}
+					return get_suggestion_based_on_weather(loc, suggestions, callback);
 					});
+			}
 			});
 }
 
@@ -119,15 +129,30 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  * descriptive error is thrown.
  */
 function get_suggestion_based_on_weather(loc, suggestions, callback){
+	if(suggestions == null){
+		suggestions = [];
+	}
 	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
 			if(err){
 			return err;
 			}
 			for(var i in rows.rows){
-			suggestions.push(rows.rows[i]);
+			suggestions.push(rows.rows[i].id);
 			}
-			callback(suggestions);
+			callback(remove_duplicates(suggestions));
 			});
+}
+
+function remove_duplicates(array){
+	var temp = {};
+	for(var i = 0; i < array.length; i++){
+		temp[array[i]] = true;
+	}
+	var to_return = [];
+	for(var j in temp){
+		to_return.push(j);
+	}
+	return to_return;
 }
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -160,9 +185,9 @@ exports.update_kart = function(name, item_id){
 		return missing;
 	}
 	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
-		if(err){
+			if(err){
 			return err;
-		}
+			}
 			});
 }
 
@@ -204,8 +229,8 @@ exports.buy_kart = function(name){
 			if(rows.length == 0){
 			return;
 			}
-			var ids = rows[0];
-			client.query("update users set previous_items_ids = array_cat(previous_items_ids, "+ids+") where name='"+name+"'", function(err){
+			var ids = rows.rows[0].item_ids;
+			client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
 					if(err){
 					return err;
 					}

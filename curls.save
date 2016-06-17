@@ -1,2 +1,76 @@
+==================================================
+Database tests
+==================================================
 
+--------------------SEARCH--------------------
+//Should return a 400 status code with the message 'Invalid query.' since q is undefined.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?z=wrong_query_name'
+
+//Should alse return a 400 code and an 'Invalid query.' message because the query contains
+//invalid characters (only letters, numbers, and underscores are allowed).
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=badly-forma'tted%20query;'
+
+//Should render (return an html page containing) all of the products that contain the word
+//'clothing' in either their name or their description. Will also return a 200 status code.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=clothing'
+
+//Returns a html page of all products in the database whose name or description contain
+//'short sleeves' in the database, with a 200 status code.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=short_sleeves'
+
+//Should not return an entry from the database as it doesn't exist in there. Should, instead,
+//return a 200 status code, and returns a html page containing the text 'NOTHING HERE' as it
+//calls res.render.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=nonexistant_product'
+
+-------------------PRODUCTS--------------------
+NOTE:	This will work the same for each gender (men, women, kids) because they all use the
+		same method, therefore, I only test men in these examples.
+
+//Should return a 200 status code with a rendered html page of all the items in the database
+//that have a 'gender' entry of 'men'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men
+
+//Should still return a 200 status code with a rendered html page of all the items in the
+//database that have a 'gender' entry of 'men'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/
+
+//Should return a 200 status code with a rendered html page of all the items in the database
+//that have a 'gender' entry of 'men', simply ignoring the query.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men?q=something
+
+//Should return a 200 status code with a rendered html page of all the items in the database
+//that have a 'gender' entry of 'men', removing the trailing slash and simply removing the
+//query.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/?q=something
+
+//Should return a 200 status code with a rendered html page of all the items in the database
+//that have a 'gender' entry of 'men', and a type of 'watches'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/watches
+
+//Should return a 200 status code with a rendered html page of the item in the database that
+//has an id of 32.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/watches/32
+
+//Should return a 200 status code with a rendered html page, however, since this type does
+//not exist in the database, the page will simply have a 'NOTHING HERE' message.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/nonexistant_type
+
+//Should return a 200 status code with a rendered html page, however, since this item does
+//not exist in the database, the page will simply have a 'NOTHING HERE' message.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/watches/2354654362452
+
+//Should return a 404 code with the message 'Sorry, we can't find that.' because there is no
+//table in the database called 'menZXCVBNM'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/menZXCVBNM
+
+//Should also return a 200 status code with a rendered html page of all the items in the
+//database that have a 'gender' entry of 'men'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men//
+
+//Returns a 400 status code, signalling that the request was invalid (only letters, numbers,
+//and underscores are allowed) with a message 'Invalid url.'. Will not access the database.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/men/'; drop tables;
+
+--------------------OTHER--------------------
 curl -H "Content-Type: application/json" -X POST -d '{"userName":"gareth", "password":"ben"}' 130.195.4.170:8080/login
