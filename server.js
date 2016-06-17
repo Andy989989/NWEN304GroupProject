@@ -101,10 +101,6 @@ app.get('/men*', products.get_me_something);
 app.get('/women*', products.get_me_something);
 app.get('/kids*', products.get_me_something);
 
-app.get('/pages', function(req, res){
-		res.send('q: ' + req.query.q);
-		});
-
 app.get('/login', function(req, res){
 		res.render('login')
 		});
