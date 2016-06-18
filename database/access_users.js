@@ -139,7 +139,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	console.log("entering weather");
 	yahoo_weather.getFullWeather('denver,co').then(function(res){
 		console.log("in yahoo weather");
-		callback(res.query);
+		callback(res.query.results);
 		console.log("done yahoo weather");
 	});
 	return;
