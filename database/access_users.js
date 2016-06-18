@@ -136,7 +136,10 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	var loc = geo.city==null || geo.city == undefined ? geo.country : geo.city;
+	var loc = geo.city;
+	if(loc == undefined || loc == null){
+		callback(suggestions);
+	}
 	yahoo_weather.getFullWeather(loc).then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
 			console.log("condition: "+condition);
