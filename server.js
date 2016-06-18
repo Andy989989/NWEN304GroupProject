@@ -146,6 +146,7 @@ app.get('/getRecommendations',function (req, res) {
 	var loc = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 	if(req.user == undefined){
 		res.status(400).send("Not logged in, no recommendation possible");
+		return;
 	}
 	var name = req.user.name;
 	if(name!==undefined){
