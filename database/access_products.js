@@ -104,7 +104,7 @@ exports.get_from_id = function(req, res){
 				return err;
 			}
 		});
-		handle_query(query, res, null);
+		handle_query(query, req, res, null);
 	} else{
 		res.status(400).send("Invalid id.");
 		return;
@@ -185,7 +185,7 @@ function ensure_only_letters_and_numbers(word){
 	return /^\w+$/.test(word);
 }
 
-function handle_query(query,req, res, tableID){
+function handle_query(query, req, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
 			query_results.push(JSON.stringify(row));
