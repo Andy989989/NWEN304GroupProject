@@ -95,7 +95,7 @@ exports.get_from_id = function(req, res){
 		res.status(400).send("Invalid url.");
 		return;
 	}
-	var id = array[1]; //The second item in the array is a number (the id). eg array=['id', '32']
+	var id = array[2]; //The third item is the id. eg array=['id', 'watches', '32']
 	if(/^[0-9]*$/.test(id)){
 		//The id is only made up of numbers (as it should be).
 		var query = client.query("select * from products where id='"+id+"'", function(err, rows, fields){
