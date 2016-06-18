@@ -135,6 +135,10 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 	}
 	var lat = latlon[0];
 	var lon = latlon[2];
+	console.log("lat");
+	console.log(lat);
+	console.log("lon");
+	console.log(lon);
 	console.log("entering weather.now\n");
 	weather.now([lat, lon], function(err, data){
 		console.log("in weather.now\n");
