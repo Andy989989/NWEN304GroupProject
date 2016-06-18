@@ -145,7 +145,7 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 		console.log("no error\n");
 		console.log("data");
 		console.log(data);
-		console.log"(end data");
+		console.log("end data");
 		var temp = data.Weather.type;
 		console.log("weather:");
 		console.log(temp);
