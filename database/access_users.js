@@ -135,12 +135,6 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	var lat = latlon[0];
-	var lon = latlon[1];
-	console.log("lat");
-	console.log(lat);
-	console.log("lon");
-	console.log(lon);
 	console.log("entering weather");
 	weather({location: geo.country}, function(err, data){
 		console.log("in weather");
