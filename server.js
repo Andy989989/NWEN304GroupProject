@@ -150,7 +150,7 @@ app.get('/getRecommendations',function (req, res) {
 	}
 	var name = req.user.name;
 	if(name!==undefined){
-		users.get_recommendations(name, geo.ll, function(results){
+		users.get_recommendations(name, geo, function(results){
 			res.send({recommendation: results});
 		});
 	}
