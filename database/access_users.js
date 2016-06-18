@@ -134,7 +134,7 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 		suggestions = [];
 	}
 	var lat = latlon[0];
-	var lon = latlon[2];
+	var lon = latlon[1];
 	console.log("lat");
 	console.log(lat);
 	console.log("lon");
