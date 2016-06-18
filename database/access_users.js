@@ -136,7 +136,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 		suggestions = [];
 	}
 	console.log("entering weather");
-	weather({location: geo.country}, function(err, data){
+	weather({location: 'Melbourne'}, function(err, data){
 		if(err){
 			console.log(err);
 			return err;
