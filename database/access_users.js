@@ -136,26 +136,9 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	console.log("entering weather");
 	yahoo_weather.getFullWeather('denver,co').then(function(res){
-		console.log("in yahoo weather");
-		callback(res.query.results.channel.item.condition.text);
-		console.log("done yahoo weather");
-	});
-	return;
-	weather({location: 'Melbourne'}, function(err, data){
-		if(err){
-			console.log(err);
-			return err;
-		}
-		console.log("in weather");
-		console.log("data");
-		console.log(data);
-		console.log("end data");
-		var temp = 'thing';
-		console.log("weather:");
-		console.log(temp);
-		client.query("select id from products where weather='"+temp+"'", function(err, rows, fields){
+			var condition = res.query.results.channel.item.condition.text;
+			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
 					if(err){
 					return err;
 					}
