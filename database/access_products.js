@@ -95,6 +95,10 @@ exports.get_from_id = function(req, res){
 		res.status(400).send("Invalid url.");
 		return;
 	}
+	if(array.length<3){
+		//Not enough arguments have been provided
+		res.status(400).send("Invalid url.");
+	}
 	var id = array[2]; //The third item is the id. eg array=['id', 'watches', '32']
 	if(/^[0-9]*$/.test(id)){
 		//The id is only made up of numbers (as it should be).

@@ -23,7 +23,34 @@ curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=short_sleeves'
 //calls res.render.
 curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=nonexistant_product'
 
--------------------PRODUCTS--------------------
+--------------------VIEW--------------------
+//Should return a single entry from the database (whichever one has an id of 35).
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35'
+
+//The 'watches' part of the previous command actually doesn't make a difference, so this
+//will work too. It will return whichever entry in the database has an id of 35.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/random_category/35'
+
+//This will simply not return anything, since there is no entry in the database with this id.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/34535'
+
+//This will not even get past out server.js method, and, as a result, will return a message
+//saying 'Sorry, that page doesn't exist.'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id'
+
+//
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/'
+
+//
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches'
+
+//
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35/something_else'
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35/something_else'
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35/something_else'
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35/something_else'
+
+--------------------PRODUCTS--------------------
 NOTE:	This will work the same for each gender (men, women, kids) because they all use the
 		same method, therefore, I only test men in these examples.
 
