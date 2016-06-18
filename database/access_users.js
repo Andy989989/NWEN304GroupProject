@@ -133,19 +133,23 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	console.log("latlon");
-	console.log(latlon);
 	var lat = latlon[0];
 	var lon = latlon[2];
+	console.log("entering weather.now\n");
 	weather.now([lat, lon], function(err, data){
+		console.log("in weather.now\n");
 		if(err){
 			console.log(err);
 			return err;
 		}
+		console.log("no error\n");
 		console.log("data");
 		console.log(data);
+		console.log"(end data");
 		var temp = data.Weather.type;
-		client.query("select id from products where minTemp<"+temp+" and maxTemp>"+temp, function(err, rows, fields){
+		console.log("weather:");
+		console.log(temp);
+		client.query("select id from products where weather="+temp, function(err, rows, fields){
 					if(err){
 					return err;
 					}
