@@ -39,7 +39,7 @@ exports.search = function(req, res){
 		return;
 	}
 	res.status(200);
-	handle_query(query, res, null);
+	handle_query(query,req, res, 'id');
 }
 
 /*
@@ -86,7 +86,34 @@ exports.get_me_something = function(req, res){
 		return;
 	}
 	res.statusCode = 200;
-	handle_query(query, res, array[0]);
+	handle_query(query,req, res, array[0]);
+}
+
+exports.get_from_id = function(req, res){
+	var array = sanitize_url(req.url);
+	if(array == null){
+		res.status(400).send("Invalid url.");
+		return;
+	}
+	if(array.length<3){
+		//Not enough arguments have been provided
+		res.status(400).send("Invalid url.");
+		return;
+	}
+	var id = array[2]; //The third item is the id. eg array=['id', 'watches', '32']
+	if(/^[0-9]*$/.test(id)){
+		//The id is only made up of numbers (as it should be).
+		var query = client.query("select * from products where id='"+id+"'", function(err, rows, fields){
+				if(err){
+				res.status(404).send("Sorry, we can't find that.");
+				return err;
+				}
+				});
+		handle_query(query, req, res, null);
+	} else{
+		res.status(400).send("Invalid id.");
+		return;
+	}
 }
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -163,12 +190,12 @@ function ensure_only_letters_and_numbers(word){
 	return /^\w+$/.test(word);
 }
 
-function handle_query(query, res, tableID){
+function handle_query(query, req, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.render('display', {results: query_results, table: tableID})
+			res.render('display', {'user':req.user,results: query_results, table: tableID})
 			});
 }
