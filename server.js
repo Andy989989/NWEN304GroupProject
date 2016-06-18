@@ -142,7 +142,8 @@ app.get('/getRecommendations',function (req, res) {
 	}
 	console.log(ipAddr);
 	var geo = geoip.lookup(ipAddr);
-	console.log("geo: "+geo);
+	console.log("geo: ");
+	console.log(geo);
 	var loc = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 	if(req.user == undefined){
 		res.status(400).send("Not logged in, no recommendation possible");
