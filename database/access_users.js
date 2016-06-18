@@ -136,7 +136,8 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	yahoo_weather.getFullWeather('Melbourne').then(function(res){
+	var loc = geo.city==null || geo.city == undefined ? geo.country : geo.city;
+	yahoo_weather.getFullWeather(loc).then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
 			console.log("condition: "+condition);
 			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
