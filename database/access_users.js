@@ -138,6 +138,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	}
 	yahoo_weather.getFullWeather('Melbourne').then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
+			console.log("condition: "+condition);
 			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
 					if(err){
 					return err;
