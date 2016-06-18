@@ -39,7 +39,7 @@ exports.search = function(req, res){
 		return;
 	}
 	res.status(200);
-	handle_query(query,req, res, null);
+	handle_query(query,req, res, 'http://morning-dawn-49717.herokuapp.com/id');
 }
 
 /*
