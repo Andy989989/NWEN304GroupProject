@@ -138,6 +138,8 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 			console.log(err);
 			return err;
 		}
+		console.log("data");
+		console.log(data);
 		var temp = data.getDegreeTemp().temp;
 		client.query("select id from products where minTemp<"+temp+" and maxTemp>"+temp, function(err, rows, fields){
 					if(err){
