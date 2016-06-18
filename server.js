@@ -144,14 +144,13 @@ app.get('/getRecommendations',function (req, res) {
 	var geo = geoip.lookup(ipAddr);
 	console.log("geo: ");
 	console.log(geo);
-	var loc = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 	if(req.user == undefined){
-		res.status(400).send("Not logged in, no recommendation possible");
+		res.status(400).render('/');
 		return;
 	}
 	var name = req.user.name;
 	if(name!==undefined){
-		users.get_recommendations(name, 143, 432, function(results){
+		users.get_recommendations(name, geo.ll, function(results){
 			res.send({recommendation: results});
 		});
 	}

@@ -75,15 +75,12 @@ exports.update_password = function(name, new_password){
  * I could make this appen synchronously in Node.js. As always, this throws helpful error messages when it
  * fails.
  */
-exports.get_recommendations = function(name, lat, lon, callback){
+exports.get_recommendations = function(name, latlon, callback){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	if(lat == null || lat == undefined || !ensure_only_letters_and_numbers(lat)){
-		return "ERROR: Missing a valid value for lat.";
-	}
-	if(lon == null || lon == undefined || !ensure_only_letters_and_numbers(lon)){
-		return "ERROR: Missing a valid value for lon.";
+	if(latlon == null || latlon == undefined){
+		return "ERROR: Missing a valid value for latitude and longitude.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
@@ -93,7 +90,7 @@ exports.get_recommendations = function(name, lat, lon, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
 			}
-			return get_suggestion_based_on_previous_item(prev, lat, lon, callback);
+			return get_suggestion_based_on_previous_item(prev, latlon, callback);
 			});
 }
 
@@ -102,11 +99,11 @@ exports.get_recommendations = function(name, lat, lon, callback){
  * If something goes wrong, a descriptive error message is returned, however, if everything goes nicely,
  * nothing is returned, and instead, the callback method is called (by get_suggestion_based_on_weather).
  */
-function get_suggestion_based_on_previous_item(prev, lat, lon, callback){
+function get_suggestion_based_on_previous_item(prev, latlon, callback){
 	var types = {};
 	if(prev == -1){
 		//Ignore the previous item and just get the information from the location
-		return get_suggestion_based_on_weather(lat, lon, null, callback);
+		return get_suggestion_based_on_weather(latlon, null, callback);
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
@@ -122,7 +119,7 @@ function get_suggestion_based_on_previous_item(prev, lat, lon, callback){
 					for(var i in r.rows){
 					suggestions.push(r.rows[i].id);
 					}
-					return get_suggestion_based_on_weather(lat, lon, suggestions, callback);
+					return get_suggestion_based_on_weather(latlon, suggestions, callback);
 					});
 			}
 			});
@@ -132,11 +129,11 @@ function get_suggestion_based_on_previous_item(prev, lat, lon, callback){
  * suggestions, and passes the now-complete array to the callback method. If something goes wrong, a
  * descriptive error is thrown.
  */
-function get_suggestion_based_on_weather(lat, lon, suggestions, callback){
+function get_suggestion_based_on_weather(latlon, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	weather.now([lat, lon], function(err, data){
+	weather.now(latlon, function(err, data){
 		if(err){
 			console.log(err);
 			return err;
