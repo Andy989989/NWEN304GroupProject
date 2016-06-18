@@ -4,6 +4,7 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
+var weather = require('Openweather-Node');
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
@@ -74,12 +75,15 @@ exports.update_password = function(name, new_password){
  * I could make this appen synchronously in Node.js. As always, this throws helpful error messages when it
  * fails.
  */
-exports.get_recommendations = function(name, loc, callback){
+exports.get_recommendations = function(name, lat, lon, callback){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	if(loc == null || loc == undefined || !ensure_only_letters_and_numbers(loc)){
-		return "ERROR: Missing a valid value for loc.";
+	if(lat == null || lat == undefined || !ensure_only_letters_and_numbers(lat)){
+		return "ERROR: Missing a valid value for lat.";
+	}
+	if(lon == null || lon == undefined || !ensure_only_letters_and_numbers(lon)){
+		return "ERROR: Missing a valid value for lon.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
@@ -89,7 +93,7 @@ exports.get_recommendations = function(name, loc, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
 			}
-			return get_suggestion_based_on_previous_item(prev, loc, callback);
+			return get_suggestion_based_on_previous_item(prev, lat, lon, callback);
 			});
 }
 
@@ -98,11 +102,11 @@ exports.get_recommendations = function(name, loc, callback){
  * If something goes wrong, a descriptive error message is returned, however, if everything goes nicely,
  * nothing is returned, and instead, the callback method is called (by get_suggestion_based_on_weather).
  */
-function get_suggestion_based_on_previous_item(prev, loc, callback){
+function get_suggestion_based_on_previous_item(prev, lat, lon, callback){
 	var types = {};
 	if(prev == -1){
 		//Ignore the previous item and just get the information from the location
-		return get_suggestion_based_on_weather(loc, null, callback);
+		return get_suggestion_based_on_weather(lat, lon, null, callback);
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
@@ -118,7 +122,7 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 					for(var i in r.rows){
 					suggestions.push(r.rows[i].id);
 					}
-					return get_suggestion_based_on_weather(loc, suggestions, callback);
+					return get_suggestion_based_on_weather(lat, lon, suggestions, callback);
 					});
 			}
 			});
@@ -128,18 +132,25 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  * suggestions, and passes the now-complete array to the callback method. If something goes wrong, a
  * descriptive error is thrown.
  */
-function get_suggestion_based_on_weather(loc, suggestions, callback){
+function get_suggestion_based_on_weather(lat, lon, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
-			if(err){
+	weather.now([lat, lon], function(err, data){
+		if(err){
+			console.log(err);
 			return err;
-			}
-			for(var i in rows.rows){
-			suggestions.push(rows.rows[i].id);
-			}
-			callback(remove_duplicates(suggestions));
+		}
+		var temp = data.getDegreeTemp().temp;
+		client.query("select id from products where minTemp<"+temp+" and maxTemp>"+temp, function(err, rows, fields){
+					if(err){
+					return err;
+					}
+					for(var i in rows.rows){
+					suggestions.push(rows.rows[i].id);
+					}
+					callback(remove_duplicates(suggestions));
+					});
 			});
 }
 
