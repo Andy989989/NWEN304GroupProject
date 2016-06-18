@@ -4,7 +4,7 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
-var weather = require('Openweather-Node');
+var weather = require('openweather-node');
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
