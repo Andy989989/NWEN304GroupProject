@@ -145,7 +145,7 @@ app.get('/getRecommendations',function (req, res) {
 	console.log("geo: ");
 	console.log(geo);
 	if(req.user == undefined){
-		res.status(400).render('/');
+		res.render('home');
 		return;
 	}
 	var name = req.user.name;
