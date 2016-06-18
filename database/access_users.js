@@ -152,10 +152,10 @@ function get_suggestion_based_on_weather(latlon, suggestions, callback){
 		console.log("data");
 		console.log(data);
 		console.log("end data");
-		var temp = data.Weather.type;
+		var temp = 'thing';
 		console.log("weather:");
 		console.log(temp);
-		client.query("select id from products where weather="+temp, function(err, rows, fields){
+		client.query("select id from products where weather='"+temp+"'", function(err, rows, fields){
 					if(err){
 					return err;
 					}
