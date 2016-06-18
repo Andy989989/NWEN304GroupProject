@@ -136,7 +136,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	yahoo_weather.getFullWeather('denver,co').then(function(res){
+	yahoo_weather.getFullWeather('Melbourne').then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
 			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
 					if(err){
