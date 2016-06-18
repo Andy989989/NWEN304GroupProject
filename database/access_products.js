@@ -99,11 +99,11 @@ exports.get_from_id = function(req, res){
 	if(/^[0-9]*$/.test(id)){
 		//The id is only made up of numbers (as it should be).
 		var query = client.query("select * from products where id='"+id+"'", function(err, rows, fields){
-			if(err){
+				if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				return err;
-			}
-		});
+				}
+				});
 		handle_query(query, req, res, null);
 	} else{
 		res.status(400).send("Invalid id.");
