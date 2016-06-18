@@ -5,6 +5,7 @@ var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
 var weather = require('weather');
+var yahoo-weather = require('weather-yahoo');
 //var api_key = '206cdba8d542e635ec9e478fff147b12';
 //weather.setAPPID(api_key);
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
@@ -136,6 +137,12 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 		suggestions = [];
 	}
 	console.log("entering weather");
+	yahoo-weather.getFullWeather('denver,co').then(function(res){
+		console.log("in yahoo weather);
+		console.log(res);
+		console.log("done yahoo weather");
+	});
+	return;
 	weather({location: 'Melbourne'}, function(err, data){
 		if(err){
 			console.log(err);

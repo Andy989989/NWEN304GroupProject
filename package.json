@@ -31,7 +31,8 @@
     "pg": "^4.5.5",
     "pg-native": "^1.10.0",
     "start": "^4.0.1",
-    "weather": "^0.1.0"
+    "weather": "^0.1.0",
+    "weather-yahoo": "^1.0.2"
   },
   "devDependencies": {},
   "repository": {
