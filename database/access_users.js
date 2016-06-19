@@ -258,17 +258,16 @@ function get_the_kart(req, res){
 		return;
 	}
 	var ids = [];
-	var query = client.query("select * from karts where name='"+name+"'", function(err){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err){
 			if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
 			}
 			});
 	query.on('row', function(row){
-			ids.push(JSON.stringify(row));
+			ids.push(row);
 			});
 	query.on('end', function(){
-			res.status(200);
 			change_ids_to_items_and_render(ids, req, res);
 			});
 }
@@ -284,6 +283,7 @@ function change_ids_to_items_and_render(ids, req, res){
 			console.log(err);
 			return err;
 			}
+			res.status(200);
 			res.render('profile', {results: rows.rows, user: req.user});
 			});
 }
