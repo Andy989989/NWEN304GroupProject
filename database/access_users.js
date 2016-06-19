@@ -279,7 +279,7 @@ function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
 	console.log("Id array");
 	console.log(ids);
-	if(ids.length == 0){
+	if(ids == null || ids.length == 0){
 		res.render('profile', {results: [], user: req.user});
 		return;
 	}
