@@ -274,7 +274,7 @@ function get_the_kart(req, res){
 
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
-	for(var i in ids){
+	for(var i in ids[0]){
 		id_string += ids[i] + " or id=";
 	}
 	id_string = id_string.slice(0, -7);
