@@ -150,6 +150,8 @@ app.get('/getRecommendations',function (req, res) {
 	} else {
 		ipAddr = req.connection.remoteAddress;
 	}
+    var ipAddr = "130.195.6.167";
+	console.log(ipAddr);
 	var geo = geoip.lookup(ipAddr);
 	if(req.user == undefined){
 		res.render('index', {'user':req.user});

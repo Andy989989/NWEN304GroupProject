@@ -12,14 +12,18 @@
 		    		<div class = "collapse navbar-collapse navHeaderCollapse">
 		    			<ul class = "nav navbar-nav navbar-right">
 		    				<li class = "active"><a href = "/">Home</a></li>
-		    				<li><a href = "/register">Register</a></li>
+							<% if(user == undefined){ %>
+		    					<li><a href = "/register">Register</a></li>
+							<% } %>
 		    				<% if(user !== undefined){ %>
 		    					<li><a href = "/logout" id="logout">Logout</a></li>
 		    				<%} else {%>
 		    					<li><a href = "/login" id="login">Login</a></li>
 		    				<%}%>
 		    				<li><a href = "/aboutus">About Us</a></li>
-		    				<li><a href = "/gallery">Gallery</a></li>
+							<% if(user !== undefined){ %>
+		    					<li><a href = "/profile">Profile</a></li>
+							<% } %>
 		    			</ul>
 		    		</div>
 		    	</div>

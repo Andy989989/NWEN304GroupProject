@@ -4,14 +4,11 @@
     </head>
         <body>
         <% include partials/navbar %>
-        <script>
-            var res = <%= results %>;
-
-        </script>
-        <% console.log('[Profile]Results returned from server: ' + results); %>
-        <% if(results.length < 1){%>
+        <% console.log('[Profile] In profile') %>
+        <% if(results.length < 1){ %>
             NOTHING HERE
         <% }else if(results.length > 1){%>
+            <% console.log('[Profile]Results returned from server: ' + results); %>
             <div class="row flex-row">
                 <% results.forEach(function(item) { %>
                     <% console.log('[Profile]Each object in Results: ' + item); %>
@@ -19,10 +16,11 @@
                     <% include partials/item_card %>
                 <% }); %>
             </div>
-        <%}else{%>
+        <% }else{ %>
+            <% console.log('[Profile]Results returned from server: ' + results); %>
             <% jsonItem = JSON.parse(results[0])%>
             <% include partials/single_item_card %>
-        <%}%>
+        <% } %>
     </body>
 </html>
 
