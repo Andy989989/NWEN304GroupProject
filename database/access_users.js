@@ -83,7 +83,7 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-		if(err){
+			if(err){
 			return err;
 			}
 			var prev = -1;
@@ -121,7 +121,7 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 
 					var suggestions = [];
 					for(var i in r.rows){
-                        suggestions.push(r.rows[i].id);
+					suggestions.push(r.rows[i].id);
 					}
 					return get_suggestion_based_on_weather(geo, suggestions, callback);
 					});
@@ -170,18 +170,18 @@ function get_entries_from_suggestions_and_call_callback(suggestions, callback){
 	//Remove the trailing ' or id='
 	suggestions_string = suggestions_string.slice(0, -7);
 	var query = client.query("select * from products where id="+suggestions_string, function(err){
-		if(err){
+			if(err){
 			console.log(err);
 			return err;
-		}
-	});
+			}
+			});
 	var results = [];
 	query.on('row', function(row){
-		results.push(JSON.stringify(row));
-	});
+			results.push(JSON.stringify(row));
+			});
 	query.on('end', function(){
-		callback(results);
-	});
+			callback(results);
+			});
 }
 
 function remove_duplicates(array){
@@ -204,7 +204,7 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(req, item_id){
+exports.add_to_kart = function(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
@@ -212,16 +212,22 @@ exports.add_to_kart = function(req, item_id){
 	}
 	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
-			return err;
+			update_the_kart(req, res, item_id);
+			return;
 			}
+			get_the_kart(req, res);
 			});
+}
+
+exports.update_kart = function(req, res, item_id){
+	update_the_kart(req, res, item_id);
 }
 
 /* Updates the kart associated with a user's name by adding the id of an item. If the update
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.update_kart = function(req, item_id){
+function update_the_kart(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
@@ -231,7 +237,12 @@ exports.update_kart = function(req, item_id){
 			if(err){
 			return err;
 			}
+			get_the_kart(req, res);
 			});
+}
+
+exports.get_kart = function(req, res){
+	get_the_kart(req, res);
 }
 
 /* Returns the items in the kart associated with a user's name. If the query is successful
@@ -240,29 +251,55 @@ exports.update_kart = function(req, item_id){
  * and returning the item numbers of the kart. Otherwise it returns an error code and message,
  * detailing what went wrong.
  */
-exports.get_kart = function(req, res){
+function get_the_kart(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
 	}
 	var ids = [];
-	var query = client.query("select * from karts where name='"+name+"'", function(err){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err){
 			if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
 			}
 			});
 	query.on('row', function(row){
-			ids.push(JSON.stringify(row));
+			ids.push(row.item_ids);
 			});
 	query.on('end', function(){
-			res.status(200);
-			res.render('profile', {results: ids, user: req.user});
+			change_ids_to_items_and_render(ids, req, res);
 			});
 }
 
-exports.buy_kart = function(req){
+function change_ids_to_items_and_render(ids, req, res){
+	var id_string = 'id=';
+	console.log("Id array");
+	console.log(ids);
+	ids = ids[0];
+	for(var i in ids){
+		if(!/^[0-9]+$/.test(ids[i])){
+			continue;
+		}
+		id_string += ids[i] + " or id=";
+	}
+	id_string = id_string.slice(0, -7);
+	var query = client.query("select * from products where "+id_string, function(err, rows, fields){
+			if(err){
+			console.log(err);
+			return err;
+			}
+			});
+	var r = [];
+	query.on('row', function(row){
+		r.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		res.render('profile', {results: r, user: req.user});
+	});
+}
+
+exports.buy_kart = function(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
@@ -282,11 +319,15 @@ exports.buy_kart = function(req){
 					});
 			});
 	query.on('end', function(){
-		delete_entire_kart(req);
-	});
+			delete_the_entire_kart(req, res);
+			});
 }
 
-exports.delete_entire_kart = function(req){
+exports.delete_entire_kart = function(req, res){
+	delete_the_entire_kart(req, res);
+}
+
+function delete_the_entire_kart(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
@@ -295,10 +336,11 @@ exports.delete_entire_kart = function(req){
 			if(err){
 			return err;
 			}
+			get_the_kart(req, res);
 			});
 }
 
-exports.delete_from_kart = function(req, item_id){
+exports.delete_from_kart = function(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
@@ -308,6 +350,7 @@ exports.delete_from_kart = function(req, item_id){
 			if(err){
 			return err;
 			}
+			get_the_kart(req, res);
 			});
 }
 
