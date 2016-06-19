@@ -214,6 +214,7 @@ exports.add_to_kart = function(req, res, item_id){
 			if(err){
 			return err;
 			}
+			res.render('profile', {user: req.user});
 			});
 }
 
@@ -231,6 +232,7 @@ exports.update_kart = function(req, res, item_id){
 			if(err){
 			return err;
 			}
+			res.render('profile', {user: req.user});
 			});
 }
 
@@ -295,6 +297,7 @@ exports.delete_entire_kart = function(req, res){
 			if(err){
 			return err;
 			}
+			res.render('profile', {user: req.user});
 			});
 }
 
@@ -308,6 +311,7 @@ exports.delete_from_kart = function(req, res, item_id){
 			if(err){
 			return err;
 			}
+			res.render('profile', {user: req.user});
 			});
 }
 
