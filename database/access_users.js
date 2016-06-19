@@ -93,7 +93,8 @@ exports.get_recommendations = function(name, geo, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
 			}
-			return get_suggestion_based_on_previous_item(prev, geo, callback);
+			get_suggestion_based_on_previous_item(prev, geo, callback);
+			return;
 			});
 }
 
@@ -138,7 +139,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	}
 	var loc = geo.city;
 	if(loc == undefined || loc == null || loc == ''){
-		callback(suggestions);
+		get_entries_from_suggestions_and_call_callback(suggestions, callback);
 		return;
 	}
 	console.log("got past that");
@@ -152,9 +153,38 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 					for(var i in rows.rows){
 					suggestions.push(rows.rows[i].id);
 					}
-					callback(remove_duplicates(suggestions));
+					get_entries_from_suggestions_and_call_callback(suggestions, callback);
 					});
 			});
+}
+
+function get_entries_from_suggestions_and_call_callback(suggestions, callback){
+	if(suggestions == undefined || suggestions == null || suggestions.length == 0){
+		callback(suggestions);
+	}
+	suggestions = remove_duplicates(suggestions);
+	var suggestion_string = '';
+	for(var i in suggestions){
+		suggestions_string += suggestions[i] + " or id="
+	}
+	//Remove the trailing ' or id='
+	suggestion_string = suggestion_string.slice(0, -7);
+	var query = client.query("select * from products where id="+suggestions_string, function(err){
+		if(err){
+			return err;
+		}
+	});
+	handle_query(query, callback);
+}
+
+function handle_query(query, callback){
+	var results = [];
+	query.on('row', function(row){
+		results.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		callback(results);
+	});
 }
 
 function remove_duplicates(array){
