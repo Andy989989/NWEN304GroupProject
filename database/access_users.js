@@ -204,7 +204,7 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(req, item_id){
+exports.add_to_kart = function(req, res item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
@@ -221,7 +221,7 @@ exports.add_to_kart = function(req, item_id){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.update_kart = function(req, item_id){
+exports.update_kart = function(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
@@ -262,7 +262,7 @@ exports.get_kart = function(req, res){
 			});
 }
 
-exports.buy_kart = function(req){
+exports.buy_kart = function(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
@@ -282,11 +282,11 @@ exports.buy_kart = function(req){
 					});
 			});
 	query.on('end', function(){
-		delete_entire_kart(req);
+		delete_entire_kart(req, res);
 	});
 }
 
-exports.delete_entire_kart = function(req){
+exports.delete_entire_kart = function(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
@@ -298,7 +298,7 @@ exports.delete_entire_kart = function(req){
 			});
 }
 
-exports.delete_from_kart = function(req, item_id){
+exports.delete_from_kart = function(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
