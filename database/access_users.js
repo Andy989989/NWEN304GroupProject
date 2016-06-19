@@ -203,12 +203,13 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(name, item_id){
+exports.add_to_kart = function(req, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+	var query = client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
 			return err;
 			}
@@ -219,7 +220,8 @@ exports.add_to_kart = function(name, item_id){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.update_kart = function(name, item_id){
+exports.update_kart = function(req, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
 		return missing;
@@ -237,7 +239,8 @@ exports.update_kart = function(name, item_id){
  * and returning the item numbers of the kart. Otherwise it returns an error code and message,
  * detailing what went wrong.
  */
-exports.get_kart = function(res, name){
+exports.get_kart = function(req, res){
+	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
@@ -254,15 +257,16 @@ exports.get_kart = function(res, name){
 			});
 	query.on('end', function(){
 			res.status(200);
-			res.render('display', {results: ids});
+			res.render('profile', {results: ids, user: req.user});
 			});
 }
 
-exports.buy_kart = function(name){
+exports.buy_kart = function(req){
+	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
 			if(err){
 			return err;
 			}
@@ -276,10 +280,13 @@ exports.buy_kart = function(name){
 					}
 					});
 			});
-	delete_entire_kart(name);
+	query.on('end', function(){
+		delete_entire_kart(req);
+	});
 }
 
-exports.delete_entire_kart = function(name){
+exports.delete_entire_kart = function(req){
+	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
@@ -290,7 +297,8 @@ exports.delete_entire_kart = function(name){
 			});
 }
 
-exports.delete_from_kart = function(name, item_id){
+exports.delete_from_kart = function(req, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
 		return missing;
