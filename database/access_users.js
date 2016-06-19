@@ -121,7 +121,6 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 
 					var suggestions = [];
 					for(var i in r.rows){
-					    //suggestions.push(r.rows[i].id);
                         suggestions.push(r.rows[i].id);
 					}
 					return get_suggestion_based_on_weather(geo, suggestions, callback);
