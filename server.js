@@ -145,7 +145,9 @@ app.get('/id/*', products.get_from_id);
 			  console.log("id: " + id);
 			  if(req.user != undefined && req.user.name != undefined){
 				  users.add_to_kart(req, res, id);
-			  }
+			} else{
+			  res.render('index', {'user':req.user});
+			}
 			  })
 
 			  app.get('/getRecommendations',function (req, res) {
