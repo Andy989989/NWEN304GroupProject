@@ -212,7 +212,7 @@ exports.add_to_kart = function(req, res, item_id){
 	}
 	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
-			update_kart(req, res, item_id);
+			update_the_kart(req, res, item_id);
 			return;
 			}
 			r = [];
@@ -220,11 +220,15 @@ exports.add_to_kart = function(req, res, item_id){
 			});
 }
 
+exports.update_kart = function(req, res, item_id){
+	update_the_kart(req, res, item_id);
+}
+
 /* Updates the kart associated with a user's name by adding the id of an item. If the update
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.update_kart = function(req, res, item_id){
+function update_the_kart(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
@@ -302,11 +306,15 @@ exports.buy_kart = function(req, res){
 					});
 			});
 	query.on('end', function(){
-			delete_entire_kart(req, res);
+			delete_the_entire_kart(req, res);
 			});
 }
 
 exports.delete_entire_kart = function(req, res){
+	delete_the_entire_kart(req, res);
+}
+
+function delete_the_entire_kart(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
