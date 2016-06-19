@@ -408,7 +408,7 @@ function check_for_kart(name, id){
  * space, or underscore, returning a boolean of whether it is valid (does not contain
  * anything else) or not. This is useful for preventing SQL injection attacks on the database.
  */
-function ensure_only_letters_and_numbers(word){
+function ensure_only_letters_numbers_and_spaces(word){
 	return /^[\w\s\_]+$/.test(word);
 }
 
