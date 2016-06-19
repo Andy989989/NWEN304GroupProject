@@ -143,12 +143,12 @@ app.get('/id/*', products.get_from_id);
 			  console.log("array: " + array);
 			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
 			  console.log("id: " + id);
-			  if(req.user != undefined && req.user.name != undefined){
+			  if(req.user == undefined || req.user.name == undefined){
+					res.render('index', {'user':req.user});
+					return;
+				}
 				  users.add_to_kart(req, res, id);
-			} else{
-			  res.render('index', {'user':req.user});
-			}
-			  })
+			  });
 
 			  app.get('/getRecommendations',function (req, res) {
 			  var ipAddr = req.headers["x-forwarded-for"];
