@@ -215,8 +215,7 @@ exports.add_to_kart = function(req, res, item_id){
 			update_the_kart(req, res, item_id);
 			return;
 			}
-			r = [];
-			res.render('profile', {results: r, user: req.user});
+			get_the_kart(req, res);
 			});
 }
 
@@ -238,9 +237,12 @@ function update_the_kart(req, res, item_id){
 			if(err){
 			return err;
 			}
-			r = [];
-			res.render('profile', {results: r, user: req.user});
+			get_the_kart(req, res);
 			});
+}
+
+exports.get_kart = function(req, res){
+	get_the_kart(req, res);
 }
 
 /* Returns the items in the kart associated with a user's name. If the query is successful
@@ -249,7 +251,7 @@ function update_the_kart(req, res, item_id){
  * and returning the item numbers of the kart. Otherwise it returns an error code and message,
  * detailing what went wrong.
  */
-exports.get_kart = function(req, res){
+function get_the_kart(req, res){
 	var name = req.user.name;
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
@@ -323,8 +325,7 @@ function delete_the_entire_kart(req, res){
 			if(err){
 			return err;
 			}
-			r = [];
-			res.render('profile', {results: r, user: req.user});
+			get_the_kart(req, res);
 			});
 }
 
@@ -338,8 +339,7 @@ exports.delete_from_kart = function(req, res, item_id){
 			if(err){
 			return err;
 			}
-			r = [];
-			res.render('profile', {results: r, user: req.user});
+			get_the_kart(req, res);
 			});
 }
 
