@@ -83,7 +83,7 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			return err;
 			}
 			var prev = -1;
@@ -118,7 +118,8 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 					}
 					var suggestions = [];
 					for(var i in r.rows){
-					suggestions.push(r.rows[i].id);
+					    //suggestions.push(r.rows[i].id);
+                        suggestions.push(r.rows[i]);
 					}
 					return get_suggestion_based_on_weather(geo, suggestions, callback);
 					});
@@ -206,7 +207,7 @@ exports.add_to_kart = function(req, item_id){
 	if(missing!=null){
 		return missing;
 	}
-	var query = client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
 			return err;
 			}

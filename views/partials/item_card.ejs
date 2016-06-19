@@ -2,7 +2,7 @@
     <div class="panel panel-default">
         <div class="panel-heading ic-header">
             <div class="row">
-                <p class="col-md-10 ic-header-text"><%= jsonItem.name %></p>
+                    <p class="col-md-10 ic-header-text"><%= jsonItem.name %></p>
                 <p class="text-right col-md-2"><%= jsonItem.cost %></p>
             </div>
         </div>
@@ -13,7 +13,8 @@
             <div class="ic-description-text"><%= jsonItem.description %></div>
         </div>
         <div class="panel-footer">
-            <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>" class="btn btn-info" role="button">view</a>
+            <!--<a href="/<#%= table %>/<#%= jsonItem.type %>/<#%= jsonItem.id %>" class="btn btn-info" role="button">view</a>-->
+            <a href="/id/<%= jsonItem.id %>" class="btn btn-info" role="button">view</a>
         </div>
     </div>
 </div>

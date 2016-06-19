@@ -109,24 +109,38 @@ app.get('/id/*', products.get_from_id);
 			  res.render('login',{'user':req.user})
 			  });
 
-			  app.get('/logout', function(req, res){
-			  req.logout();
-			  req.user = undefined;
-			  console.log(req.user);
-			  res.render('index',{'user':req.user});
-			  });
+app.get('/profile', function (req, res) {
+    users.get_kart(req, res);
+});
 
-			  app.get('/register', function (req, res) {
-			  res.render('register',{'user':req.user})
-			  });
+app.get('/logout', function(req, res){
+    req.logout();
+    req.user = undefined;
+    console.log(req.user);
+    res.render('index',{'user':req.user});
+});
 
-			  app.get('/aboutus', function (req, res) {
-			  res.render('aboutus',{'user':req.user})
-			  });
+app.get('/register', function (req, res) {
+    res.render('register',{'user':req.user})
+});
 
-			  app.get('/local', function (req, res) {
-			  res.render('local',{user:req.user})
-			  });
+app.get('/aboutus', function (req, res) {
+    res.render('aboutus',{'user':req.user})
+});
+
+app.get('/local', function (req, res) {
+    res.render('local',{user:req.user})
+});
+
+app.get('/add_to_cart/*', function (req, res) {
+    var url = "" + req.url;
+    console.log("url: " + url);
+    var array = url.split("/");
+    console.log("array: " + array);
+    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+    console.log("id: " + id);
+    users.add_to_kart(req, res, id);
+})
 
 app.get('/getRecommendations',function (req, res) {
 	var ipAddr = req.headers["x-forwarded-for"];
@@ -141,13 +155,17 @@ app.get('/getRecommendations',function (req, res) {
 		res.render('index', {'user':req.user});
 		return;
 	}
+    //var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 	var name = req.user.name;
 	if(name!==undefined){
 		users.get_recommendations(name, geo, function(results){
-			res.send({recommendation: results});
+			//res.send({recommendation: results});
+            res.render('display', {results: results, 'user':req.user});
 		});
 	}
 });
+
+
 //=====================================
 //PUT METHODS
 //=====================================
@@ -253,12 +271,12 @@ res.render('index', {'user':data});
 //console.log(req.user.accessToken);
 });
 
-app.get('/profile',
+/*app.get('/profile',
 //  connect.ensureLoggedIn(),
 function(req, res){
-res.render('profile', { user: req.user });
+  res.render('profile   ', { user: req.user });
 
-});
+});*/
 
 
 
