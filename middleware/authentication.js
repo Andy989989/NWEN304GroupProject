@@ -37,30 +37,6 @@ exports.authenticate = function (req, res,next){
 	// // TODO even if the person is still browsing/
 	// // possibly refreshed the token if the page has not been refreshed within 30 mins
  
-<<<<<<< HEAD
-	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
-
-	// decode token
-	if (token) {
-
-		// jwt.verify(token, secret, function(error, decoded) {			
-		// 	if (error) {
-		// 		return res.json({ success: false, message: 'Failed to authenticate token.' });		
-		// 	} else {
-		// 		// if everything is good, save to request for use in other routes
-		// 		req.decoded = decoded;	
-		// 		// everything is fine and has been authenticated
-		// 		console.log("authenticated with logon");
-		// 		return next();
-		// 	}
-		// });
-
-		console.log("TOKEN EXSISTS WHEN IT SHOULDNT");
-	} 
-
-	else if (req.isAuthenticated()){
-		console.log("authenticated with facebook");
-=======
 	// var token = req.body.token || req.param('token') || req.headers['x-access-token'];
 
 	// // decode token
@@ -82,7 +58,6 @@ exports.authenticate = function (req, res,next){
 
 	if (req.isAuthenticated()){
 		console.log("authenticated");
->>>>>>> origin/andynew
     	return next();
   	}else{
  		// if there is no token

@@ -215,19 +215,6 @@ app.post('/login', function(req,res, next){
             //res.status(401).send(user);
         }
 
-<<<<<<< HEAD
-        // Set the displayName 
-        var data = { userName : username };
-        console.log(req.user.passport);
-        //console.log(req.user.passport.user);
-        req.session.passport.user = data;
-        //return res.render('/index');
-        return res.render('index', {data:data});
-    });    
-  })(req, res, next);
-=======
->>>>>>> origin/andynew
-
         req.logIn(user, function(err) {
           if (err) {
             req.session.messages = "Error";
@@ -255,16 +242,9 @@ passport.authenticate('facebook'));
 app.get('/login/facebook/return',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-<<<<<<< HEAD
-    console.log(req.user);
-    var data = {'user':req.user};
-    //res.render('index', {data:data});
-    res.render('index', {'user':req.user});
-    //console.log(req.user.accessToken);
-  });
-=======
     //console.log(req.data);
 
+          checkDatabase(res,req.user.displayName,req.user.id);
 
           var data = { 'name' : req.user.displayName };
           req.session.passport.user = data;
@@ -275,7 +255,6 @@ app.get('/login/facebook/return',
           res.render('index', {'user':data});
           //console.log(req.user.accessToken);
         });
->>>>>>> origin/andynew
 
 app.get('/profile',
 //  connect.ensureLoggedIn(),
@@ -283,6 +262,27 @@ function(req, res){
   res.render('profile', { user: req.user });
 
 });
+
+function checkDatabase(res,name,id){
+
+  var check = users.get(name,res,function(res,returnedDB){
+
+    if(returnedDB == undefined || returnedDB == null){
+      // if name isnt in the db then add it. 
+      user.put(name,id);
+    }
+
+    else if(returnedDB == name){
+      // name is already in the database no need to do anything
+      return;
+    }
+
+
+
+  });
+
+}
+
 
 
 
