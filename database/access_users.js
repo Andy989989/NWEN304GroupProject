@@ -137,16 +137,11 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 		suggestions = [];
 	}
 	var loc = geo.city;
-	if(loc == undefined || loc == null){
+	if(loc == undefined || loc == null || loc == ''){
 		callback(suggestions);
 		return;
 	}
-	console.log("================LOC==============");
-	console.log(loc);
-	console.log("END LOC");
-	//TODO temporary! Remove
-	callback(suggestions);
-	return;
+	console.log("got past that");
 	yahoo_weather.getFullWeather(loc).then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
 			console.log("condition: "+condition);
