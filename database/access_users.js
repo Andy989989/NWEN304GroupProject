@@ -108,14 +108,17 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
+			console.log(err);
 			return err;
 			}
 			if(rows.length!=0){
 			var type = rows.rows[0].type;
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
-					if(e || r.rows.length==0){
+					if(e){
+					console.log(e);
 					return e;
 					}
+
 					var suggestions = [];
 					for(var i in r.rows){
 					    //suggestions.push(r.rows[i].id);
@@ -140,12 +143,12 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 		get_entries_from_suggestions_and_call_callback(suggestions, callback);
 		return;
 	}
-	console.log("got past that");
 	yahoo_weather.getFullWeather(loc).then(function(res){
 			var condition = res.query.results.channel.item.condition.text;
 			console.log("condition: "+condition);
 			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
 					if(err){
+					console.log(err);
 					return err;
 					}
 					for(var i in rows.rows){
@@ -169,6 +172,7 @@ function get_entries_from_suggestions_and_call_callback(suggestions, callback){
 	suggestions_string = suggestions_string.slice(0, -7);
 	var query = client.query("select * from products where id="+suggestions_string, function(err){
 		if(err){
+			console.log(err);
 			return err;
 		}
 	});
