@@ -265,7 +265,7 @@ function get_the_kart(req, res){
 			}
 			});
 	query.on('row', function(row){
-			ids.push(row);
+			ids.push(row.item_ids);
 			});
 	query.on('end', function(){
 			change_ids_to_items_and_render(ids, req, res);
