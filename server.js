@@ -265,8 +265,8 @@ function(req, res){
 
 function checkDatabase(res,name,id){
 	console.log("got into check database");
-	users.put(name,id); 
-		
+	var put = users.put(name,id); 
+	console.log(put);		
  var check = users.get(name,res,function(res,returnedDB){
 	
 		
