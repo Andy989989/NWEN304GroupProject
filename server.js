@@ -109,64 +109,64 @@ app.get('/id/*', products.get_from_id);
 			  res.render('login',{'user':req.user})
 			  });
 
-app.get('/profile', function (req, res) {
-	if(req.user ==undefined || req.user.name == undefined){
-		res.render('index', {'user': req.user});
-		return;
-	}
-    users.get_kart(req, res);
+			  app.get('/profile', function (req, res) {
+			  if(req.user ==undefined || req.user.name == undefined){
+			  res.render('index', {'user': req.user});
+			  return;
+			  }
+			  users.get_kart(req, res);
+			  });
+
+			  app.get('/logout', function(req, res){
+			  req.logout();
+			  req.user = undefined;
+			  console.log(req.user);
+			  res.render('index',{'user':req.user});
+			  });
+
+			  app.get('/register', function (req, res) {
+			  res.render('register',{'user':req.user})
+			  });
+
+			  app.get('/aboutus', function (req, res) {
+			  res.render('aboutus',{'user':req.user})
+			  });
+
+			  app.get('/local', function (req, res) {
+			  res.render('local',{user:req.user})
+			  });
+
+			  app.get('/add_to_cart/*', function (req, res) {
+			  var url = "" + req.url;
+			  console.log("url: " + url);
+			  var array = url.split("/");
+			  console.log("array: " + array);
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  console.log("id: " + id);
+			  users.add_to_kart(req, res, id);
+			  })
+
+			  app.get('/getRecommendations',function (req, res) {
+			  var ipAddr = req.headers["x-forwarded-for"];
+			  if (ipAddr){
+			  var list = ipAddr.split(",");
+			  ipAddr = list[list.length-1];
+			  } else {
+			  ipAddr = req.connection.remoteAddress;
+			  }
+			  var geo = geoip.lookup(ipAddr);
+			  if(req.user == undefined){
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
+//var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+var name = req.user.name;
+if(name!==undefined){
+users.get_recommendations(name, geo, function(results){
+//res.send({recommendation: results});
+res.render('display', {results: results, 'user':req.user});
 });
-
-app.get('/logout', function(req, res){
-    req.logout();
-    req.user = undefined;
-    console.log(req.user);
-    res.render('index',{'user':req.user});
-});
-
-app.get('/register', function (req, res) {
-    res.render('register',{'user':req.user})
-});
-
-app.get('/aboutus', function (req, res) {
-    res.render('aboutus',{'user':req.user})
-});
-
-app.get('/local', function (req, res) {
-    res.render('local',{user:req.user})
-});
-
-app.get('/add_to_cart/*', function (req, res) {
-    var url = "" + req.url;
-    console.log("url: " + url);
-    var array = url.split("/");
-    console.log("array: " + array);
-    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-    console.log("id: " + id);
-    users.add_to_kart(req, res, id);
-})
-
-app.get('/getRecommendations',function (req, res) {
-	var ipAddr = req.headers["x-forwarded-for"];
-	if (ipAddr){
-		var list = ipAddr.split(",");
-		ipAddr = list[list.length-1];
-	} else {
-		ipAddr = req.connection.remoteAddress;
-	}
-	var geo = geoip.lookup(ipAddr);
-	if(req.user == undefined){
-		res.render('index', {'user':req.user});
-		return;
-	}
-    //var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-	var name = req.user.name;
-	if(name!==undefined){
-		users.get_recommendations(name, geo, function(results){
-			//res.send({recommendation: results});
-            res.render('display', {results: results, 'user':req.user});
-		});
-	}
+}
 });
 
 
@@ -188,8 +188,8 @@ app.post('/', function(req,res){
 if(req.body.item==undefined){
 res.statusCode = 400;
 } else{
-	postData(req.body.item, true);
-	res.statusCode = 200;
+postData(req.body.item, true);
+res.statusCode = 200;
 }
 res.end();
 });
@@ -200,7 +200,7 @@ res.end();
 
 app.delete('/', function(req,res){
 
-		});
+});
 
 //=====================================
 //AUTHENTICATION METHODS
@@ -278,7 +278,7 @@ res.render('index', {'user':data});
 /*app.get('/profile',
 //  connect.ensureLoggedIn(),
 function(req, res){
-  res.render('profile   ', { user: req.user });
+res.render('profile   ', { user: req.user });
 
 });*/
 

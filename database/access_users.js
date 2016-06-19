@@ -83,7 +83,7 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-		if(err){
+			if(err){
 			return err;
 			}
 			var prev = -1;
@@ -121,7 +121,7 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 
 					var suggestions = [];
 					for(var i in r.rows){
-                        suggestions.push(r.rows[i].id);
+					suggestions.push(r.rows[i].id);
 					}
 					return get_suggestion_based_on_weather(geo, suggestions, callback);
 					});
@@ -170,18 +170,18 @@ function get_entries_from_suggestions_and_call_callback(suggestions, callback){
 	//Remove the trailing ' or id='
 	suggestions_string = suggestions_string.slice(0, -7);
 	var query = client.query("select * from products where id="+suggestions_string, function(err){
-		if(err){
+			if(err){
 			console.log(err);
 			return err;
-		}
-	});
+			}
+			});
 	var results = [];
 	query.on('row', function(row){
-		results.push(JSON.stringify(row));
-	});
+			results.push(JSON.stringify(row));
+			});
 	query.on('end', function(){
-		callback(results);
-	});
+			callback(results);
+			});
 }
 
 function remove_duplicates(array){
@@ -260,7 +260,22 @@ exports.get_kart = function(req, res){
 			});
 	query.on('end', function(){
 			res.status(200);
-			res.render('profile', {results: ids, user: req.user});
+			change_ids_to_items_and_render(ids, req, res);
+			});
+}
+
+function change_ids_to_items_and_render(ids, req, res){
+	var id_string = 'id=';
+	for(var i in ids){
+		id_string += ids[i] + " or id=";
+	}
+	id_string = is_string.slice(0, -7);
+	client.query("select * from products where "+id_string, function(err, rows, fields){
+			if(err){
+			console.log(err);
+			return err;
+			}
+			res.render('profile', {results: rows.rows, user: req.user});
 			});
 }
 
@@ -284,8 +299,8 @@ exports.buy_kart = function(req, res){
 					});
 			});
 	query.on('end', function(){
-		delete_entire_kart(req, res);
-	});
+			delete_entire_kart(req, res);
+			});
 }
 
 exports.delete_entire_kart = function(req, res){
