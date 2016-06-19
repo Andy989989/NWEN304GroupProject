@@ -274,6 +274,8 @@ function get_the_kart(req, res){
 
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
+	console.log("Id array");
+	console.log(ids);
 	for(var i in ids[0]){
 		id_string += ids[i] + " or id=";
 	}
