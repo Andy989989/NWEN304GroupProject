@@ -258,27 +258,32 @@ function get_the_kart(req, res){
 		return;
 	}
 	var ids = [];
-	var query = client.query("select * from karts where name='"+name+"'", function(err){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err){
 			if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
 			}
 			});
 	query.on('row', function(row){
-			ids.push(JSON.stringify(row));
+			ids.push(row.item_ids);
 			});
 	query.on('end', function(){
-			res.status(200);
 			change_ids_to_items_and_render(ids, req, res);
 			});
 }
 
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
+	console.log("Id array");
+	console.log(ids);
+	ids = ids[0];
 	for(var i in ids){
+		if(!/^[0-9]+$/.test(ids[i])){
+			continue;
+		}
 		id_string += ids[i] + " or id=";
 	}
-	id_string = is_string.slice(0, -7);
+	id_string = id_string.slice(0, -7);
 	client.query("select * from products where "+id_string, function(err, rows, fields){
 			if(err){
 			console.log(err);
