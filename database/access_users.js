@@ -284,6 +284,8 @@ function change_ids_to_items_and_render(ids, req, res){
 			console.log(err);
 			return err;
 			}
+			console.log("+++++++++++++ROWS+++++++++++++");
+			console.log(rows.rows);
 			res.render('profile', {results: rows.rows, user: req.user});
 			});
 }
