@@ -284,13 +284,19 @@ function change_ids_to_items_and_render(ids, req, res){
 		id_string += ids[i] + " or id=";
 	}
 	id_string = id_string.slice(0, -7);
-	client.query("select * from products where "+id_string, function(err, rows, fields){
+	var query = client.query("select * from products where "+id_string, function(err, rows, fields){
 			if(err){
 			console.log(err);
 			return err;
 			}
-			res.render('profile', {results: JSON.stringify(rows.rows), user: req.user});
 			});
+	var r = [];
+	query.on('row', function(row){
+		r.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		res.render('profile', {results: r, user: req.user});
+	});
 }
 
 exports.buy_kart = function(req, res){
