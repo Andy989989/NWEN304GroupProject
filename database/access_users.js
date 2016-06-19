@@ -204,7 +204,7 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(req, res item_id){
+exports.add_to_kart = function(req, res, item_id){
 	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
