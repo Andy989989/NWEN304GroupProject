@@ -157,8 +157,7 @@ app.get('/getRecommendations',function (req, res) {
     //var ipAddr = "130.195.6.167";
 	console.log(ipAddr);
 	var geo = geoip.lookup(ipAddr);
-	console.log("geo: ");
-	console.log(geo);
+	console.log("geo: " + geo);
 	if(req.user == undefined){
 		res.render('index', {'user':req.user});
 		return;
@@ -167,8 +166,8 @@ app.get('/getRecommendations',function (req, res) {
 	var name = req.user.name;
 	if(name!==undefined){
 		users.get_recommendations(name, geo, function(results){
-			res.send({recommendation: results});
-            //res.render('display', {results: results, 'user':req.user});
+			//res.send({recommendation: results});
+            res.render('display', {results: results, 'user':req.user});
 		});
 	}
 });
