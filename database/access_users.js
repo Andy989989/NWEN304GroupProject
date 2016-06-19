@@ -374,7 +374,7 @@ exports.delete_from_kart = function(req, res, item_id){
  */
 function check_everything_is_here(name, password){
 	//Check name exists and is valid
-	if(name == undefined || name == null || !(ensure_only_letters_and_numbers(name))){
+	if(name == undefined || name == null || !(ensure_only_letters_numbers_and_spaces(name))){
 		return "ERROR: Missing a valid name.";
 	}
 	//Check password exists and is valid
@@ -405,9 +405,17 @@ function check_for_kart(name, id){
 }
 
 /* This methods checks whether a given word contains anything that is not a letter, number,
+ * space, or underscore, returning a boolean of whether it is valid (does not contain
+ * anything else) or not. This is useful for preventing SQL injection attacks on the database.
+ */
+function ensure_only_letters_and_numbers(word){
+	return /^[\w\s\_]+$/.test(word);
+}
+
+/* This methods checks whether a given word contains anything that is not a letter, number,
  * or underscore, returning a boolean of whether it is valid (does not contain anything else)
  * or not. This is useful for preventing SQL injection attacks on the database.
  */
 function ensure_only_letters_and_numbers(word){
-	return /^\w+$/.test(word);
+	return /^[\w\_]+$/.test(word);
 }
