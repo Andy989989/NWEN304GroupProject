@@ -266,15 +266,18 @@ function(req, res){
 function checkDatabase(res,name,id){
 
   var check = users.get(name,res,function(res,returnedDB){
-
+	console.log("returned from db fb method : "+returnedDB);
+	
     if(returnedDB == undefined || returnedDB == null){
       // if name isnt in the db then add it. 
-      user.put(name,id);
+      console.log(name + " : added this data to db in fb : "+id);
+	user.put(name,id);
     }
 
     else if(returnedDB == name){
       // name is already in the database no need to do anything
-      return;
+      	console.log("name already in db");
+	return;
     }
 
 
