@@ -9,10 +9,7 @@ var connect = require('connect-ensure-login');
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
 var passport = require('passport');
-//var cors = require('cors');
-//var pg = require('pg').native;
 var codes = require('./middleware/code.js');
-//var users = require('../database/access_users.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 
@@ -25,7 +22,6 @@ var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
 // these are used in the authentication
-//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true,maxAge :20000 }));
