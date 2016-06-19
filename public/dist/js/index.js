@@ -17,4 +17,7 @@ $(document).ready(function(e) {
             $(this).trigger("enterKey");
         }
     });
+    $('#recomendations').button().click(function(){
+        window.location.href = "/getRecommendations";
+    });
 });

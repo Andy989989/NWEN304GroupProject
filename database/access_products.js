@@ -95,12 +95,12 @@ exports.get_from_id = function(req, res){
 		res.status(400).send("Invalid url.");
 		return;
 	}
-	if(array.length<3){
+	if(array.length<2){
 		//Not enough arguments have been provided
 		res.status(400).send("Invalid url.");
 		return;
 	}
-	var id = array[2]; //The third item is the id. eg array=['id', 'watches', '32']
+	var id = array[1]; //The second item is the id. eg array=['id', '32']
 	if(/^[0-9]*$/.test(id)){
 		//The id is only made up of numbers (as it should be).
 		var query = client.query("select * from products where id='"+id+"'", function(err, rows, fields){
@@ -196,6 +196,6 @@ function handle_query(query, req, res, tableID){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.render('display', {'user':req.user,results: query_results, table: tableID})
+			res.render('display', {'user':req.user, results: query_results, table: tableID})
 			});
 }

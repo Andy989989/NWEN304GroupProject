@@ -82,15 +82,15 @@ exports.get_recommendations = function(name, loc, callback){
 		return "ERROR: Missing a valid value for loc.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			return err;
-			}
-			var prev = -1;
-			if(rows.length != 0){
-			prev = rows.rows[0].previous_item_id;
-			}
-			return get_suggestion_based_on_previous_item(prev, loc, callback);
-			});
+		}
+		var prev = -1;
+		if(rows.length != 0){
+			//prev = rows.rows[0].previous_item_id;
+		}
+		return get_suggestion_based_on_previous_item(prev, loc, callback);
+	});
 }
 
 /* This method queries the databsase to find all entries with the same type as the previous purchase (prev),
@@ -116,7 +116,8 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 					}
 					var suggestions = [];
 					for(var i in r.rows){
-					suggestions.push(r.rows[i].id);
+					    //suggestions.push(r.rows[i].id);
+                        suggestions.push(r.rows[i]);
 					}
 					return get_suggestion_based_on_weather(loc, suggestions, callback);
 					});
@@ -133,14 +134,15 @@ function get_suggestion_based_on_weather(loc, suggestions, callback){
 		suggestions = [];
 	}
 	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			return err;
-			}
-			for(var i in rows.rows){
+		}
+		for(var i in rows.rows){
+			//suggestions.push(rows.rows[i].id);
 			suggestions.push(rows.rows[i].id);
-			}
-			callback(remove_duplicates(suggestions));
-			});
+		}
+		callback(remove_duplicates(suggestions));
+	});
 }
 
 function remove_duplicates(array){
@@ -163,16 +165,20 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(name, item_id){
+exports.add_to_kart = function(req, res, item_id){
+    console.log("adding to kart");
+    name = req.user.name;
+    console.log("name: " + name);
+    console.log("item id: " + item_id);
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
-			if(err){
-			return err;
-			}
-			});
+	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", 
+        function(err){if(err){
+            return err;
+        }
+    });
 }
 
 /* Updates the kart associated with a user's name by adding the id of an item. If the update
@@ -197,7 +203,9 @@ exports.update_kart = function(name, item_id){
  * and returning the item numbers of the kart. Otherwise it returns an error code and message,
  * detailing what went wrong.
  */
-exports.get_kart = function(res, name){
+exports.get_kart = function(req, res){
+    var name = req.user.name;
+    console.log(name);
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
@@ -214,8 +222,9 @@ exports.get_kart = function(res, name){
 			});
 	query.on('end', function(){
 			res.status(200);
-			res.render('display', {results: ids});
-			});
+			//res.render('display', {results: ids, user:req.user});
+            res.render('profile',{results: ids, user:req.user})
+    });
 }
 
 exports.buy_kart = function(name){

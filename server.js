@@ -124,12 +124,22 @@ app.get('/aboutus', function (req, res) {
   res.render('aboutus',{'user':req.user})
 });
 
-app.get('/local', function (req, res) {
-  res.render('local',{user:req.user})
+app.get('/profile', function (req, res) {
+    users.get_kart(req, res);
 });
 
+app.get('/add_to_cart/*', function (req, res) {
+    var url = "" + req.url;
+    console.log("url: " + url);
+    var array = url.split("/");
+    console.log("array: " + array);
+    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+    console.log("id: " + id);
+    users.add_to_kart(req, res, id);
+})
+
 app.get('/getRecommendations',function (req, res) {
-    var ipAddr = req.headers["x-forwarded-for"];
+    //var ipAddr = req.headers["x-forwarded-for"];
     
     if (ipAddr){
     var list = ipAddr.split(",");
@@ -137,21 +147,21 @@ app.get('/getRecommendations',function (req, res) {
     } else {
     ipAddr = req.connection.remoteAddress;
     }
-    //var ipAddr = "130.195.6.167";
+    var ipAddr = "130.195.6.167";
     console.log(ipAddr);
     var geo = geoip.lookup(ipAddr);
     var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
     
 
-    var name = req.user.name; //TODO change this, it's temporary
+    var name = req.user.name;
      if(name!==undefined){
         users.get_recommendations(name, country, function(results){
-        res.send({recommendation: results});
+            res.render('display', {results: results, 'user':req.user});
         });
      }
-
-  
 });
+
+
 //=====================================
 //PUT METHODS
 //=====================================
@@ -257,12 +267,12 @@ app.get('/login/facebook/return',
           //console.log(req.user.accessToken);
         });
 
-app.get('/profile',
+/*app.get('/profile',
 //  connect.ensureLoggedIn(),
 function(req, res){
-  res.render('profile', { user: req.user });
+  res.render('profile   ', { user: req.user });
 
-});
+});*/
 
 
 

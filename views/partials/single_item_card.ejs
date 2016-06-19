@@ -14,12 +14,12 @@
         </div>
         <div class="panel-footer">
             <div class="row">
-                <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>"
+                <script>
+                    var id = "<%= jsonItem.id %>"
+                    console.log("id = " + id);
+                </script>
+                <a href="/add_to_cart/<%= jsonItem.id %>"
                    class="btn btn-info col-md-2 col-md-offset-1" role="button">Add to cart</a>
-                <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>"
-                   class="btn btn-info col-md-2 col-md-offset-2" role="button">Delete</a>
-                <a href="/<%= table %>/<%= jsonItem.type %>/<%= jsonItem.id %>"
-                   class="btn btn-info col-md-2 col-md-offset-2" role="button">Buy</a>
             </div>
         </div>
     </div>
