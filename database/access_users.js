@@ -210,8 +210,11 @@ exports.add_to_kart = function(req, res, item_id){
 	if(missing!=null){
 		return missing;
 	}
+	console.log("_______________________________ITEM_ID_______________________________");
+	console.log(item_id);
 	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
+			console.log(err);
 			update_the_kart(req, res, item_id);
 			return;
 			}
