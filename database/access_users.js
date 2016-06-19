@@ -280,7 +280,7 @@ function change_ids_to_items_and_render(ids, req, res){
 	for(var i in ids){
 		if(!/^[0-9]+$/.test(ids[i])){
 			continue;
-		{
+		}
 		id_string += ids[i] + " or id=";
 	}
 	id_string = id_string.slice(0, -7);
