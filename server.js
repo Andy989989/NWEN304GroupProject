@@ -264,9 +264,10 @@ function(req, res){
 });
 
 function checkDatabase(res,name,id){
-	console.log("got into check database");
 	var put = users.put(name,id); 
-	console.log(put);		
+	console.log(put);
+
+	console.log("got into check database: "+ name+" + " + id);
  var check = users.get(name,res,function(res,returnedDB){
 	
 		
