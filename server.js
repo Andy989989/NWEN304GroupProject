@@ -143,7 +143,9 @@ app.get('/id/*', products.get_from_id);
 			  console.log("array: " + array);
 			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
 			  console.log("id: " + id);
-			  users.add_to_kart(req, res, id);
+			  if(req.user != undefined && req.user.name != undefined){
+				  users.add_to_kart(req, res, id);
+			  }
 			  })
 
 			  app.get('/getRecommendations',function (req, res) {
