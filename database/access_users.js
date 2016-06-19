@@ -143,6 +143,7 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 	}
 	console.log("================LOC==============");
 	console.log(loc);
+	console.log("END LOC");
 	//TODO temporary! Remove
 	callback(suggestions);
 	return;
