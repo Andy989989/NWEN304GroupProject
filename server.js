@@ -140,10 +140,7 @@ app.get('/getRecommendations',function (req, res) {
 	} else {
 		ipAddr = req.connection.remoteAddress;
 	}
-	console.log(ipAddr);
 	var geo = geoip.lookup(ipAddr);
-	console.log("geo: ");
-	console.log(geo);
 	if(req.user == undefined){
 		res.render('index', {'user':req.user});
 		return;
