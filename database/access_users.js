@@ -4,6 +4,10 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
+var weather = require('weather');
+var yahoo_weather = require('weather-yahoo');
+//var api_key = '206cdba8d542e635ec9e478fff147b12';
+//weather.setAPPID(api_key);
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
@@ -74,23 +78,24 @@ exports.update_password = function(name, new_password){
  * I could make this appen synchronously in Node.js. As always, this throws helpful error messages when it
  * fails.
  */
-exports.get_recommendations = function(name, loc, callback){
+exports.get_recommendations = function(name, geo, callback){
 	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	if(loc == null || loc == undefined || !ensure_only_letters_and_numbers(loc)){
-		return "ERROR: Missing a valid value for loc.";
+	if(geo == null || geo == undefined){
+		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 		if(err){
 			return err;
-		}
-		var prev = -1;
-		if(rows.length != 0){
-			//prev = rows.rows[0].previous_item_id;
-		}
-		return get_suggestion_based_on_previous_item(prev, loc, callback);
-	});
+			}
+			var prev = -1;
+			if(rows.length != 0){
+			prev = rows.rows[0].previous_item_id;
+			}
+			get_suggestion_based_on_previous_item(prev, geo, callback);
+			return;
+			});
 }
 
 /* This method queries the databsase to find all entries with the same type as the previous purchase (prev),
@@ -98,11 +103,11 @@ exports.get_recommendations = function(name, loc, callback){
  * If something goes wrong, a descriptive error message is returned, however, if everything goes nicely,
  * nothing is returned, and instead, the callback method is called (by get_suggestion_based_on_weather).
  */
-function get_suggestion_based_on_previous_item(prev, loc, callback){
+function get_suggestion_based_on_previous_item(prev, geo, callback){
 	var types = {};
 	if(prev == -1){
 		//Ignore the previous item and just get the information from the location
-		return get_suggestion_based_on_weather(loc, null, callback);
+		return get_suggestion_based_on_weather(geo, null, callback);
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
@@ -119,7 +124,7 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
 					    //suggestions.push(r.rows[i].id);
                         suggestions.push(r.rows[i]);
 					}
-					return get_suggestion_based_on_weather(loc, suggestions, callback);
+					return get_suggestion_based_on_weather(geo, suggestions, callback);
 					});
 			}
 			});
@@ -129,19 +134,53 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  * suggestions, and passes the now-complete array to the callback method. If something goes wrong, a
  * descriptive error is thrown.
  */
-function get_suggestion_based_on_weather(loc, suggestions, callback){
+function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
+	var loc = geo.city;
+	if(loc == undefined || loc == null || loc == ''){
+		get_entries_from_suggestions_and_call_callback(suggestions, callback);
+		return;
+	}
+	console.log("got past that");
+	yahoo_weather.getFullWeather(loc).then(function(res){
+			var condition = res.query.results.channel.item.condition.text;
+			console.log("condition: "+condition);
+			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
+					if(err){
+					return err;
+					}
+					for(var i in rows.rows){
+					suggestions.push(rows.rows[i].id);
+					}
+					get_entries_from_suggestions_and_call_callback(suggestions, callback);
+					});
+			});
+}
+
+function get_entries_from_suggestions_and_call_callback(suggestions, callback){
+	if(suggestions == undefined || suggestions == null || suggestions.length == 0){
+		callback(suggestions);
+	}
+	suggestions = remove_duplicates(suggestions);
+	var suggestions_string = '';
+	for(var i in suggestions){
+		suggestions_string += suggestions[i] + " or id="
+	}
+	//Remove the trailing ' or id='
+	suggestions_string = suggestions_string.slice(0, -7);
+	var query = client.query("select * from products where id="+suggestions_string, function(err){
 		if(err){
 			return err;
 		}
-		for(var i in rows.rows){
-			//suggestions.push(rows.rows[i].id);
-			suggestions.push(rows.rows[i].id);
-		}
-		callback(remove_duplicates(suggestions));
+	});
+	var results = [];
+	query.on('row', function(row){
+		results.push(JSON.stringify(row));
+	});
+	query.on('end', function(){
+		callback(results);
 	});
 }
 

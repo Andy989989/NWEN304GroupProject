@@ -95,37 +95,45 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
-	res.render('index',{'user':req.user});
-});
+		res.render('index',{'user':req.user});
+		});
 
 
 app.get('/search*', products.search);
+
 app.get('/id/*', products.get_from_id);
-app.get('/men*', products.get_me_something);
-app.get('/women*', products.get_me_something);
-app.get('/kids*', products.get_me_something);
 
-app.get('/login', function(req, res){
-  res.render('login',{'user':req.user})
-});
+			  app.get('/men*', products.get_me_something);
 
-app.get('/logout', function(req, res){
-  req.logout();
-  req.user = undefined;
-  console.log(req.user);
-  res.render('index',{'user':req.user});
-});
+			  app.get('/women*', products.get_me_something);
 
-app.get('/register', function (req, res) {
-  res.render('register',{'user':req.user})
-});
+			  app.get('/kids*', products.get_me_something);
 
-app.get('/aboutus', function (req, res) {
-  res.render('aboutus',{'user':req.user})
-});
+			  app.get('/login', function(req, res){
+			  res.render('login',{'user':req.user})
+			  });
 
 app.get('/profile', function (req, res) {
     users.get_kart(req, res);
+});
+
+app.get('/logout', function(req, res){
+    req.logout();
+    req.user = undefined;
+    console.log(req.user);
+    res.render('index',{'user':req.user});
+});
+
+app.get('/register', function (req, res) {
+    res.render('register',{'user':req.user})
+});
+
+app.get('/aboutus', function (req, res) {
+    res.render('aboutus',{'user':req.user})
+});
+
+app.get('/local', function (req, res) {
+    res.render('local',{user:req.user})
 });
 
 app.get('/add_to_cart/*', function (req, res) {
@@ -139,26 +147,30 @@ app.get('/add_to_cart/*', function (req, res) {
 })
 
 app.get('/getRecommendations',function (req, res) {
-    //var ipAddr = req.headers["x-forwarded-for"];
-    
-    if (ipAddr){
-    var list = ipAddr.split(",");
-    ipAddr = list[list.length-1];
-    } else {
-    ipAddr = req.connection.remoteAddress;
-    }
-    var ipAddr = "130.195.6.167";
-    console.log(ipAddr);
-    var geo = geoip.lookup(ipAddr);
-    var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-    
-
-    var name = req.user.name;
-     if(name!==undefined){
-        users.get_recommendations(name, country, function(results){
-            res.render('display', {results: results, 'user':req.user});
-        });
-     }
+	var ipAddr = req.headers["x-forwarded-for"];
+	if (ipAddr){
+		var list = ipAddr.split(",");
+		ipAddr = list[list.length-1];
+	} else {
+		ipAddr = req.connection.remoteAddress;
+	}
+    //var ipAddr = "130.195.6.167";
+	console.log(ipAddr);
+	var geo = geoip.lookup(ipAddr);
+	console.log("geo: ");
+	console.log(geo);
+	if(req.user == undefined){
+		res.render('index', {'user':req.user});
+		return;
+	}
+    //var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+	var name = req.user.name;
+	if(name!==undefined){
+		users.get_recommendations(name, geo, function(results){
+			res.send({recommendation: results});
+            //res.render('display', {results: results, 'user':req.user});
+		});
+	}
 });
 
 
@@ -168,7 +180,7 @@ app.get('/getRecommendations',function (req, res) {
 
 app.put('/', function(req,res){
 
-		});
+});
 
 app.put('/login', users.put);
 
@@ -177,14 +189,14 @@ app.put('/login', users.put);
 //=====================================
 
 app.post('/', function(req,res){
-		if(req.body.item==undefined){
-		res.statusCode = 400;
-		} else{
-		postData(req.body.item, true);
-		res.statusCode = 200;
-		}
-		res.end();
-		});
+if(req.body.item==undefined){
+res.statusCode = 400;
+} else{
+	postData(req.body.item, true);
+	res.statusCode = 200;
+}
+res.end();
+});
 
 //=====================================
 //DELETE METHODS
@@ -200,49 +212,49 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
- app.all('/auth/*',checkAuth);
+app.all('/auth/*',checkAuth);
 //app.all('/auth/*', connect.ensureLoggedIn();
 
-				app.post('/auth/testAuth',auth.testAuth);
+app.post('/auth/testAuth',auth.testAuth);
 
-				app.post('/newUser',auth.newUser);
+app.post('/newUser',auth.newUser);
 
 
 app.post('/login', function(req,res, next){
-    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
-      console.log("gets into loacl auth");
-      console.log(user);
+passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+console.log("gets into loacl auth");
+console.log(user);
 
-        if(user!=false){
-            console.log("user exists");
-            console.log("username :" + user);
-            req.session.username = "'" + user + "'";
-            req.session.save();
-            //return res.redirect('/');
-        }
-        else{
-            console.log("Login unsucessful");
-            //res.send({redirect: '/'});
-            //res.status(401).send(user);
-        }
+if(user!=false){
+console.log("user exists");
+console.log("username :" + user);
+req.session.username = "'" + user + "'";
+req.session.save();
+		//return res.redirect('/');
+		}
+		else{
+		console.log("Login unsucessful");
+//res.send({redirect: '/'});
+//res.status(401).send(user);
+}
 
 
-        req.logIn(user, function(err) {
-          if (err) {
-            req.session.messages = "Error";
-            console.log('login Error');
-            return res.status(401).send(user +" :   " +err);
+req.logIn(user, function(err) {
+if (err) {
+req.session.messages = "Error";
+console.log('login Error');
+return res.status(401).send(user +" :   " +err);
 
-          }
-          req.session.messages = "Login successfully";
-          var data = { 'name' : user };
-          req.session.passport.user = data;
-          console.log(data +" : " +user);
+}
+req.session.messages = "Login successfully";
+var data = { 'name' : user };
+req.session.passport.user = data;
+console.log(data +" : " +user);
 
-          console.log('login successful');
-          res.render('index',{'user':req.user});
-      });  
-    })(req,res,next);
+console.log('login successful');
+res.render('index',{'user':req.user});
+});  
+})(req,res,next);
 });
 
 // TODO have a database of vaild tokens
@@ -252,52 +264,56 @@ app.get('/login/facebook',
 passport.authenticate('facebook'));
 
 app.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    //console.log(req.data);
+passport.authenticate('facebook', { failureRedirect: '/login' }),
+function(req, res) {
+//console.log(req.data);
 
 
-          var data = { 'name' : req.user.displayName };
-          req.session.passport.user = data;
-          //console.log(req.user.displayName);
-    //var data = {'data':req.user.accessToken};
-          //'res.render('index', {data:data});
+var data = { 'name' : req.user.displayName };
+req.session.passport.user = data;
+//console.log(req.user.displayName);
+//var data = {'data':req.user.accessToken};
+//'res.render('index', {data:data});
 
-          res.render('index', {'user':data});
-          //console.log(req.user.accessToken);
-        });
+res.render('index', {'user':data});
+//console.log(req.user.accessToken);
+});
 
 /*app.get('/profile',
 //  connect.ensureLoggedIn(),
 function(req, res){
+<<<<<<< HEAD
   res.render('profile   ', { user: req.user });
+=======
+res.render('profile', { user: req.user });
+>>>>>>> 7678746e5a7231db4aedf85a54438aed9d9f5e3b
 
 });*/
 
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-  request.logout();
-  response.send( 'Logged out!' );
-      //res.redirect('/');
-});
+		request.logout();
+		response.send( 'Logged out!' );
+		//res.redirect('/');
+		});
 
 function checkAuth(req, res, next) {
-  if (req.isAuthenticated()){
-    return next();
-  }
-  else{
-    res.status(401).send("Failed to authenticate: please login")
-  }
+	if (req.isAuthenticated()){
+		return next();
+	}
+	else{
+		res.status(401).send("Failed to authenticate: please login")
+	}
 
 }
 
 
 app.listen(port, function(){
-console.log('Listening:' + port);
-});
+		console.log('Listening:' + port);
+		});
 
 app.get('*', function(req, res){
-  res.status(400).send("Sorry, that page doesn't exist.");
-});
+		res.status(400).send("Sorry, that page doesn't exist.");
+		});
 
