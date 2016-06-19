@@ -221,40 +221,41 @@ app.post('/newUser',auth.newUser);
 
 
 app.post('/login', function(req,res, next){
-passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
-console.log("gets into loacl auth");
-console.log(user);
 
-if(user!=false){
-console.log("user exists");
-console.log("username :" + user);
-req.session.username = "'" + user + "'";
-req.session.save();
-		//return res.redirect('/');
-		}
-		else{
-		console.log("Login unsucessful");
-//res.send({redirect: '/'});
-//res.status(401).send(user);
-}
+    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+      console.log("gets into loacl auth");
+      console.log(user);
 
+        if(user!=false){
+            console.log("user exists");
+            console.log("username :" + user);
+            req.session.username = "'" + user + "'";
+            req.session.save();
+            //return res.redirect('/');
+        }
+        else{
+            console.log("Login unsucessful");
+            //res.send({redirect: '/'});
+            //res.status(401).send(user);
+        }
 
-req.logIn(user, function(err) {
-if (err) {
-req.session.messages = "Error";
-console.log('login Error');
-return res.status(401).send(user +" :   " +err);
+        req.logIn(user, function(err) {
+          if (err) {
+            req.session.messages = "Error";
+            console.log('login Error');
+            return res.status(401).send(user +" :   " +err);
 
-}
-req.session.messages = "Login successfully";
-var data = { 'name' : user };
-req.session.passport.user = data;
-console.log(data +" : " +user);
+          }
+          req.session.messages = "Login successfully";
+          var data = { 'name' : user };
+          req.session.passport.user = data;
+          console.log(data +" : " +user);
 
-console.log('login successful');
-res.render('index',{'user':req.user});
-});  
-})(req,res,next);
+          console.log('login successful');
+          res.render('index',{'user':req.user});
+      });  
+    })(req,res,next);
+
 });
 
 // TODO have a database of vaild tokens
@@ -268,6 +269,7 @@ passport.authenticate('facebook', { failureRedirect: '/login' }),
 function(req, res) {
 //console.log(req.data);
 
+          checkDatabase(res,req.user.displayName,req.user.id);
 
 var data = { 'name' : req.user.displayName };
 req.session.passport.user = data;
@@ -285,6 +287,33 @@ function(req, res){
 res.render('profile   ', { user: req.user });
 
 });*/
+
+function checkDatabase(res,name,id){
+	var put = users.put(name,id); 
+	console.log(put);
+
+	console.log("got into check database: "+ name+" + " + id);
+ var check = users.get(name,res,function(res,returnedDB){
+			
+   if(returnedDB == undefined || returnedDB == null){
+     	//if name isnt in the db then add it. 
+	console.log("shit failed when adding to the db");
+   }else{
+	console.log("shit didnt fail when adding to the db");
+   }
+
+    //else if(returnedDB == name){
+     	//name is already in the database no need to do anything
+  	//console.log("name already in db");
+	//return;
+    //}
+
+
+
+  });
+
+}
+
 
 
 

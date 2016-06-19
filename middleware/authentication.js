@@ -166,7 +166,6 @@ if(!req.body.hasOwnProperty('token')) {
     res.statusCode = 400;
     return res.send('Error 400');
   }
-
 }
 
 exports.newToken = function (req, res){
