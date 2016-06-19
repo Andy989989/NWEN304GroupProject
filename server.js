@@ -110,6 +110,9 @@ app.get('/id/*', products.get_from_id);
 			  });
 
 app.get('/profile', function (req, res) {
+	if(req.user.name == undefined){
+		res.render('index', {'user': req.user});
+	}
     users.get_kart(req, res);
 });
 
