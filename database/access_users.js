@@ -278,7 +278,7 @@ function change_ids_to_items_and_render(ids, req, res){
 	for(var i in ids){
 		id_string += ids[i] + " or id=";
 	}
-	id_string = is_string.slice(0, -7);
+	id_string = id_string.slice(0, -7);
 	client.query("select * from products where "+id_string, function(err, rows, fields){
 			if(err){
 			console.log(err);
