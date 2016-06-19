@@ -163,21 +163,17 @@ function get_entries_from_suggestions_and_call_callback(suggestions, callback){
 		callback(suggestions);
 	}
 	suggestions = remove_duplicates(suggestions);
-	var suggestion_string = '';
+	var suggestions_string = '';
 	for(var i in suggestions){
 		suggestions_string += suggestions[i] + " or id="
 	}
 	//Remove the trailing ' or id='
-	suggestion_string = suggestion_string.slice(0, -7);
+	suggestions_string = suggestions_string.slice(0, -7);
 	var query = client.query("select * from products where id="+suggestions_string, function(err){
 		if(err){
 			return err;
 		}
 	});
-	handle_query(query, callback);
-}
-
-function handle_query(query, callback){
 	var results = [];
 	query.on('row', function(row){
 		results.push(JSON.stringify(row));
