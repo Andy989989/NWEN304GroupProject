@@ -212,7 +212,8 @@ exports.add_to_kart = function(req, res, item_id){
 	}
 	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
-			return err;
+			update_kart(req, res, item_id);
+			return;
 			}
 			r = [];
 			res.render('profile', {results: r, user: req.user});
