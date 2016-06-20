@@ -212,17 +212,12 @@ exports.add_to_kart = function(req, res, item_id){
 	if(missing!=null){
 		return missing;
 	}
-	console.log("_______________________________ITEM_ID_______________________________");
-	console.log(item_id);
 	client.query("select item_ids from karts where name='"+name+"'", function(err, rows){
 			if(err){
 			console.log(err);
 			return err;
 			}
-			console.log(rows);
 			var id_array = rows.rows[0];
-			console.log("===========IDS=========");
-			console.log(id_array);
 			var query;
 			if(id_array == undefined || id_array.length == 0){
 			//Person is not in the karts table
@@ -296,8 +291,6 @@ function get_the_kart(req, res){
 
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
-	console.log("Id array");
-	console.log(ids);
 	if(ids[0] == null || ids.length == 0){
 		res.render('profile', {results: [], user: req.user});
 		return;
