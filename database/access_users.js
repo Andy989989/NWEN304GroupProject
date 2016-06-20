@@ -219,7 +219,7 @@ exports.add_to_kart = function(req, res, item_id){
 			console.log(err);
 			return err;
 			}
-			var id_array = rows.rows.item_ids == undefined || rows.rows.item_ids.length == 0 ? {} : rows.rows.item_ids;
+			var id_array = rows.rows.item_ids == undefined || rows.rows.item_ids.length == 0 ? [] : rows.rows.item_ids;
 			id_array.push(item_id);
 			var query;
 			if(id_array.length == 1){
