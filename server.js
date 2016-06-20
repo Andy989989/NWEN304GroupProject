@@ -120,7 +120,6 @@ app.get('/id/*', products.get_from_id);
 			  app.get('/logout', function(req, res){
 			  req.logout();
 			  req.user = undefined;
-			  console.log(req.user);
 			  res.render('index',{'user':req.user});
 			  });
 
@@ -138,11 +137,8 @@ app.get('/id/*', products.get_from_id);
 
 			  app.get('/add_to_cart/*', function (req, res) {
 			  var url = "" + req.url;
-			  console.log("url: " + url);
 			  var array = url.split("/");
-			  console.log("array: " + array);
 			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-			  console.log("id: " + id);
 			  if(req.user == undefined || req.user.name == undefined){
 					res.render('index', {'user':req.user});
 					return;
@@ -267,9 +263,8 @@ passport.authenticate('facebook'));
 app.get('/login/facebook/return',
 passport.authenticate('facebook', { failureRedirect: '/login' }),
 function(req, res) {
-//console.log(req.data);
 
-          checkDatabase(res,req.user.displayName,req.user.id);
+checkDatabase(res,req.user.displayName,req.user.id);
 
 var data = { 'name' : req.user.displayName };
 req.session.passport.user = data;
@@ -305,9 +300,9 @@ function checkDatabase(res,name,id){
 			//Otherwise the user alread exists
 			console.log("user already exists");
 			if(id == password){
-				//Correct authentication TODO
+			//Correct authentication TODO
 			} else{
-				//Don't let them in, they have the wrong password TODO
+			//Don't let them in, they have the wrong password TODO
 			}
 			});
 }

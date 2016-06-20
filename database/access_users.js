@@ -31,7 +31,6 @@ exports.get = function(name, res, callback){
 			console.log(err);
 			return err;
 			}
-			console.log("about to call back");
 			callback(res, rows.rows[0].password);
 			});
 }
