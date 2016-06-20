@@ -219,6 +219,7 @@ exports.add_to_kart = function(req, res, item_id){
 			console.log(err);
 			return err;
 			}
+			console.log(rows);
 			var id_array = rows.rows.item_ids;
 			console.log("===========IDS=========");
 			console.log(id_array);
