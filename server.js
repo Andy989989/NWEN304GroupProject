@@ -289,29 +289,27 @@ res.render('profile   ', { user: req.user });
 });*/
 
 function checkDatabase(res,name,id){
-	var put = users.put(name,id); 
-	console.log(put);
-
-	console.log("got into check database: "+ name+" + " + id);
- var check = users.get(name,res,function(res,returnedDB){
-			
-   if(returnedDB == undefined || returnedDB == null){
-     	//if name isnt in the db then add it. 
-	console.log("shit failed when adding to the db");
-   }else{
-	console.log("shit didnt fail when adding to the db");
-   }
-
-    //else if(returnedDB == name){
-     	//name is already in the database no need to do anything
-  	//console.log("name already in db");
-	//return;
-    //}
-
-
-
-  });
-
+	users.get(name, res, function(res, password){
+			if(password == null || password == undefined){
+			//User does not already exist, so add to database
+			users.put(name, id);
+			users.get(name, res, function(res, returnedDB){
+					if(returnedDB == null || returnedDB == undefined){
+					console.log("failed to add to the database");
+					} else {
+					console.log("didn't fail to add to the database");
+					}
+					});
+			return;
+			}
+			//Otherwise the user alread exists
+			console.log("user already exists");
+			if(id == password){
+				//Correct authentication TODO
+			} else{
+				//Don't let them in, they have the wrong password TODO
+			}
+			});
 }
 
 
