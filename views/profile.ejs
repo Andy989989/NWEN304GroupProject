@@ -4,14 +4,22 @@
     </head>
         <body>
         <% include partials/navbar %>
-        <% console.log('[Profile] In profile') %>
+        <div class="row">
+            <div class="col-sm-5 col-sm-offset-1">
+                <h1><%= user.name %>'s Kart</h1>
+            </div>
+            <div class="col-sm-5">
+                <input type="button" class="btn pull-right" onclick="location.href='http://google.com';" value="Purchase Kart" />
+            </div>
+        </div>
+
         <% if(results.length < 1){ %>
             NOTHING HERE
         <% }else if(results.length > 1){%>
             <% console.log('[Profile]Results returned from server: ' + results); %>
             <div class="row flex-row">
+                <% var profile = true %>
                 <% results.forEach(function(item) { %>
-                    <% console.log('[Profile]Each object in Results: ' + item); %>
                     <% var jsonItem = JSON.parse(item)%>
                     <% include partials/item_card %>
                 <% }); %>

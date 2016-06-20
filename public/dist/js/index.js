@@ -18,6 +18,11 @@ $(document).ready(function(e) {
         }
     });
     $('#recomendations').button().click(function(){
-        window.location.href = "/getRecommendations";
+        var ok = window.confirm("Are you okay with us using your location for recommendations?");
+        if(ok){
+            window.location.href = "/getRecommendations";
+        }else{
+            return;
+        }
     });
 });
