@@ -214,6 +214,32 @@ exports.add_to_kart = function(req, res, item_id){
 	}
 	console.log("_______________________________ITEM_ID_______________________________");
 	console.log(item_id);
+	client.query("select item_ids from karts where name='"+name+"'", function(err, rows){
+			if(err){
+			console.log(err);
+			return err;
+			}
+			var id_array = rows.rows.item_ids == undefined || rows.rows.item_ids.length == 0 ? {} : rows.rows.item_ids;
+			id_array.push(item_id);
+			var query;
+			if(id_array.length == 1){
+			//Person is not in the karts table
+			query = "insert into karts values ('"+name+"', '"+id_array+"')";
+			} else{
+			//Person is in the table, so update, instead of adding.
+			query = "update karts set item_ids = "+id_array+" where name='"+name+"'";
+			}
+			client.query(query, function(err){
+					if(err){
+					console.log(err);
+					return err;
+					}
+					});
+	});
+
+
+
+	var id_array = [];
 	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
 			if(err){
 			console.log(err);
@@ -301,11 +327,11 @@ function change_ids_to_items_and_render(ids, req, res){
 			});
 	var r = [];
 	query.on('row', function(row){
-		r.push(JSON.stringify(row));
-	});
+			r.push(JSON.stringify(row));
+			});
 	query.on('end', function(){
-		res.render('profile', {results: r, user: req.user});
-	});
+			res.render('profile', {results: r, user: req.user});
+			});
 }
 
 exports.buy_kart = function(req, res){
