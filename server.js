@@ -99,78 +99,73 @@ app.get('/search*', products.search);
 
 app.get('/id/*', products.get_from_id);
 
-app.get('/men*', products.get_me_something);
 
-app.get('/women*', products.get_me_something);
+			  app.get('/men*', products.get_me_something);
 
-app.get('/kids*', products.get_me_something);
+			  app.get('/women*', products.get_me_something);
 
-app.get('/login', function(req, res){
-res.render('login',{'user':req.user})
-});
+			  app.get('/kids*', products.get_me_something);
 
-app.get('/profile', function (req, res) {
-    if(req.user ==undefined || req.user.name == undefined){
-        res.render('index', {'user': req.user});
-        return;
-    }
-    users.get_kart(req, res);
-});
+			  app.get('/login', function(req, res){
+			  res.render('login',{'user':req.user})
+			  });
 
-app.get('/logout', function(req, res){
-    req.logout();
-    req.user = undefined;
-    console.log(req.user);
-    res.render('index',{'user':req.user});
-});
+			  app.get('/profile', function (req, res) {
+			  if(req.user ==undefined || req.user.name == undefined){
+			  res.render('index', {'user': req.user});
+			  return;
+			  }
+			  users.get_kart(req, res);
+			  });
 
-app.get('/register', function (req, res) {
-    res.render('register',{'user':req.user})
-});
+			  app.get('/logout', function(req, res){
+			  req.logout();
+			  req.user = undefined;
+			  res.render('index',{'user':req.user});
+			  });
 
-app.get('/aboutus', function (req, res) {
-    res.render('aboutus',{'user':req.user})
-});
+			  app.get('/register', function (req, res) {
+			  res.render('register',{'user':req.user})
+			  });
 
-app.get('/local', function (req, res) {
-    res.render('local',{user:req.user})
-});
+			  app.get('/aboutus', function (req, res) {
+			  res.render('aboutus',{'user':req.user})
+			  });
 
+			  app.get('/local', function (req, res) {
+			  res.render('local',{user:req.user})
+			  });
 
-app.get('/add_to_cart/*', function (req, res) {
-    var url = "" + req.url;
-    console.log("url: " + url);
-    var array = url.split("/");
-    console.log("array: " + array);
-    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-    console.log("id: " + id);
-    if(req.user == undefined || req.user.name == undefined){
-        res.render('index', {'user':req.user});
-    return;
-}
-users.add_to_kart(req, res, id);
-});
+			  app.get('/add_to_cart/*', function (req, res) {
+			  var url = "" + req.url;
+			  var array = url.split("/");
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  if(req.user == undefined || req.user.name == undefined){
+					res.render('index', {'user':req.user});
+					return;
+				}
+				  users.add_to_kart(req, res, id);
+			  });
 
-app.get('/getRecommendations',function (req, res) {
-var ipAddr = req.headers["x-forwarded-for"];
-if (ipAddr){
-var list = ipAddr.split(",");
-ipAddr = list[list.length-1];
-} else {
-ipAddr = req.connection.remoteAddress;
-}
-var ipAddr = "130.195.6.167";
-var geo = geoip.lookup(ipAddr);
-if(req.user == undefined){
-res.render('index', {'user':req.user});
-return;
-}
+			  app.get('/getRecommendations',function (req, res) {
+			  var ipAddr = req.headers["x-forwarded-for"];
+			  if (ipAddr){
+			  var list = ipAddr.split(",");
+			  ipAddr = list[list.length-1];
+			  } else {
+			  ipAddr = req.connection.remoteAddress;
+			  }
+			  var geo = geoip.lookup(ipAddr);
+			  if(req.user == undefined){
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
 //var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 var name = req.user.name;
 if(name!==undefined){
 users.get_recommendations(name, geo, function(results){
 //res.send({recommendation: results});
-res.render('display', {results: results, 'user':req.user});
+res.render('display', {results: results, user: req.user, kart: false});
 });
 }
 });
@@ -223,40 +218,41 @@ app.post('/newUser',auth.newUser);
 
 
 app.post('/login', function(req,res, next){
-passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
-console.log("gets into loacl auth");
-console.log(user);
 
-if(user!=false){
-console.log("user exists");
-console.log("username :" + user);
-req.session.username = "'" + user + "'";
-req.session.save();
-		//return res.redirect('/');
-		}
-		else{
-		console.log("Login unsucessful");
-//res.send({redirect: '/'});
-//res.status(401).send(user);
-}
+    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+      console.log("gets into loacl auth");
+      console.log(user);
 
+        if(user!=false){
+            console.log("user exists");
+            console.log("username :" + user);
+            req.session.username = "'" + user + "'";
+            req.session.save();
+            //return res.redirect('/');
+        }
+        else{
+            console.log("Login unsucessful");
+            //res.send({redirect: '/'});
+            //res.status(401).send(user);
+        }
 
-req.logIn(user, function(err) {
-if (err) {
-req.session.messages = "Error";
-console.log('login Error');
-return res.status(401).send(user +" :   " +err);
+        req.logIn(user, function(err) {
+          if (err) {
+            req.session.messages = "Error";
+            console.log('login Error');
+            return res.status(401).send(user +" :   " +err);
 
-}
-req.session.messages = "Login successfully";
-var data = { 'name' : user };
-req.session.passport.user = data;
-console.log(data +" : " +user);
+          }
+          req.session.messages = "Login successfully";
+          var data = { 'name' : user };
+          req.session.passport.user = data;
+          console.log(data +" : " +user);
 
-console.log('login successful');
-res.render('index',{'user':req.user});
-});  
-})(req,res,next);
+          console.log('login successful');
+          res.render('index',{'user':req.user});
+      });  
+    })(req,res,next);
+
 });
 
 // TODO have a database of vaild tokens
@@ -268,8 +264,8 @@ passport.authenticate('facebook'));
 app.get('/login/facebook/return',
 passport.authenticate('facebook', { failureRedirect: '/login' }),
 function(req, res) {
-//console.log(req.data);
 
+checkDatabase(res,req.user.displayName,req.user.id);
 
 var data = { 'name' : req.user.displayName };
 req.session.passport.user = data;
@@ -281,12 +277,30 @@ res.render('index', {'user':data});
 //console.log(req.user.accessToken);
 });
 
-/*app.get('/profile',
-//  connect.ensureLoggedIn(),
-function(req, res){
-res.render('profile   ', { user: req.user });
+function checkDatabase(res,name,id){
+	users.get(name, res, function(res, password){
+			if(password == null || password == undefined){
+			//User does not already exist, so add to database
+			users.put(name, id);
+			users.get(name, res, function(res, returnedDB){
+					if(returnedDB == null || returnedDB == undefined){
+					console.log("failed to add to the database");
+					} else {
+					console.log("didn't fail to add to the database");
+					}
+					});
+			return;
+			}
+			//Otherwise the user alread exists
+			console.log("user already exists");
+			if(id == password){
+			//Correct authentication TODO
+			} else{
+			//Don't let them in, they have the wrong password TODO
+			}
+			});
+}
 
-});*/
 
 
 

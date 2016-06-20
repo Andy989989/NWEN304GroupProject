@@ -23,11 +23,12 @@ app.use(bp.json());
  * of the error.
  */
 exports.get = function(name, res, callback){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing valid value for name.";
 	}
 	var password = client.query("select password from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
+			console.log(err);
 			return err;
 			}
 			callback(res, rows.rows[0].password);
@@ -45,6 +46,7 @@ exports.put = function(name, password){
 	if(missing == null){
 		client.query("insert into users (name, password) values ('"+name+"','"+password+"')", function(err){
 				if(err){
+				console.log(err);
 				return err;
 				}
 				});
@@ -76,7 +78,7 @@ exports.update_password = function(name, new_password){
  * fails.
  */
 exports.get_recommendations = function(name, geo, callback){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
 	if(geo == null || geo == undefined){
@@ -210,13 +212,27 @@ exports.add_to_kart = function(req, res, item_id){
 	if(missing!=null){
 		return missing;
 	}
-	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+	client.query("select item_ids from karts where name='"+name+"'", function(err, rows){
 			if(err){
-			update_the_kart(req, res, item_id);
-			return;
+			console.log(err);
+			return err;
 			}
-			get_the_kart(req, res);
-			});
+			var id_array = rows.rows[0];
+			var query;
+			if(id_array == undefined || id_array.length == 0){
+			//Person is not in the karts table
+			client.query("insert into karts (name) values ('"+name+"')", function(err){
+					if(err){
+					console.log(err);
+					return err;
+					}
+					update_the_kart(req, res, item_id);
+					});
+			} else{
+				//Person is in the table, so update, instead of adding.
+				update_the_kart(req, res, item_id);
+			}
+	});
 }
 
 exports.update_kart = function(req, res, item_id){
@@ -235,6 +251,7 @@ function update_the_kart(req, res, item_id){
 	}
 	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
 			if(err){
+			console.log(err);
 			return err;
 			}
 			get_the_kart(req, res);
@@ -253,7 +270,7 @@ exports.get_kart = function(req, res){
  */
 function get_the_kart(req, res){
 	var name = req.user.name;
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
 	}
@@ -274,8 +291,10 @@ function get_the_kart(req, res){
 
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
-	console.log("Id array");
-	console.log(ids);
+	if(ids[0] == null || ids.length == 0){
+		res.render('profile', {results: [], user: req.user, kart: true});
+		return;
+	}
 	ids = ids[0];
 	for(var i in ids){
 		if(!/^[0-9]+$/.test(ids[i])){
@@ -292,16 +311,16 @@ function change_ids_to_items_and_render(ids, req, res){
 			});
 	var r = [];
 	query.on('row', function(row){
-		r.push(JSON.stringify(row));
-	});
+			r.push(JSON.stringify(row));
+			});
 	query.on('end', function(){
-		res.render('profile', {results: r, user: req.user});
-	});
+			res.render('profile', {results: r, user: req.user, kart: true});
+			});
 }
 
 exports.buy_kart = function(req, res){
 	var name = req.user.name;
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
 	var query = client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
@@ -329,7 +348,7 @@ exports.delete_entire_kart = function(req, res){
 
 function delete_the_entire_kart(req, res){
 	var name = req.user.name;
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
 	client.query("delete from karts where name='"+name+"'", function(err){
@@ -367,7 +386,7 @@ exports.delete_from_kart = function(req, res, item_id){
  */
 function check_everything_is_here(name, password){
 	//Check name exists and is valid
-	if(name == undefined || name == null || !(ensure_only_letters_and_numbers(name))){
+	if(name == undefined || name == null || !(ensure_only_letters_numbers_and_spaces(name))){
 		return "ERROR: Missing a valid name.";
 	}
 	//Check password exists and is valid
@@ -386,7 +405,7 @@ function check_everything_is_here(name, password){
  */
 function check_for_kart(name, id){
 	//Check for valid name.
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: invalid name.";
 	}
 	//Check for valid id number.
@@ -398,9 +417,17 @@ function check_for_kart(name, id){
 }
 
 /* This methods checks whether a given word contains anything that is not a letter, number,
+ * space, or underscore, returning a boolean of whether it is valid (does not contain
+ * anything else) or not. This is useful for preventing SQL injection attacks on the database.
+ */
+function ensure_only_letters_numbers_and_spaces(word){
+	return /^[\w\s\_]+$/.test(word);
+}
+
+/* This methods checks whether a given word contains anything that is not a letter, number,
  * or underscore, returning a boolean of whether it is valid (does not contain anything else)
  * or not. This is useful for preventing SQL injection attacks on the database.
  */
 function ensure_only_letters_and_numbers(word){
-	return /^\w+$/.test(word);
+	return /^[\w\_]+$/.test(word);
 }
