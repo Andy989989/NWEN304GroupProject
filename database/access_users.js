@@ -220,7 +220,7 @@ exports.add_to_kart = function(req, res, item_id){
 			return err;
 			}
 			console.log(rows);
-			var id_array = rows.rows.item_ids;
+			var id_array = rows.rows[0].item_ids;
 			console.log("===========IDS=========");
 			console.log(id_array);
 			var query;
