@@ -220,6 +220,8 @@ exports.add_to_kart = function(req, res, item_id){
 			return err;
 			}
 			var id_array = rows.rows.item_ids;
+			console.log("===========IDS=========");
+			console.log(id_array);
 			var query;
 			if(id_array == undefined || id_array.length == 0){
 			//Person is not in the karts table
