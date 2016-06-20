@@ -164,7 +164,7 @@ var name = req.user.name;
 if(name!==undefined){
 users.get_recommendations(name, geo, function(results){
 //res.send({recommendation: results});
-res.render('display', {results: results, 'user':req.user});
+res.render('display', {results: results, user: req.user, kart: false});
 });
 }
 });
@@ -275,13 +275,6 @@ req.session.passport.user = data;
 res.render('index', {'user':data});
 //console.log(req.user.accessToken);
 });
-
-/*app.get('/profile',
-//  connect.ensureLoggedIn(),
-function(req, res){
-res.render('profile   ', { user: req.user });
-
-});*/
 
 function checkDatabase(res,name,id){
 	users.get(name, res, function(res, password){

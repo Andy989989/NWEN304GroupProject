@@ -196,6 +196,6 @@ function handle_query(query, req, res, tableID){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.render('display', {'user':req.user, results: query_results, table: tableID})
+			res.render('display', {user: req.user, kart: false, results: query_results, table: tableID})
 			});
 }
