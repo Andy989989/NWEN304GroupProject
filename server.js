@@ -110,43 +110,43 @@ res.render('login',{'user':req.user})
 });
 
 app.get('/profile', function (req, res) {
-if(req.user ==undefined || req.user.name == undefined){
-res.render('index', {'user': req.user});
-return;
-}
-users.get_kart(req, res);
+    if(req.user ==undefined || req.user.name == undefined){
+        res.render('index', {'user': req.user});
+        return;
+    }
+    users.get_kart(req, res);
 });
 
 app.get('/logout', function(req, res){
-req.logout();
-req.user = undefined;
-console.log(req.user);
-res.render('index',{'user':req.user});
+    req.logout();
+    req.user = undefined;
+    console.log(req.user);
+    res.render('index',{'user':req.user});
 });
 
 app.get('/register', function (req, res) {
-res.render('register',{'user':req.user})
+    res.render('register',{'user':req.user})
 });
 
 app.get('/aboutus', function (req, res) {
-res.render('aboutus',{'user':req.user})
+    res.render('aboutus',{'user':req.user})
 });
 
 app.get('/local', function (req, res) {
-res.render('local',{user:req.user})
+    res.render('local',{user:req.user})
 });
 
 
 app.get('/add_to_cart/*', function (req, res) {
-var url = "" + req.url;
-console.log("url: " + url);
-var array = url.split("/");
-console.log("array: " + array);
-var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-console.log("id: " + id);
-if(req.user == undefined || req.user.name == undefined){
-res.render('index', {'user':req.user});
-return;
+    var url = "" + req.url;
+    console.log("url: " + url);
+    var array = url.split("/");
+    console.log("array: " + array);
+    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+    console.log("id: " + id);
+    if(req.user == undefined || req.user.name == undefined){
+        res.render('index', {'user':req.user});
+    return;
 }
 users.add_to_kart(req, res, id);
 });
