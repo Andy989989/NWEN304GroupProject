@@ -19,7 +19,7 @@ app.use(bp.json());
 exports.search = function(req, res){
 	var q = req.query.q;
 	if(q == undefined || q == null || !ensure_only_letters_and_numbers(q)){
-		res.status(400).send("Invalid query.");
+		res.render('index', {user: req.user});
 		return;
 	}
 	//Replaces all underscores with spaces (so multiple words can be passed in a query).

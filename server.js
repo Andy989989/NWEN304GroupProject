@@ -140,10 +140,10 @@ app.get('/id/*', products.get_from_id);
 			  var array = url.split("/");
 			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
 			  if(req.user == undefined || req.user.name == undefined){
-					res.render('index', {'user':req.user});
-					return;
-				}
-				  users.add_to_kart(req, res, id);
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
+			  users.add_to_kart(req, res, id);
 			  });
 
 			  app.get('/getRecommendations',function (req, res) {
@@ -162,6 +162,7 @@ app.get('/id/*', products.get_from_id);
 //var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
 var name = req.user.name;
 if(name!==undefined){
+
 users.get_recommendations(name, geo, function(results){
 //res.send({recommendation: results});
 res.render('display', {results: results, user: req.user, kart: false});
@@ -218,39 +219,39 @@ app.post('/newUser',auth.newUser);
 
 app.post('/login', function(req,res, next){
 
-    passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
-      console.log("gets into loacl auth");
-      console.log(user);
+passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
+console.log("gets into loacl auth");
+console.log(user);
 
-        if(user!=false){
-            console.log("user exists");
-            console.log("username :" + user);
-            req.session.username = "'" + user + "'";
-            req.session.save();
-            //return res.redirect('/');
-        }
-        else{
-            console.log("Login unsucessful");
-            //res.send({redirect: '/'});
-            //res.status(401).send(user);
-        }
+if(user!=false){
+console.log("user exists");
+console.log("username :" + user);
+req.session.username = "'" + user + "'";
+req.session.save();
+		//return res.redirect('/');
+		}
+		else{
+		console.log("Login unsucessful");
+//res.send({redirect: '/'});
+//res.status(401).send(user);
+}
 
-        req.logIn(user, function(err) {
-          if (err) {
-            req.session.messages = "Error";
-            console.log('login Error');
-            return res.status(401).send(user +" :   " +err);
+req.logIn(user, function(err) {
+if (err) {
+req.session.messages = "Error";
+console.log('login Error');
+return res.status(401).send(user +" :   " +err);
 
-          }
-          req.session.messages = "Login successfully";
-          var data = { 'name' : user };
-          req.session.passport.user = data;
-          console.log(data +" : " +user);
+}
+req.session.messages = "Login successfully";
+var data = { 'name' : user };
+req.session.passport.user = data;
+console.log(data +" : " +user);
 
-          console.log('login successful');
-          res.render('index',{'user':req.user});
-      });  
-    })(req,res,next);
+console.log('login successful');
+res.render('index',{'user':req.user});
+});  
+})(req,res,next);
 
 });
 
@@ -277,27 +278,27 @@ res.render('index', {'user':data});
 });
 
 function checkDatabase(res,name,id){
-	users.get(name, res, function(res, password){
-			if(password == null || password == undefined){
-			//User does not already exist, so add to database
-			users.put(name, id);
-			users.get(name, res, function(res, returnedDB){
-					if(returnedDB == null || returnedDB == undefined){
-					console.log("failed to add to the database");
-					} else {
-					console.log("didn't fail to add to the database");
-					}
-					});
-			return;
-			}
-			//Otherwise the user alread exists
-			console.log("user already exists");
-			if(id == password){
-			//Correct authentication TODO
-			} else{
-			//Don't let them in, they have the wrong password TODO
-			}
-			});
+users.get(name, res, function(res, password){
+if(password == null || password == undefined){
+//User does not already exist, so add to database
+users.put(name, id);
+users.get(name, res, function(res, returnedDB){
+		if(returnedDB == null || returnedDB == undefined){
+		console.log("failed to add to the database");
+		} else {
+		console.log("didn't fail to add to the database");
+		}
+		});
+return;
+}
+//Otherwise the user alread exists
+console.log("user already exists");
+if(id == password){
+	//Correct authentication TODO
+} else{
+	//Don't let them in, they have the wrong password TODO
+}
+});
 }
 
 
