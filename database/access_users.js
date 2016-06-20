@@ -219,14 +219,14 @@ exports.add_to_kart = function(req, res, item_id){
 			console.log(err);
 			return err;
 			}
-			var id_array = rows.rows.item_ids == undefined || rows.rows.item_ids.length == 0 ? [] : rows.rows.item_ids;
-			id_array.push(item_id);
+			var id_array = rows.rows.item_ids;
 			var query;
-			if(id_array.length == 1){
+			if(id_array == undefined || id_array.length == 0){
 			//Person is not in the karts table
-			query = "insert into karts values ('"+name+"', '"+id_array+"')";
+			query = "insert into karts values ('"+name+"', '{"+item_id+"}')";
 			} else{
 			//Person is in the table, so update, instead of adding.
+			id_array.push(item_id);
 			query = "update karts set item_ids = "+id_array+" where name='"+name+"'";
 			}
 			client.query(query, function(err){
