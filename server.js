@@ -9,10 +9,7 @@ var connect = require('connect-ensure-login');
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
 var passport = require('passport');
-//var cors = require('cors');
-//var pg = require('pg').native;
 var codes = require('./middleware/code.js');
-//var users = require('../database/access_users.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 
@@ -25,7 +22,6 @@ var bp = require('body-parser');
 var jobsFilename = './jobs.json';
 
 // these are used in the authentication
-//app.use(require('morgan')('combined'));
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true,maxAge :20000 }));
@@ -95,69 +91,92 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
-	res.render('index',{'user':req.user});
-});
+		res.render('index',{'user':req.user});
+		});
 
 
 app.get('/search*', products.search);
-app.get('/men*', products.get_me_something);
-app.get('/women*', products.get_me_something);
-app.get('/kids*', products.get_me_something);
 
-app.get('/login', function(req, res){
-  res.render('login',{'user':req.user})
+app.get('/id/*', products.get_from_id);
+
+			  app.get('/men*', products.get_me_something);
+
+			  app.get('/women*', products.get_me_something);
+
+			  app.get('/kids*', products.get_me_something);
+
+			  app.get('/login', function(req, res){
+			  res.render('login',{'user':req.user})
+			  });
+
+			  app.get('/profile', function (req, res) {
+			  if(req.user ==undefined || req.user.name == undefined){
+			  res.render('index', {'user': req.user});
+			  return;
+			  }
+			  users.get_kart(req, res);
+			  });
+
+			  app.get('/logout', function(req, res){
+			  req.logout();
+			  req.user = undefined;
+			  res.render('index',{'user':req.user});
+			  });
+
+			  app.get('/register', function (req, res) {
+			  res.render('register',{'user':req.user})
+			  });
+
+			  app.get('/aboutus', function (req, res) {
+			  res.render('aboutus',{'user':req.user})
+			  });
+
+			  app.get('/local', function (req, res) {
+			  res.render('local',{user:req.user})
+			  });
+
+			  app.get('/add_to_cart/*', function (req, res) {
+			  var url = "" + req.url;
+			  var array = url.split("/");
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  if(req.user == undefined || req.user.name == undefined){
+					res.render('index', {'user':req.user});
+					return;
+				}
+				  users.add_to_kart(req, res, id);
+			  });
+
+			  app.get('/getRecommendations',function (req, res) {
+			  var ipAddr = req.headers["x-forwarded-for"];
+			  if (ipAddr){
+			  var list = ipAddr.split(",");
+			  ipAddr = list[list.length-1];
+			  } else {
+			  ipAddr = req.connection.remoteAddress;
+			  }
+			  var geo = geoip.lookup(ipAddr);
+			  if(req.user == undefined){
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
+//var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+var name = req.user.name;
+if(name!==undefined){
+users.get_recommendations(name, geo, function(results){
+//res.send({recommendation: results});
+res.render('display', {results: results, user: req.user, kart: false});
+});
+}
 });
 
-app.get('/logout', function(req, res){
-  req.logout();
-  req.user = undefined;
-  console.log(req.user);
-  res.render('index',{'user':req.user});
-});
 
-app.get('/register', function (req, res) {
-  res.render('register',{'user':req.user})
-});
-
-app.get('/aboutus', function (req, res) {
-  res.render('aboutus',{'user':req.user})
-});
-
-app.get('/local', function (req, res) {
-  res.render('local',{user:req.user})
-});
-
-app.get('/getRecommendations',function (req, res) {
-    var ipAddr = req.headers["x-forwarded-for"];
-    
-    if (ipAddr){
-    var list = ipAddr.split(",");
-    ipAddr = list[list.length-1];
-    } else {
-    ipAddr = req.connection.remoteAddress;
-    }
-    //var ipAddr = "130.195.6.167";
-    console.log(ipAddr);
-    var geo = geoip.lookup(ipAddr);
-    var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-    
-
-    var name = req.user.name; //TODO change this, it's temporary
-     if(name!==undefined){
-        users.get_recommendations(name, country, function(results){
-        res.send({recommendation: results});
-        });
-     }
-
-  
-});
 //=====================================
 //PUT METHODS
 //=====================================
 
 app.put('/', function(req,res){
 
-		});
+});
 
 app.put('/login', users.put);
 
@@ -166,14 +185,14 @@ app.put('/login', users.put);
 //=====================================
 
 app.post('/', function(req,res){
-		if(req.body.item==undefined){
-		res.statusCode = 400;
-		} else{
-		postData(req.body.item, true);
-		res.statusCode = 200;
-		}
-		res.end();
-		});
+if(req.body.item==undefined){
+res.statusCode = 400;
+} else{
+postData(req.body.item, true);
+res.statusCode = 200;
+}
+res.end();
+});
 
 //=====================================
 //DELETE METHODS
@@ -181,7 +200,7 @@ app.post('/', function(req,res){
 
 app.delete('/', function(req,res){
 
-		});
+});
 
 //=====================================
 //AUTHENTICATION METHODS
@@ -189,15 +208,16 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
- app.all('/auth/*',checkAuth);
+app.all('/auth/*',checkAuth);
 //app.all('/auth/*', connect.ensureLoggedIn();
 
-				app.post('/auth/testAuth',auth.testAuth);
+app.post('/auth/testAuth',auth.testAuth);
 
-				app.post('/newUser',auth.newUser);
+app.post('/newUser',auth.newUser);
 
 
 app.post('/login', function(req,res, next){
+
     passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
       console.log("gets into loacl auth");
       console.log(user);
@@ -231,6 +251,7 @@ app.post('/login', function(req,res, next){
           res.render('index',{'user':req.user});
       });  
     })(req,res,next);
+
 });
 
 // TODO have a database of vaild tokens
@@ -240,81 +261,70 @@ app.get('/login/facebook',
 passport.authenticate('facebook'));
 
 app.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
-  function(req, res) {
-    //console.log(req.data);
+passport.authenticate('facebook', { failureRedirect: '/login' }),
+function(req, res) {
 
-          checkDatabase(res,req.user.displayName,req.user.id);
+checkDatabase(res,req.user.displayName,req.user.id);
 
-          var data = { 'name' : req.user.displayName };
-          req.session.passport.user = data;
-          //console.log(req.user.displayName);
-    //var data = {'data':req.user.accessToken};
-          //'res.render('index', {data:data});
+var data = { 'name' : req.user.displayName };
+req.session.passport.user = data;
+//console.log(req.user.displayName);
+//var data = {'data':req.user.accessToken};
+//'res.render('index', {data:data});
 
-          res.render('index', {'user':data});
-          //console.log(req.user.accessToken);
-        });
-
-app.get('/profile',
-//  connect.ensureLoggedIn(),
-function(req, res){
-  res.render('profile', { user: req.user });
-
+res.render('index', {'user':data});
+//console.log(req.user.accessToken);
 });
 
 function checkDatabase(res,name,id){
-	var put = users.put(name,id); 
-	console.log(put);
-
-	console.log("got into check database: "+ name+" + " + id);
- var check = users.get(name,res,function(res,returnedDB){
-	
-		
-   if(returnedDB == undefined || returnedDB == null){
-     	//if name isnt in the db then add it. 
-	console.log("shit failed when adding to the db");
-   }else{
-	console.log("shit didnt fail when adding to the db");
-   }
-
-    //else if(returnedDB == name){
-     	//name is already in the database no need to do anything
-  	//console.log("name already in db");
-	//return;
-    //}
-
-
-
-  });
-
+	users.get(name, res, function(res, password){
+			if(password == null || password == undefined){
+			//User does not already exist, so add to database
+			users.put(name, id);
+			users.get(name, res, function(res, returnedDB){
+					if(returnedDB == null || returnedDB == undefined){
+					console.log("failed to add to the database");
+					} else {
+					console.log("didn't fail to add to the database");
+					}
+					});
+			return;
+			}
+			//Otherwise the user alread exists
+			console.log("user already exists");
+			if(id == password){
+			//Correct authentication TODO
+			} else{
+			//Don't let them in, they have the wrong password TODO
+			}
+			});
 }
 
 
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-  request.logout();
-  response.send( 'Logged out!' );
-      //res.redirect('/');
-});
+		request.logout();
+		response.send( 'Logged out!' );
+		//res.redirect('/');
+		});
 
 function checkAuth(req, res, next) {
-  if (req.isAuthenticated()){
-    return next();
-  }
-  else{
-    res.status(401).send("Failed to authenticate: please login")
-  }
+	if (req.isAuthenticated()){
+		return next();
+	}
+	else{
+		res.status(401).send("Failed to authenticate: please login")
+	}
 
 }
 
 
 app.listen(port, function(){
-console.log('Listening:' + port);
-});
+		console.log('Listening:' + port);
+		});
 
 app.get('*', function(req, res){
-  res.status(400).send("Sorry, that page doesn't exist.");
-});
+		res.status(400).send("Sorry, that page doesn't exist.");
+		});
 

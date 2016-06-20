@@ -22,6 +22,6 @@ https://git.heroku.com/morning-dawn-49717.git
 
 
 
-reason ffor using bcrypt:
+reason for using bcrypt:
 
 http://stackoverflow.com/questions/6951867/nodejs-bcrypt-vs-native-crypto

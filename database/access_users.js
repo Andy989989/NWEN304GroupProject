@@ -4,6 +4,7 @@ var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
+var yahoo_weather = require('weather-yahoo');
 var connectionString = "postgres://rybgtwaenxzadm:Ia_YiG0ih5FblKPT71enEMI4z-@ec2-54-243-236-70.compute-1.amazonaws.com:5432/d6map6onq4uhlg";
 var client = new pg.Client(connectionString);
 client.connect();
@@ -22,11 +23,12 @@ app.use(bp.json());
  * of the error.
  */
 exports.get = function(name, res, callback){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing valid value for name.";
 	}
 	var password = client.query("select password from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
+			console.log(err);
 			return err;
 			}
 			callback(res, rows.rows[0].password);
@@ -44,6 +46,7 @@ exports.put = function(name, password){
 	if(missing == null){
 		client.query("insert into users (name, password) values ('"+name+"','"+password+"')", function(err){
 				if(err){
+				console.log(err);
 				return err;
 				}
 				});
@@ -74,12 +77,12 @@ exports.update_password = function(name, new_password){
  * I could make this appen synchronously in Node.js. As always, this throws helpful error messages when it
  * fails.
  */
-exports.get_recommendations = function(name, loc, callback){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+exports.get_recommendations = function(name, geo, callback){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	if(loc == null || loc == undefined || !ensure_only_letters_and_numbers(loc)){
-		return "ERROR: Missing a valid value for loc.";
+	if(geo == null || geo == undefined){
+		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
 			if(err){
@@ -89,7 +92,8 @@ exports.get_recommendations = function(name, loc, callback){
 			if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
 			}
-			return get_suggestion_based_on_previous_item(prev, loc, callback);
+			get_suggestion_based_on_previous_item(prev, geo, callback);
+			return;
 			});
 }
 
@@ -98,27 +102,30 @@ exports.get_recommendations = function(name, loc, callback){
  * If something goes wrong, a descriptive error message is returned, however, if everything goes nicely,
  * nothing is returned, and instead, the callback method is called (by get_suggestion_based_on_weather).
  */
-function get_suggestion_based_on_previous_item(prev, loc, callback){
+function get_suggestion_based_on_previous_item(prev, geo, callback){
 	var types = {};
 	if(prev == -1){
 		//Ignore the previous item and just get the information from the location
-		return get_suggestion_based_on_weather(loc, null, callback);
+		return get_suggestion_based_on_weather(geo, null, callback);
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
 			if(err){
+			console.log(err);
 			return err;
 			}
 			if(rows.length!=0){
 			var type = rows.rows[0].type;
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
-					if(e || r.rows.length==0){
+					if(e){
+					console.log(e);
 					return e;
 					}
+
 					var suggestions = [];
 					for(var i in r.rows){
 					suggestions.push(r.rows[i].id);
 					}
-					return get_suggestion_based_on_weather(loc, suggestions, callback);
+					return get_suggestion_based_on_weather(geo, suggestions, callback);
 					});
 			}
 			});
@@ -128,18 +135,54 @@ function get_suggestion_based_on_previous_item(prev, loc, callback){
  * suggestions, and passes the now-complete array to the callback method. If something goes wrong, a
  * descriptive error is thrown.
  */
-function get_suggestion_based_on_weather(loc, suggestions, callback){
+function get_suggestion_based_on_weather(geo, suggestions, callback){
 	if(suggestions == null){
 		suggestions = [];
 	}
-	client.query("select id from products where location='"+loc+"'", function(err, rows, fields){
+	var loc = geo.city;
+	if(loc == undefined || loc == null || loc == ''){
+		get_entries_from_suggestions_and_call_callback(suggestions, callback);
+		return;
+	}
+	yahoo_weather.getFullWeather(loc).then(function(res){
+			var condition = res.query.results.channel.item.condition.text;
+			console.log("condition: "+condition);
+			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
+					if(err){
+					console.log(err);
+					return err;
+					}
+					for(var i in rows.rows){
+					suggestions.push(rows.rows[i].id);
+					}
+					get_entries_from_suggestions_and_call_callback(suggestions, callback);
+					});
+			});
+}
+
+function get_entries_from_suggestions_and_call_callback(suggestions, callback){
+	if(suggestions == undefined || suggestions == null || suggestions.length == 0){
+		callback(suggestions);
+	}
+	suggestions = remove_duplicates(suggestions);
+	var suggestions_string = '';
+	for(var i in suggestions){
+		suggestions_string += suggestions[i] + " or id="
+	}
+	//Remove the trailing ' or id='
+	suggestions_string = suggestions_string.slice(0, -7);
+	var query = client.query("select * from products where id="+suggestions_string, function(err){
 			if(err){
+			console.log(err);
 			return err;
 			}
-			for(var i in rows.rows){
-			suggestions.push(rows.rows[i].id);
-			}
-			callback(remove_duplicates(suggestions));
+			});
+	var results = [];
+	query.on('row', function(row){
+			results.push(JSON.stringify(row));
+			});
+	query.on('end', function(){
+			callback(results);
 			});
 }
 
@@ -163,32 +206,60 @@ function remove_duplicates(array){
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.add_to_kart = function(name, item_id){
+exports.add_to_kart = function(req, res, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing!=null){
 		return missing;
 	}
-	client.query("insert into karts (name, item_ids[0]) values ('"+name+"', "+item_id+")", function(err){
+	client.query("select item_ids from karts where name='"+name+"'", function(err, rows){
 			if(err){
+			console.log(err);
 			return err;
 			}
-			});
+			var id_array = rows.rows[0];
+			var query;
+			if(id_array == undefined || id_array.length == 0){
+			//Person is not in the karts table
+			client.query("insert into karts (name) values ('"+name+"')", function(err){
+					if(err){
+					console.log(err);
+					return err;
+					}
+					update_the_kart(req, res, item_id);
+					});
+			} else{
+				//Person is in the table, so update, instead of adding.
+				update_the_kart(req, res, item_id);
+			}
+	});
+}
+
+exports.update_kart = function(req, res, item_id){
+	update_the_kart(req, res, item_id);
 }
 
 /* Updates the kart associated with a user's name by adding the id of an item. If the update
  * is successful (ie. the given name and id were valid and no errors were thrown by the
  * database) then this method returns nothing, otherwise it returns an error object.
  */
-exports.update_kart = function(name, item_id){
+function update_the_kart(req, res, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
 		return missing;
 	}
 	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
 			if(err){
+			console.log(err);
 			return err;
 			}
+			get_the_kart(req, res);
 			});
+}
+
+exports.get_kart = function(req, res){
+	get_the_kart(req, res);
 }
 
 /* Returns the items in the kart associated with a user's name. If the query is successful
@@ -197,32 +268,62 @@ exports.update_kart = function(name, item_id){
  * and returning the item numbers of the kart. Otherwise it returns an error code and message,
  * detailing what went wrong.
  */
-exports.get_kart = function(res, name){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+function get_the_kart(req, res){
+	var name = req.user.name;
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
 	}
 	var ids = [];
-	var query = client.query("select * from karts where name='"+name+"'", function(err){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err){
 			if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
 			}
 			});
 	query.on('row', function(row){
-			ids.push(JSON.stringify(row));
+			ids.push(row.item_ids);
 			});
 	query.on('end', function(){
-			res.status(200);
-			res.render('display', {results: ids});
+			change_ids_to_items_and_render(ids, req, res);
 			});
 }
 
-exports.buy_kart = function(name){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+function change_ids_to_items_and_render(ids, req, res){
+	var id_string = 'id=';
+	if(ids[0] == null || ids.length == 0){
+		res.render('profile', {results: [], user: req.user, kart: true});
+		return;
+	}
+	ids = ids[0];
+	for(var i in ids){
+		if(!/^[0-9]+$/.test(ids[i])){
+			continue;
+		}
+		id_string += ids[i] + " or id=";
+	}
+	id_string = id_string.slice(0, -7);
+	var query = client.query("select * from products where "+id_string, function(err, rows, fields){
+			if(err){
+			console.log(err);
+			return err;
+			}
+			});
+	var r = [];
+	query.on('row', function(row){
+			r.push(JSON.stringify(row));
+			});
+	query.on('end', function(){
+			res.render('profile', {results: r, user: req.user, kart: true});
+			});
+}
+
+exports.buy_kart = function(req, res){
+	var name = req.user.name;
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
-	client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
+	var query = client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
 			if(err){
 			return err;
 			}
@@ -236,21 +337,30 @@ exports.buy_kart = function(name){
 					}
 					});
 			});
-	delete_entire_kart(name);
+	query.on('end', function(){
+			delete_the_entire_kart(req, res);
+			});
 }
 
-exports.delete_entire_kart = function(name){
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+exports.delete_entire_kart = function(req, res){
+	delete_the_entire_kart(req, res);
+}
+
+function delete_the_entire_kart(req, res){
+	var name = req.user.name;
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: Missing a valid value for name.";
 	}
 	client.query("delete from karts where name='"+name+"'", function(err){
 			if(err){
 			return err;
 			}
+			get_the_kart(req, res);
 			});
 }
 
-exports.delete_from_kart = function(name, item_id){
+exports.delete_from_kart = function(req, res, item_id){
+	var name = req.user.name;
 	var missing = check_for_kart(name, item_id);
 	if(missing != null){
 		return missing;
@@ -259,6 +369,7 @@ exports.delete_from_kart = function(name, item_id){
 			if(err){
 			return err;
 			}
+			get_the_kart(req, res);
 			});
 }
 
@@ -275,7 +386,7 @@ exports.delete_from_kart = function(name, item_id){
  */
 function check_everything_is_here(name, password){
 	//Check name exists and is valid
-	if(name == undefined || name == null || !(ensure_only_letters_and_numbers(name))){
+	if(name == undefined || name == null || !(ensure_only_letters_numbers_and_spaces(name))){
 		return "ERROR: Missing a valid name.";
 	}
 	//Check password exists and is valid
@@ -294,7 +405,7 @@ function check_everything_is_here(name, password){
  */
 function check_for_kart(name, id){
 	//Check for valid name.
-	if(name == undefined || name == null || !ensure_only_letters_and_numbers(name)){
+	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		return "ERROR: invalid name.";
 	}
 	//Check for valid id number.
@@ -306,9 +417,17 @@ function check_for_kart(name, id){
 }
 
 /* This methods checks whether a given word contains anything that is not a letter, number,
+ * space, or underscore, returning a boolean of whether it is valid (does not contain
+ * anything else) or not. This is useful for preventing SQL injection attacks on the database.
+ */
+function ensure_only_letters_numbers_and_spaces(word){
+	return /^[\w\s\_]+$/.test(word);
+}
+
+/* This methods checks whether a given word contains anything that is not a letter, number,
  * or underscore, returning a boolean of whether it is valid (does not contain anything else)
  * or not. This is useful for preventing SQL injection attacks on the database.
  */
 function ensure_only_letters_and_numbers(word){
-	return /^\w+$/.test(word);
+	return /^[\w\_]+$/.test(word);
 }

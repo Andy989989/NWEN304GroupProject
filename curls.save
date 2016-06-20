@@ -23,7 +23,46 @@ curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=short_sleeves'
 //calls res.render.
 curl -X GET 'http://morning-dawn-49717.herokuapp.com/search?q=nonexistant_product'
 
--------------------PRODUCTS--------------------
+--------------------VIEW--------------------
+//Should return a single entry from the database (whichever one has an id of 35).
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35'
+
+//The 'watches' part of the previous command actually doesn't make a difference, so this
+//will work too. It will return whichever entry in the database has an id of 35.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/random_category/35'
+
+//This will simply not return anything, since there is no entry in the database with this id.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/34535'
+
+//This will not even get past out server.js method, and, as a result, will return a message
+//saying 'Sorry, that page doesn't exist.'.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id'
+
+//Should simply return a 400 status code and a message saying 'Invalid url.', as there is no
+//actual id in the request url.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/'
+
+//Should also return a 400 code and an 'Invalid url.' message, since there is, again, no id
+//within the url.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches'
+
+//This will return the correct item from the database, regardless of whatever is tagged onto
+//the end of the request. Anything after the id number will simply be ignored.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35/something_else'
+
+//Should return a 400 status code with an 'Invalid url.' message. The invalid part of the
+//url is not processed and so does not affect the database.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/'; drop tables;'/35'
+
+//Should return a 400 status code with an 'Invalid id.' message. Since there in no valid id,
+//the database cannot process this request.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/35a'
+
+//Should return a 400 status code with an 'Invalid id.' message. Since there in no valid id,
+//the database cannot process this request.
+curl -X GET 'http://morning-dawn-49717.herokuapp.com/id/watches/;35'
+
+--------------------PRODUCTS--------------------
 NOTE:	This will work the same for each gender (men, women, kids) because they all use the
 		same method, therefore, I only test men in these examples.
 
