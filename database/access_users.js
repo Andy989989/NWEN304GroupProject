@@ -292,7 +292,7 @@ function get_the_kart(req, res){
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
 	if(ids[0] == null || ids.length == 0){
-		res.render('profile', {results: [], user: req.user});
+		res.render('profile', {results: [], user: req.user, kart: true});
 		return;
 	}
 	ids = ids[0];
@@ -314,7 +314,7 @@ function change_ids_to_items_and_render(ids, req, res){
 			r.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
-			res.render('profile', {results: r, user: req.user});
+			res.render('profile', {results: r, user: req.user, kart: true});
 			});
 }
 
