@@ -159,7 +159,14 @@ app.get('/remove_from_kart/*', function (req, res) {
 });
 
 app.get('/delete_entire_kart', function(req, res) {
-    users.delete_entire_kart(req, res);
+    users.delete_entire_kart(req, res, id);
+});
+
+app.get('/purchase_item/*', function(req, res) {
+    var url = "" + req.url;
+    var array = url.split("/");
+    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+    products.delete_something(req, res, id);
 });
 
 app.get('/getRecommendations', function (req, res) {
