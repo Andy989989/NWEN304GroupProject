@@ -147,8 +147,23 @@ app.get('/id/*', products.get_from_id);
 				  users.add_to_kart(req, res, id);
 			  });
 
-app.get('/getRecommendations',function (req, res) {
-	var ipAddr = req.headers["x-forwarded-for"];
+app.get('/remove_from_kart/*', function (req, res) {
+    var url = "" + req.url;
+    var array = url.split("/");
+    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+    if(req.user == undefined || req.user.name == undefined){
+        res.render('index', {'user':req.user});
+        return;
+    }
+    users.delete_from_kart(req, res, id);
+});
+
+app.get('/delete_entire_kart', function(req, res) {
+    users.delete_entire_kart(req, res);
+});
+
+app.get('/getRecommendations', function (req, res) {
+	//var ipAddr = req.headers["x-forwarded-for"];
 	if (ipAddr){
 		var list = ipAddr.split(",");
 		ipAddr = list[list.length-1];
@@ -156,7 +171,7 @@ app.get('/getRecommendations',function (req, res) {
 		ipAddr = req.connection.remoteAddress;
 	}
 
-    //var ipAddr = "130.195.6.167";
+    var ipAddr = "130.195.6.167";
 	var geo = geoip.lookup(ipAddr);
 	if(req.user == undefined){
 		res.render('index', {'user':req.user});

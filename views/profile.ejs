@@ -9,14 +9,13 @@
                 <h1><%= user.name %>'s Kart</h1>
             </div>
             <div class="col-sm-5">
-                <input type="button" class="btn pull-right" onclick="location.href='http://google.com';" value="Purchase Kart" />
+                <input type="button" class="btn pull-right" onclick="location.href='/delete_entire_kart';" value="Purchase Kart" />
             </div>
         </div>
 
         <% if(results.length < 1){ %>
             NOTHING HERE
         <% }else if(results.length > 1){%>
-            <% console.log('[Profile]Results returned from server: ' + results); %>
             <div class="row flex-row">
                 <% var profile = true %>
                 <% results.forEach(function(item) { %>
@@ -25,7 +24,6 @@
                 <% }); %>
             </div>
         <% }else{ %>
-            <% console.log('[Profile]Results returned from server: ' + results); %>
             <% jsonItem = JSON.parse(results[0])%>
             <% include partials/single_item_card %>
         <% } %>
