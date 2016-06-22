@@ -5,12 +5,13 @@
   <body>
     <% include partials/navbar %>
 
+    <%var profile = false %>
+
     <% if(results.length < 1){%>
         NOTHING HERE
     <% }else if(results.length > 1){%>
         <div class="row flex-row">
             <% results.forEach(function(item) { %>
-                <% console.log('[Display]Each item in display ' + item); %>
                 <% var jsonItem = JSON.parse(item)%>
                 <% include partials/item_card %>
             <% }); %>

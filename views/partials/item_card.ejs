@@ -13,8 +13,10 @@
             <div class="ic-description-text"><%= jsonItem.description %></div>
         </div>
         <div class="panel-footer">
-            <!--<a href="/<#%= table %>/<#%= jsonItem.type %>/<#%= jsonItem.id %>" class="btn btn-info" role="button">view</a>-->
-            <a href="/id/<%= jsonItem.id %>" class="btn btn-info" role="button">view</a>
+            <a href="/id/<%= jsonItem.id %>" class="btn btn-info" role="button">View</a>
+            <% if(profile){ %>
+                <a href="/remove_from_kart/<%= jsonItem.id %>" class="btn btn-info" role="button">Remove From Cart</a>
+            <% } %>
         </div>
     </div>
 </div>

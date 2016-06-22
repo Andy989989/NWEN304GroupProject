@@ -82,19 +82,20 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid value for name.";
 	}
 	if(geo == null || geo == undefined){
+		console.log("ERROR: Missing a valid geo value.");
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			return err;
-			}
-			var prev = -1;
-			if(rows.length != 0){
+		}
+		var prev = -1;
+		if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
-			}
-			get_suggestion_based_on_previous_item(prev, geo, callback);
-			return;
-			});
+		}
+		get_suggestion_based_on_previous_item(prev, geo, callback);
+		return;
+	});
 }
 
 /* This method queries the databsase to find all entries with the same type as the previous purchase (prev),
