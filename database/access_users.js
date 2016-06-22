@@ -32,7 +32,7 @@ exports.get = function(name, res, callback){
 			return err;
 			}
 			if(rows.rows[0] == undefined){
-				res.status(400).send("Sorry, you aren't in our database. Please Register first, and then try again");
+				callback(res, "Failed");
 			}
 			callback(res, rows.rows[0].password);
 			});
