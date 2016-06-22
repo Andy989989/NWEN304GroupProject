@@ -32,9 +32,10 @@ exports.get = function(name, res, callback){
 			return err;
 			}
 			if(rows.rows[0] == undefined){
-				callback(res, "Failed");
-			}
+			callback(res, "Failed");
+			} else{
 			callback(res, rows.rows[0].password);
+			}
 			});
 }
 
@@ -89,16 +90,16 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-		if(err){
+			if(err){
 			return err;
-		}
-		var prev = -1;
-		if(rows.length != 0){
+			}
+			var prev = -1;
+			if(rows.length != 0){
 			prev = rows.rows[0].previous_item_id;
-		}
-		get_suggestion_based_on_previous_item(prev, geo, callback);
-		return;
-	});
+			}
+			get_suggestion_based_on_previous_item(prev, geo, callback);
+			return;
+			});
 }
 
 /* This method queries the databsase to find all entries with the same type as the previous purchase (prev),
@@ -233,10 +234,10 @@ exports.add_to_kart = function(req, res, item_id){
 					update_the_kart(req, res, item_id);
 					});
 			} else{
-				//Person is in the table, so update, instead of adding.
-				update_the_kart(req, res, item_id);
+			//Person is in the table, so update, instead of adding.
+			update_the_kart(req, res, item_id);
 			}
-	});
+			});
 }
 
 exports.update_kart = function(req, res, item_id){
