@@ -31,6 +31,9 @@ exports.get = function(name, res, callback){
 			console.log(err);
 			return err;
 			}
+			if(rows.rows[0] == undefined){
+				return err;
+			}
 			callback(res, rows.rows[0].password);
 			});
 }
