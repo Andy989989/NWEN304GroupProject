@@ -4,6 +4,15 @@ var ipAddr = 'http://127.0.0.1:8080';
 //var ipAddr = 'https://morning-dawn-49717.herokuapp.com';
 
 $(document).ready(function(e) {
+
+  $('#facebook_login').button().click(function(){
+    window.location.href = "../../login/facebook";
+  });
+
+
+
+
+
     //var ipAddr = 'http://130.195.4.164:8080';
     //var data = {'userName':'Andy','password':'test1'};
     var token;

@@ -171,7 +171,7 @@ app.get('/getRecommendations', function (req, res) {
 		ipAddr = req.connection.remoteAddress;
 	}
 
-//    var ipAddr = "130.195.6.167";
+  var ipAddr = "130.195.6.167";
 	var geo = geoip.lookup(ipAddr);
 	if(req.user == undefined){
 		res.render('index', {'user':req.user});
