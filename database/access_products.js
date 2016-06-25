@@ -128,14 +128,14 @@ exports.get_from_id = function(req, res){
  * =====================================================
  */
 exports.delete_something = function(req,res, id){
-	var query = client.query("DELETE FROM products WHERE  id='"+id+"'", function(err){
+	/*var query = client.query("DELETE FROM products WHERE  id='"+id+"'", function(err){
 		if(err){
 			res.status(404).send("Sorry, we can't find that.");
 			return err;
 		} else{
 			res.render('index', {user:req.user})
 		}
-	});
+	});*/
 }
 
 /*
