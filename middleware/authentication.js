@@ -77,6 +77,7 @@ console.log("added the data to the database:"+name+":"+pass);
 console.log(user);
 console.log("+++++++++++++++++");
 if(user!=undefined){
+	console.log(user);
 	if(user[0].severity == 'ERROR'){
 		// if this equals -1 that means there is no error
 		// could change to get the currentn value of errror.
