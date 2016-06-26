@@ -5,8 +5,15 @@
         <script src="dist/js/login.js"></script>
     </head>
 
+   
+
     <body>
         <% include partials/navbar %>
+         <% if(error != null){ %>
+        
+        <%= error %>
+       
+    <% } %>
         <form action="/login" method="post">
             <div class="form-group col-sm-4 col-sm-offset-4">
                 <label>Username</label>

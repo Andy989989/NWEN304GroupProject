@@ -75,12 +75,18 @@ passport.use('local', new LocalStrategy({
 				console.log("getting in hash test");
 				return done(null, username);
 			}else{
-				return done(null, false, {message: "Message: email not found in database"});
+				return done(null, false, {message: "Message: username not found in database"});
 
 			}
 
 		});
-		console.log("database lookup failed : "+databasePassword);
+
+		if(databasePassword == "ERROR: Missing valid value for name."){
+			return done(null, false, {message: "Message: username not found in database"});			
+		}
+
+		//return done(null, false, {message: "Message: username not found in database"});
+		//console.log("database lookup failed : "+databasePassword);
 
 	});			//res.status(404).send("Error when checking password");
 		//console.log(hash);

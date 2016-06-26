@@ -74,7 +74,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 // app.use(passport.session({  
 //                             cookie: { maxAge : 20000 } //1 Hour
-//                             }));
+//                             }));script src="/dist/js/navbar.js"></
 
 
 //=====================================
@@ -107,7 +107,11 @@ app.get('/id/*', products.get_from_id);
 			  app.get('/kids*', products.get_me_something);
 
 			  app.get('/login', function(req, res){
-			  res.render('login',{'user':req.user})
+			  res.render('login',{'user':req.user,'error':null})
+			  });
+
+			  app.get('/loginError', function(req, res){
+			  	res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
 			  });
 
 			  app.get('/profile',checkAuth,function (req, res) {
@@ -246,40 +250,53 @@ app.post('/newUser',auth.newUser);
 
 app.post('/login', function(req,res, next){
 
-passport.authenticate('local',{ failureRedirect: '/login'  },function(err,user,info){
-console.log("gets into loacl auth");
-console.log(user);
+	passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
+		console.log("gets into loacl auth");
+		console.log(user);
 
-if(user!=false){
-console.log("user exists");
-console.log("username :" + user);
-req.session.username = "'" + user + "'";
-req.session.save();
-		//return res.redirect('/');
+		if(user!=false){
+			console.log("user exists");
+			console.log("username :" + user);
+			req.session.username = "'" + user + "'";
+			req.session.save();
+			//return res.redirect('/');
+
+
+			req.logIn(user, function(err) {
+			if (err) {
+				req.session.messages = "Error";
+				console.log('login Error');
+				return res.status(401).send(user +" :   " +err);
+
+			}else{
+				req.session.messages = "Login successfully";
+				var data = { 'name' : user };
+				req.session.passport.user = data;
+				console.log(data +" : " +user);
+
+				console.log('login successful');
+							//console.log(res.body);
+
+				res.render('index',{'user':req.user});
+				console.log("after render");
+				//return;
+			
+			}
+		});  
+
+
+
+		}else{
+			console.log("Login unsucessful");
+			//console.log(res);
+			return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
+		//res.status(401).send(user);
 		}
-		else{
-		console.log("Login unsucessful");
-//res.send({redirect: '/'});
-//res.status(401).send(user);
-}
+	console.log("berfore");
 
-req.logIn(user, function(err) {
-if (err) {
-req.session.messages = "Error";
-console.log('login Error');
-return res.status(401).send(user +" :   " +err);
-
-}
-req.session.messages = "Login successfully";
-var data = { 'name' : user };
-req.session.passport.user = data;
-console.log(data +" : " +user);
-
-console.log('login successful');
-res.render('index',{'user':req.user});
-});  
-})(req,res,next);
-
+		
+	})(req,res,next);
+	console.log("after");
 });
 
 // TODO have a database of vaild tokens
