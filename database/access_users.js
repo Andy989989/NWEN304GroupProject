@@ -94,7 +94,7 @@ exports.get_recommendations = function(name, geo, callback){
 			return err;
 			}
 			var prev = -1;
-			if(rows.length != 0){
+			if(rows.length != 0 && rows.rows[0] != undefined){
 			prev = rows.rows[0].previous_item_id;
 			}
 			get_suggestion_based_on_previous_item(prev, geo, callback);
