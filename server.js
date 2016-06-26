@@ -379,7 +379,7 @@ function checkAuth(req, res, next) {
 		return next();
 	}
 	else{
-		res.render('login', {'user':req.user});
+		res.render('login', {'user':req.user, 'error': 'Failed to authenticate, please log in'});
 	}
 
 }
