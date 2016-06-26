@@ -18,7 +18,7 @@
                     var id = "<%= jsonItem.id %>"
                     console.log("id = " + id);
                 </script>
-                <% console.log(profile) %>
+                <% console.log('profile' + profile) %>
                 <% if(!profile){ %>
                     <a href="/add_to_cart/<%= jsonItem.id %>" class="btn btn-info col-md-2 col-md-offset-1" role="button">Add to cart</a>
                 <% } %>

@@ -102,6 +102,12 @@ app.get('/id/*', products.get_from_id);
 
 			  app.get('/men*', products.get_me_something);
 
+        app.get('/creditCard', function(req, res){
+          res.render('creditCard', {'user':req.user});
+        })
+
+        app.post('/buy_kart', users.buy_kart);
+
 			  app.get('/women*', products.get_me_something);
 
 			  app.get('/kids*', products.get_me_something);
@@ -217,13 +223,13 @@ app.put('/login', users.put);
 //=====================================
 
 app.post('/', function(req,res){
-if(req.body.item==undefined){
-res.statusCode = 400;
-} else{
-postData(req.body.item, true);
-res.statusCode = 200;
-}
-res.end();
+  if(req.body.item==undefined){
+    
+  } else{
+    postData(req.body.item, true);
+    res.statusCode = 200;
+  }
+  res.end();
 });
 
 //=====================================

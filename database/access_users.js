@@ -322,7 +322,7 @@ function change_ids_to_items_and_render(ids, req, res){
 		r.push(JSON.stringify(row));
 	});
 	query.on('end', function(){
-		res.render('profile', {results: r, user: req.user, kart: true});
+		res.status(200).render('profile', {results: r, user: req.user, kart: true});
 	});
 }
 
@@ -332,22 +332,22 @@ exports.buy_kart = function(req, res){
 		return "ERROR: Missing a valid value for name.";
 	}
 	var query = client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
+	if(err){
+		return err;
+	}
+	if(rows.length == 0){
+		return;
+	}
+	var ids = rows.rows[0].item_ids;
+	client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
 			if(err){
-			return err;
+				return err;
 			}
-			if(rows.length == 0){
-			return;
-			}
-			var ids = rows.rows[0].item_ids;
-			client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
-					if(err){
-					return err;
-					}
-					});
-			});
+		});
+	});
 	query.on('end', function(){
-			delete_the_entire_kart(req, res);
-			});
+	delete_the_entire_kart(req, res);
+	});
 }
 
 exports.delete_entire_kart = function(req, res){
