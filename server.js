@@ -32,18 +32,18 @@ app.use(express.static(__dirname + '/public'));
 app.use(bp.urlencoded({extended:true}));
 // Add headers
 app.use(function (req, res, next) {
-		// Website you wish to allow to connect
-		res.setHeader('Access-Control-Allow-Origin', '*');
-		// Request methods you wish to allow
-		res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, XHR');
-		// Request headers you wish to allow
-		res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-		// Set to true if you need the website to include cookies in the requests sent
-		// to the API (e.g. in case you use sessions)
-		res.setHeader('Access-Control-Allow-Credentials', true);
-		// Pass to next layer of middleware
-		next();
-		});
+	// Website you wish to allow to connect
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	// Request methods you wish to allow
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, XHR');
+	// Request headers you wish to allow
+	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+	// Set to true if you need the website to include cookies in the requests sent
+	// to the API (e.g. in case you use sessions)
+	res.setHeader('Access-Control-Allow-Credentials', true);
+	// Pass to next layer of middleware
+	next();
+});
 
 
 
@@ -72,17 +72,17 @@ app.use(passport.session());
 
 
 app.get('*',function(req,res,next){
-  if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
-    res.redirect('https://'+req.hostname+req.url)
-  else
-    next() 
+	if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
+		res.redirect('https://'+req.hostname+req.url)
+	else
+		next() 
 });
 
 
 app.get('/', function(req,res){
-		res.setHeader('Cache-Control', 'public, max-age=31557600');
-		res.render('index',{'user':req.user});
-		});
+	res.setHeader('Cache-Control', 'public, max-age=31557600');
+	res.render('index',{'user':req.user});
+});
 
 
 app.get('/search*', products.search);
@@ -255,38 +255,38 @@ app.post('/newUser',auth.newUser);
 
 app.post('/login', function(req,res, next){
 
-passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
+	passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
 
-if(user!=false){
-req.session.username = "'" + user + "'";
-req.session.save();
+		if(user!=false){
+			req.session.username = "'" + user + "'";
+			req.session.save();
 
-		req.logIn(user, function(err) {
-		if (err) {
-		req.session.messages = "Error";
-		console.log('login Error');
-		return res.status(401).send(user +" :   " +err);
+			req.logIn(user, function(err) {
+				if (err) {
+					req.session.messages = "Error";
+					console.log('login Error');
+					return res.status(401).send(user +" :   " +err);
+
+				}else{
+					req.session.messages = "Login successfully";
+					var data = { 'name' : user };
+					req.session.passport.user = data;
+					res.setHeader('Cache-Control', 'public, max-age=31557600');
+					res.render('index',{'user':req.user});
+				}
+			});  
+
+
 
 		}else{
-		req.session.messages = "Login successfully";
-		var data = { 'name' : user };
-		req.session.passport.user = data;
-res.setHeader('Cache-Control', 'public, max-age=31557600');
-res.render('index',{'user':req.user});
-}
-});  
+			res.setHeader('Cache-Control', 'public, max-age=31557600');
+			return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
+			//res.status(401).send(user);
+		}
 
 
 
-}else{
-res.setHeader('Cache-Control', 'public, max-age=31557600');
-return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
-//res.status(401).send(user);
-}
-
-
-
-})(req,res,next);
+	})(req,res,next);
 
 });
 
@@ -294,35 +294,35 @@ return res.render('login',{'user':req.user,'error':'Please enter a correct name 
 //app.post('/auth/logout',auth.logout);
 
 app.get('/login/facebook',
-passport.authenticate('facebook'));
+		passport.authenticate('facebook'));
 
 app.get('/login/facebook/return',
-passport.authenticate('facebook', { failureRedirect: '/login' }),
-function(req, res) {
+		passport.authenticate('facebook', { failureRedirect: '/login' }),
+		function(req, res) {
 
-checkDatabase(res,req.user.displayName,req.user.id);
+			checkDatabase(res,req.user.displayName,req.user.id);
 
-var data = { 'name' : req.user.displayName };
-req.session.passport.user = data;
-res.setHeader('Cache-Control', 'public, max-age=31557600');
-res.render('index', {'user':data});
+			var data = { 'name' : req.user.displayName };
+			req.session.passport.user = data;
+			res.setHeader('Cache-Control', 'public, max-age=31557600');
+			res.render('index', {'user':data});
 
-});
+		});
 
 function checkDatabase(res,name,id){
 	users.get(name, res, function(res, password){
-			if(password == null || password == undefined){
+		if(password == null || password == undefined){
 			//User does not already exist, so add to database
 			users.put(name, id);
 			users.get(name, res, function(res, returnedDB){
-					if(returnedDB == null || returnedDB == undefined){
+				if(returnedDB == null || returnedDB == undefined){
 					console.log("failed to add to the database");
-					} else {
+				} else {
 					console.log("didn't fail to add to the database");
-					}
-					});
+				}
+			});
 			return;
-			}
+		}
 	});
 }
 
@@ -330,10 +330,10 @@ function checkDatabase(res,name,id){
 
 
 app.get( '/auth/facebook/logout',function( request, response ) {
-		request.logout();
-		response.send( 'Logged out!' );
-		res.redirect('/');
-		});
+	request.logout();
+	response.send( 'Logged out!' );
+	res.redirect('/');
+});
 
 function checkAuth(req, res, next) {
 	if (req.isAuthenticated()){
@@ -347,10 +347,10 @@ function checkAuth(req, res, next) {
 
 
 app.listen(port, function(){
-		console.log('Listening:' + port);
-		});
+	console.log('Listening:' + port);
+});
 
 app.get('*', function(req, res){
-		res.status(400).send("Sorry, that page doesn't exist.");
-		});
+	res.status(400).send("Sorry, that page doesn't exist.");
+});
 
