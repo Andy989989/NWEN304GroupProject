@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<% include partials/header%>
+	<script src="dist/js/creditCard.js"></script>
+</head>
+	<body>
+		<% include partials/navbar.ejs %>
+
+		<div class="form-group col-md-4 col-md-offset-4">
+			<label for="usr">Credit Card Details:</label>
+			<input type="text" class="form-control" id="creditCardNumber" rows="5" placeholder="Credit card number">
+			<input type="text" class="form-control" id="ccvNnumber" rows="5" placeholder="CCV number">
+			<input type="date" class="form-control" id="expiryDate" rows="5" placeholder="Expiry Date">
+			<input id="purchase" name="submit" type="submit" value="purchase" class="btn">
+		</div>
+	</body>
+</html> 

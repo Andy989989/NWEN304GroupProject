@@ -17,6 +17,7 @@
             <% }); %>
         </div>
     <%}else{%>
+        <% var profile = false %>
         <% jsonItem = JSON.parse(results[0])%>
         <% include partials/single_item_card %>
     <%}%>

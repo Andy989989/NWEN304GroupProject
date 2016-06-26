@@ -34,8 +34,6 @@ $(document).ready(function(e) {
 				return;
 			}
 
-
-
 			if(userName == null || userName == undefined || userName == ''){
 				alert("please enter a user Name and password");
 			}else{
