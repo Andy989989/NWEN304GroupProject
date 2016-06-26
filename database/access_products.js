@@ -31,11 +31,11 @@ exports.search = function(req, res){
 	}
 	var error = false;
 	var query = client.query("select * from products where description ilike '%"+q+"%' or name ilike '%"+q+"%'", function(err){
-			if(err){
+		if(err){
 			res.status(500).send("Could not search in database.");
 			error = true;
-			}
-			});
+		}
+	});
 	if(error){
 		return;
 	}
@@ -61,27 +61,27 @@ exports.get_me_something = function(req, res){
 	if(array.length == 1){
 		//url is just /gender
 		query = client.query("select * from products where gender='" + array[0]+"'", function(err, rows, fields){
-				if(err){
+			if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
-				}
-				});
+			}
+		});
 	} else if(array.length == 2){
 		//url is /gender/some_category
 		query = client.query("select * from products where gender='" + array[0] + "' and type='" + array[1]+"'", function(err, rows, fields){
-				if(err){
+			if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
-				}
-				});
+			}
+		});
 	} else {
 		//url is /gender/some_category/item_id
 		query = client.query("select * from products where id='"+array[2]+"'", function(err, rows, fields){
-				if(err){
+			if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				error = true;
-				}
-				});
+			}
+		});
 	}
 	if(error){
 		return;
@@ -105,11 +105,11 @@ exports.get_from_id = function(req, res){
 	if(/^[0-9]*$/.test(id)){
 		//The id is only made up of numbers (as it should be).
 		var query = client.query("select * from products where id='"+id+"'", function(err, rows, fields){
-				if(err){
+			if(err){
 				res.status(404).send("Sorry, we can't find that.");
 				return err;
-				}
-				});
+			}
+		});
 		handle_query(query, req, res, null);
 	} else{
 		res.status(400).send("Invalid id.");
@@ -117,63 +117,11 @@ exports.get_from_id = function(req, res){
 	}
 }
 
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// All of these following exports should only be able to
-// be used by an admin user.
-// From here...
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-/*
- * =====================================================
- * DELETE
- * =====================================================
- */
-exports.delete_something = function(req,res, id){
-	/*var query = client.query("DELETE FROM products WHERE  id='"+id+"'", function(err){
-	  if(err){
-	  res.status(404).send("Sorry, we can't find that.");
-	  return err;
-	  } else{
-	  res.render('index', {user:req.user})
-	  }
-	  });*/
-}
-
-/*
- * =====================================================
- * POST
- * =====================================================
- */
-exports.update_something = function(req,res){
-	res.send("Unimplemented function 'post'.");
-}
-
-/*
- * =====================================================
- * PUT
- * =====================================================
- */
-exports.put_something_in_database = function(req,res){
-	res.send("Unimplemented function 'put'.");
-}
-
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// ... to here.
-//++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 /*
  * =====================================================
  * HELPER METHODS
  * =====================================================
  */
-
-function postData(key, value){
-	//client.query("update jobs set complete="+value+" where name='"+key+"'");
-}
-
-function putData(key, value){
-	//client.query("insert into jobs (name, complete) values ('"+key+"',"+value+")");
-}
 
 function sanitize_url(url){
 	var queries_removed = url.split('?');
@@ -201,10 +149,10 @@ function ensure_only_letters_and_numbers(word){
 function handle_query(query, req, res, tableID){
 	var query_results = [];
 	query.on('row', function(row){
-			query_results.push(JSON.stringify(row));
-			});
+		query_results.push(JSON.stringify(row));
+	});
 	query.on('end', function(){
-			res.setHeader('Cache-Control', 'public, max-age=31557600');
-			res.render('display', {user: req.user, kart: false, results: query_results, table: tableID})
-			});
+		res.setHeader('Cache-Control', 'public, max-age=31557600');
+		res.render('display', {user: req.user, kart: false, results: query_results, table: tableID})
+	});
 }

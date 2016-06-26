@@ -1,6 +1,5 @@
 var express = require('express');
 var app = express();
-var port = process.env.PORT || 8080;
 var bp = require('body-parser');
 var exports = module.exports = {};
 var pg = require('pg').native;
@@ -27,16 +26,16 @@ exports.get = function(name, res, callback){
 		return "ERROR: Missing valid value for name.";
 	}
 	var password = client.query("select password from users where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			if(rows.rows[0] == undefined){
+		}
+		if(rows.rows[0] == undefined){
 			callback(res, "Failed");
-			} else{
+		} else{
 			callback(res, rows.rows[0].password);
-			}
-			});
+		}
+	});
 }
 
 /* Adds a user to the database. If the adding is successful (ie. the given name and password
@@ -49,11 +48,11 @@ exports.put = function(name, password){
 	var missing = check_everything_is_here(name, password);
 	if(missing == null){
 		client.query("insert into users (name, password) values ('"+name+"','"+password+"')", function(err){
-				if(err){
+			if(err){
 				console.log(err);
 				return err;
-				}
-				});
+			}
+		});
 	}
 	else {return missing;}
 }
@@ -69,10 +68,10 @@ exports.update_password = function(name, new_password){
 		return missing;
 	}
 	client.query("update users set password='"+new_password+"' where name='"+name+"'", function(err){
-			if(err){
+		if(err){
 			return err;
-			}
-			});
+		}
+	});
 }
 
 /* Gets an array of suggested items that the user should purchase. This takes a userName, a country (loc),
@@ -86,20 +85,19 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid value for name.";
 	}
 	if(geo == null || geo == undefined){
-		console.log("ERROR: Missing a valid geo value.");
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			return err;
-			}
-			var prev = -1;
-			if(rows.length != 0 && rows.rows[0] != undefined){
+		}
+		var prev = -1;
+		if(rows.length != 0 && rows.rows[0] != undefined){
 			prev = rows.rows[0].previous_item_id;
-			}
-			get_suggestion_based_on_previous_item(prev, geo, callback);
-			return;
-			});
+		}
+		get_suggestion_based_on_previous_item(prev, geo, callback);
+		return;
+	});
 }
 
 /* This method queries the databsase to find all entries with the same type as the previous purchase (prev),
@@ -114,26 +112,26 @@ function get_suggestion_based_on_previous_item(prev, geo, callback){
 		return get_suggestion_based_on_weather(geo, null, callback);
 	}
 	client.query("select type from products where id='"+prev+"'", function(err, rows, fields){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			if(rows.length!=0){
+		}
+		if(rows.length!=0){
 			var type = rows.rows[0].type;
 			client.query("select id from products where type='"+type+"'", function(e, r, f){
-					if(e){
+				if(e){
 					console.log(e);
 					return e;
-					}
+				}
 
-					var suggestions = [];
-					for(var i in r.rows){
+				var suggestions = [];
+				for(var i in r.rows){
 					suggestions.push(r.rows[i].id);
-					}
-					return get_suggestion_based_on_weather(geo, suggestions, callback);
-					});
-			}
+				}
+				return get_suggestion_based_on_weather(geo, suggestions, callback);
 			});
+		}
+	});
 }
 
 /* This gets all of the products in the database with the location of 'loc', adds them to the arry of
@@ -150,19 +148,18 @@ function get_suggestion_based_on_weather(geo, suggestions, callback){
 		return;
 	}
 	yahoo_weather.getFullWeather(loc).then(function(res){
-			var condition = res.query.results.channel.item.condition.text;
-			console.log("condition: "+condition);
-			client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
-					if(err){
-					console.log(err);
-					return err;
-					}
-					for(var i in rows.rows){
-					suggestions.push(rows.rows[i].id);
-					}
-					get_entries_from_suggestions_and_call_callback(suggestions, callback);
-					});
-			});
+		var condition = res.query.results.channel.item.condition.text;
+		client.query("select id from products where weather='"+condition+"'", function(err, rows, fields){
+			if(err){
+				console.log(err);
+				return err;
+			}
+			for(var i in rows.rows){
+				suggestions.push(rows.rows[i].id);
+			}
+			get_entries_from_suggestions_and_call_callback(suggestions, callback);
+		});
+	});
 }
 
 function get_entries_from_suggestions_and_call_callback(suggestions, callback){
@@ -177,18 +174,18 @@ function get_entries_from_suggestions_and_call_callback(suggestions, callback){
 	//Remove the trailing ' or id='
 	suggestions_string = suggestions_string.slice(0, -7);
 	var query = client.query("select * from products where id="+suggestions_string, function(err){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			});
+		}
+	});
 	var results = [];
 	query.on('row', function(row){
-			results.push(JSON.stringify(row));
-			});
+		results.push(JSON.stringify(row));
+	});
 	query.on('end', function(){
-			callback(results);
-			});
+		callback(results);
+	});
 }
 
 function remove_duplicates(array){
@@ -218,26 +215,26 @@ exports.add_to_kart = function(req, res, item_id){
 		return missing;
 	}
 	client.query("select item_ids from karts where name='"+name+"'", function(err, rows){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			var id_array = rows.rows[0];
-			var query;
-			if(id_array == undefined || id_array.length == 0){
+		}
+		var id_array = rows.rows[0];
+		var query;
+		if(id_array == undefined || id_array.length == 0){
 			//Person is not in the karts table
 			client.query("insert into karts (name) values ('"+name+"')", function(err){
-					if(err){
+				if(err){
 					console.log(err);
 					return err;
-					}
-					update_the_kart(req, res, item_id);
-					});
-			} else{
+				}
+				update_the_kart(req, res, item_id);
+			});
+		} else{
 			//Person is in the table, so update, instead of adding.
 			update_the_kart(req, res, item_id);
-			}
-			});
+		}
+	});
 }
 
 exports.update_kart = function(req, res, item_id){
@@ -255,12 +252,12 @@ function update_the_kart(req, res, item_id){
 		return missing;
 	}
 	client.query("update karts set item_ids = array_append(item_ids, "+item_id+") where name='"+name +"'", function(err){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			get_the_kart(req, res);
-			});
+		}
+		get_the_kart(req, res);
+	});
 }
 
 exports.get_kart = function(req, res){
@@ -334,21 +331,21 @@ exports.buy_kart = function(req, res){
 		return "ERROR: Missing a valid value for name.";
 	}
 	var query = client.query("select item_ids from karts where name='"+name+"'", function(err, rows, fields){
-	if(err){
-		return err;
-	}
-	if(rows.length == 0){
-		return;
-	}
-	var ids = rows.rows[0].item_ids;
-	client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
+		if(err){
+			return err;
+		}
+		if(rows.length == 0){
+			return;
+		}
+		var ids = rows.rows[0].item_ids;
+		client.query("update users set previous_item_id="+ids[-1]+" where name='"+name+"'", function(err){
 			if(err){
 				return err;
 			}
 		});
 	});
 	query.on('end', function(){
-	delete_the_entire_kart(req, res);
+		delete_the_entire_kart(req, res);
 	});
 }
 
@@ -362,11 +359,11 @@ function delete_the_entire_kart(req, res){
 		return "ERROR: Missing a valid value for name.";
 	}
 	client.query("delete from karts where name='"+name+"'", function(err){
-			if(err){
+		if(err){
 			return err;
-			}
-			get_the_kart(req, res);
-			});
+		}
+		get_the_kart(req, res);
+	});
 }
 
 exports.delete_from_kart = function(req, res, item_id){
@@ -380,8 +377,8 @@ exports.delete_from_kart = function(req, res, item_id){
 			console.log("delete_from_kart error");
 			return err;
 		}
-			get_the_kart(req, res);
-		});
+		get_the_kart(req, res);
+	});
 }
 
 /*
