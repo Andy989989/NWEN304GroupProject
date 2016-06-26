@@ -3,13 +3,11 @@ var fs = require('fs');
 var app = express();
 var port = process.env.PORT || 8080;
 var bp = require('body-parser');
-var user = require('./middleware/User.js');
 var connect = require('connect-ensure-login');
 
 var products = require('./database/access_products.js');
 var users = require('./database/access_users.js');
 var passport = require('passport');
-var codes = require('./middleware/code.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 
