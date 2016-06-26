@@ -20,11 +20,19 @@ $(document).ready(function(e) {
 	$('#submit').button().click(
 
 		function() {
+			
+			var userName = $('#registerUsername').val();
+			var password = $('#registerPassword').val();
+			var confirmPassword = $('#registerConfirmPassword').val();
+
 			console.log($('#registerUsername').val());
 			console.log($('#registerPassword').val());
 			console.log($('#registerConfirmPassword').val());
-			var userName = $('#registerUsername').val();
-			var password = $('#registerPassword').val();
+
+			if(password !== confirmPassword){
+				alert("Passwords must match");
+				return;
+			}
 
 
 

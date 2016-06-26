@@ -17,13 +17,13 @@
             NOTHING HERE
         <% }else if(results.length > 1){%>
             <div class="row flex-row">
-                <% var profile = true %>
                 <% results.forEach(function(item) { %>
                     <% var jsonItem = JSON.parse(item)%>
                     <% include partials/item_card %>
                 <% }); %>
             </div>
         <% }else{ %>
+            <% profile = true %>
             <% jsonItem = JSON.parse(results[0])%>
             <% include partials/single_item_card %>
         <% } %>

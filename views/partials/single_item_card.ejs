@@ -18,10 +18,10 @@
                     var id = "<%= jsonItem.id %>"
                     console.log("id = " + id);
                 </script>
-                <a href="/add_to_cart/<%= jsonItem.id %>"
-                   class="btn btn-info col-md-2 col-md-offset-1" role="button">Add to cart</a>
-                <!--<a href="/purchase_item/<%= jsonItem.id %>"
-                   class="btn btn-info col-md-2 col-md-offset-1" role="button">Purchase</a>-->
+                <% console.log(profile) %>
+                <% if(!profile){ %>
+                    <a href="/add_to_cart/<%= jsonItem.id %>" class="btn btn-info col-md-2 col-md-offset-1" role="button">Add to cart</a>
+                <% } %>
             </div>
         </div>
     </div>
