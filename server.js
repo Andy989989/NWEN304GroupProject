@@ -192,7 +192,7 @@ app.get('/id/*', products.get_from_id);
 			  users.delete_from_kart(req, res, id);
 			  });
 
-			  app.get('/getRecommendations', function (req, res) {
+			  app.get('/getRecommendations', checkAuth, function (req, res) {
 			  var ipAddr = req.headers["x-forwarded-for"];
 			  if (ipAddr){
 			  var list = ipAddr.split(",");
@@ -201,7 +201,6 @@ app.get('/id/*', products.get_from_id);
 			  ipAddr = req.connection.remoteAddress;
 			  }
 
-			  var ipAddr = "130.195.6.167";
 			  var geo = geoip.lookup(ipAddr);
 			  if(req.user == undefined){
 			  res.setHeader('Cache-Control', 'public, max-age=31557600');
@@ -380,7 +379,7 @@ function checkAuth(req, res, next) {
 		return next();
 	}
 	else{
-		res.status(401).send("Failed to authenticate: please login")
+		res.render('login', {'user':req.user});
 	}
 
 }
