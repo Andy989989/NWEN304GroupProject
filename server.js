@@ -91,6 +91,7 @@ app.use(passport.session());
 
 
 app.get('/', function(req,res){
+		res.setHeader('Cache-Control', 'public, max-age=31557600');
 		res.render('index',{'user':req.user});
 		});
 
@@ -102,26 +103,29 @@ app.get('/id/*', products.get_from_id);
 
 			  app.get('/men*', products.get_me_something);
 
-        app.get('/creditCard', function(req, res){
-          res.render('creditCard', {'user':req.user});
-        })
+			  app.get('/creditCard', function(req, res){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
+			  res.render('creditCard', {'user':req.user});
+			  })
 
-        app.post('/buy_kart', users.buy_kart);
+			  app.post('/buy_kart', users.buy_kart);
 
 			  app.get('/women*', products.get_me_something);
 
 			  app.get('/kids*', products.get_me_something);
 
 			  app.get('/login', function(req, res){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('login',{'user':req.user,'error':null})
 			  });
 
 			  app.get('/loginError', function(req, res){
-			  	res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
+			  res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
 			  });
 
 			  app.get('/profile',checkAuth,function (req, res) {
 			  if(req.user ==undefined || req.user.name == undefined){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('index', {'user': req.user});
 			  return;
 			  }
@@ -131,18 +135,22 @@ app.get('/id/*', products.get_from_id);
 			  app.get('/logout', function(req, res){
 			  req.logout();
 			  req.user = undefined;
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('index',{'user':req.user});
 			  });
 
 			  app.get('/register', function (req, res) {
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('register',{'user':req.user})
 			  });
 
 			  app.get('/aboutus', function (req, res) {
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('aboutus',{'user':req.user})
 			  });
 
 			  app.get('/local', function (req, res) {
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('local',{user:req.user})
 			  });
 
@@ -151,60 +159,64 @@ app.get('/id/*', products.get_from_id);
 			  var array = url.split("/");
 			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
 			  if(req.user == undefined || req.user.name == undefined){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
 			  res.render('index', {'user':req.user});
 			  return;
 			  }
 			  users.add_to_kart(req, res, id);
 			  });
 
-app.get('/remove_from_kart/*',checkAuth, function (req, res) {
-    var url = "" + req.url;
-    var array = url.split("/");
-    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-    if(req.user == undefined || req.user.name == undefined){
-        res.render('index', {'user':req.user});
-        return;
-    }
-    users.delete_from_kart(req, res, id);
+			  app.get('/remove_from_kart/*',checkAuth, function (req, res) {
+			  var url = "" + req.url;
+			  var array = url.split("/");
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  if(req.user == undefined || req.user.name == undefined){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
+			  users.delete_from_kart(req, res, id);
+			  });
+
+			  app.get('/delete_entire_kart',checkAuth, function(req, res) {
+			  var url = "" + req.url;
+			  var array = url.split("/");
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  users.delete_entire_kart(req, res, id);
+			  });
+
+			  app.get('/purchase_item/*',checkAuth, function(req, res) {
+			  var url = "" + req.url;
+			  var array = url.split("/");
+			  var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
+			  users.delete_from_kart(req, res, id);
+			  });
+
+			  app.get('/getRecommendations', function (req, res) {
+			  var ipAddr = req.headers["x-forwarded-for"];
+			  if (ipAddr){
+			  var list = ipAddr.split(",");
+			  ipAddr = list[list.length-1];
+			  } else {
+			  ipAddr = req.connection.remoteAddress;
+			  }
+
+			  var ipAddr = "130.195.6.167";
+			  var geo = geoip.lookup(ipAddr);
+			  if(req.user == undefined){
+			  res.setHeader('Cache-Control', 'public, max-age=31557600');
+			  res.render('index', {'user':req.user});
+			  return;
+			  }
+//var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
+var name = req.user.name;
+if(name!==undefined){
+users.get_recommendations(name, geo, function(results){
+//res.send({recommendation: results});
+res.setHeader('Cache-Control', 'public, max-age=31557600');
+res.render('display', {results: results, user: req.user, kart: false});
 });
-
-app.get('/delete_entire_kart',checkAuth, function(req, res) {
-    var url = "" + req.url;
-    var array = url.split("/");
-    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-    users.delete_entire_kart(req, res, id);
-});
-
-app.get('/purchase_item/*',checkAuth, function(req, res) {
-    var url = "" + req.url;
-    var array = url.split("/");
-    var id = array[2]; //The third item is the id. eg array=[' ', id', '32']
-    users.delete_from_kart(req, res, id);
-});
-
-app.get('/getRecommendations', function (req, res) {
-	var ipAddr = req.headers["x-forwarded-for"];
-	if (ipAddr){
-		var list = ipAddr.split(",");
-		ipAddr = list[list.length-1];
-	} else {
-		ipAddr = req.connection.remoteAddress;
-	}
-
-  var ipAddr = "130.195.6.167";
-	var geo = geoip.lookup(ipAddr);
-	if(req.user == undefined){
-		res.render('index', {'user':req.user});
-		return;
-	}
-	//var country = geo.city!=undefined && geo.city!='' && geo.city!=null ? geo.city : geo.country;
-	var name = req.user.name;
-	if(name!==undefined){
-		users.get_recommendations(name, geo, function(results){
-			//res.send({recommendation: results});
-			res.render('display', {results: results, user: req.user, kart: false});
-		});
-	}
+}
 });
 
 
@@ -223,13 +235,13 @@ app.put('/login', users.put);
 //=====================================
 
 app.post('/', function(req,res){
-  if(req.body.item==undefined){
-    
-  } else{
-    postData(req.body.item, true);
-    res.statusCode = 200;
-  }
-  res.end();
+if(req.body.item==undefined){
+
+} else{
+postData(req.body.item, true);
+res.statusCode = 200;
+}
+res.end();
 });
 
 //=====================================
@@ -256,53 +268,55 @@ app.post('/newUser',auth.newUser);
 
 app.post('/login', function(req,res, next){
 
-	passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
-		console.log("gets into loacl auth");
-		console.log(user);
+passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
+console.log("gets into loacl auth");
+console.log(user);
 
-		if(user!=false){
-			console.log("user exists");
-			console.log("username :" + user);
-			req.session.username = "'" + user + "'";
-			req.session.save();
-			//return res.redirect('/');
-
-
-			req.logIn(user, function(err) {
-			if (err) {
-				req.session.messages = "Error";
-				console.log('login Error');
-				return res.status(401).send(user +" :   " +err);
-
-			}else{
-				req.session.messages = "Login successfully";
-				var data = { 'name' : user };
-				req.session.passport.user = data;
-				console.log(data +" : " +user);
-
-				console.log('login successful');
-							//console.log(res.body);
-
-				res.render('index',{'user':req.user});
-				console.log("after render");
-				//return;
-			
-			}
-		});  
+if(user!=false){
+console.log("user exists");
+console.log("username :" + user);
+req.session.username = "'" + user + "'";
+req.session.save();
+		//return res.redirect('/');
 
 
+		req.logIn(user, function(err) {
+		if (err) {
+		req.session.messages = "Error";
+		console.log('login Error');
+		return res.status(401).send(user +" :   " +err);
 
 		}else{
-			console.log("Login unsucessful");
-			//console.log(res);
-			return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
-		//res.status(401).send(user);
-		}
-	console.log("berfore");
+		req.session.messages = "Login successfully";
+		var data = { 'name' : user };
+		req.session.passport.user = data;
+		console.log(data +" : " +user);
 
-		
-	})(req,res,next);
-	console.log("after");
+		console.log('login successful');
+//console.log(res.body);
+
+res.setHeader('Cache-Control', 'public, max-age=31557600');
+res.render('index',{'user':req.user});
+console.log("after render");
+//return;
+
+}
+});  
+
+
+
+}else{
+console.log("Login unsucessful");
+//console.log(res);
+res.setHeader('Cache-Control', 'public, max-age=31557600');
+return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
+//res.status(401).send(user);
+}
+console.log("berfore");
+
+
+})(req,res,next);
+console.log("after");
 });
 
 // TODO have a database of vaild tokens
@@ -323,32 +337,33 @@ req.session.passport.user = data;
 //var data = {'data':req.user.accessToken};
 //'res.render('index', {data:data});
 
+res.setHeader('Cache-Control', 'public, max-age=31557600');
 res.render('index', {'user':data});
 //console.log(req.user.accessToken);
 });
 
 function checkDatabase(res,name,id){
-users.get(name, res, function(res, password){
-if(password == null || password == undefined){
-//User does not already exist, so add to database
-users.put(name, id);
-users.get(name, res, function(res, returnedDB){
-		if(returnedDB == null || returnedDB == undefined){
-		console.log("failed to add to the database");
-		} else {
-		console.log("didn't fail to add to the database");
-		}
-		});
-return;
-}
-//Otherwise the user alread exists
-console.log("user already exists");
-if(id == password){
-	//Correct authentication TODO
-} else{
-	//Don't let them in, they have the wrong password TODO
-}
-});
+	users.get(name, res, function(res, password){
+			if(password == null || password == undefined){
+			//User does not already exist, so add to database
+			users.put(name, id);
+			users.get(name, res, function(res, returnedDB){
+					if(returnedDB == null || returnedDB == undefined){
+					console.log("failed to add to the database");
+					} else {
+					console.log("didn't fail to add to the database");
+					}
+					});
+			return;
+			}
+			//Otherwise the user alread exists
+			console.log("user already exists");
+			if(id == password){
+			//Correct authentication TODO
+			} else{
+			//Don't let them in, they have the wrong password TODO
+			}
+			});
 }
 
 

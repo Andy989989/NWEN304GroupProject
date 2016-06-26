@@ -299,6 +299,7 @@ function get_the_kart(req, res){
 function change_ids_to_items_and_render(ids, req, res){
 	var id_string = 'id=';
 	if(ids[0] == null || ids.length == 0){
+		res.setHeader('Cache-Control', 'public, max-age=31557600');
 		res.render('profile', {results: [], user: req.user, kart: true});
 		return;
 	}
@@ -322,6 +323,7 @@ function change_ids_to_items_and_render(ids, req, res){
 		r.push(JSON.stringify(row));
 	});
 	query.on('end', function(){
+		res.setHeader('Cache-Control', 'public, max-age=31557600');
 		res.status(200).render('profile', {results: r, user: req.user, kart: true});
 	});
 }

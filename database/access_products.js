@@ -19,6 +19,7 @@ app.use(bp.json());
 exports.search = function(req, res){
 	var q = req.query.q;
 	if(q == undefined || q == null || !ensure_only_letters_and_numbers(q)){
+		res.setHeader('Cache-Control', 'public, max-age=31557600');
 		res.render('index', {user: req.user});
 		return;
 	}
@@ -129,13 +130,13 @@ exports.get_from_id = function(req, res){
  */
 exports.delete_something = function(req,res, id){
 	/*var query = client.query("DELETE FROM products WHERE  id='"+id+"'", function(err){
-		if(err){
-			res.status(404).send("Sorry, we can't find that.");
-			return err;
-		} else{
-			res.render('index', {user:req.user})
-		}
-	});*/
+	  if(err){
+	  res.status(404).send("Sorry, we can't find that.");
+	  return err;
+	  } else{
+	  res.render('index', {user:req.user})
+	  }
+	  });*/
 }
 
 /*
@@ -203,6 +204,7 @@ function handle_query(query, req, res, tableID){
 			query_results.push(JSON.stringify(row));
 			});
 	query.on('end', function(){
+			res.setHeader('Cache-Control', 'public, max-age=31557600');
 			res.render('display', {user: req.user, kart: false, results: query_results, table: tableID})
 			});
 }
