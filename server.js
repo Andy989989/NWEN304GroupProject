@@ -13,9 +13,6 @@ var codes = require('./middleware/code.js');
 var bcrypt = require('bcrypt');
 var salt = bcrypt.genSaltSync(10);
 
-// this is for authentication
-
-//var loggedOn = require('connect-ensure-login');
 var geoip = require('geoip-lite');
 
 var bp = require('body-parser');
@@ -25,10 +22,6 @@ var jobsFilename = './jobs.json';
 app.use(require('cookie-parser')());
 app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: true, saveUninitialized: true,maxAge :20000 }));
-
-// app.use(express.session({secret:'andyisawesome',  
-//                             cookie: { maxAge : 20000 } //1 Hour
-//                             }));
 
 
 //use for accesing local files
@@ -72,22 +65,18 @@ app.set('view engine', 'ejs');
 // session.
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(passport.session({  
-//                             cookie: { maxAge : 20000 } //1 Hour
-//                             }));script src="/dist/js/navbar.js"></
-
 
 //=====================================
 //GET METHODS
 //=====================================
 
 
-// app.get('*',function(req,res,next){
-//   if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
-//     res.redirect('https://'+req.hostname+req.url)
-//   else
-//     next() 
-// });
+app.get('*',function(req,res,next){
+  if(req.headers['x-forwarded-proto']!='https')//&&process.env.NODE_ENV === 'production')
+    res.redirect('https://'+req.hostname+req.url)
+  else
+    next() 
+});
 
 
 app.get('/', function(req,res){
@@ -257,10 +246,9 @@ app.delete('/', function(req,res){
 
 
 //check to see if loggedon with fb and then locally
-app.all('/auth/*',checkAuth);
-//app.all('/auth/*', connect.ensureLoggedIn();
+//app.all('/auth/*',checkAuth);
 
-app.get('/auth/testAuth',auth.testAuth);
+app.get('/testAuth',checkAuth,auth.testAuth);
 
 app.post('/newUser',auth.newUser);
 
@@ -268,16 +256,10 @@ app.post('/newUser',auth.newUser);
 app.post('/login', function(req,res, next){
 
 passport.authenticate('local',{ failureRedirect: '/'  },function(err,user,info){
-console.log("gets into loacl auth");
-console.log(user);
 
 if(user!=false){
-console.log("user exists");
-console.log("username :" + user);
 req.session.username = "'" + user + "'";
 req.session.save();
-		//return res.redirect('/');
-
 
 		req.logIn(user, function(err) {
 		if (err) {
@@ -289,33 +271,23 @@ req.session.save();
 		req.session.messages = "Login successfully";
 		var data = { 'name' : user };
 		req.session.passport.user = data;
-		console.log(data +" : " +user);
-
-		console.log('login successful');
-//console.log(res.body);
-
 res.setHeader('Cache-Control', 'public, max-age=31557600');
 res.render('index',{'user':req.user});
-console.log("after render");
-//return;
-
 }
 });  
 
 
 
 }else{
-console.log("Login unsucessful");
-//console.log(res);
 res.setHeader('Cache-Control', 'public, max-age=31557600');
 return res.render('login',{'user':req.user,'error':'Please enter a correct name or password'});
 //res.status(401).send(user);
 }
-console.log("berfore");
+
 
 
 })(req,res,next);
-console.log("after");
+
 });
 
 // TODO have a database of vaild tokens
@@ -332,13 +304,9 @@ checkDatabase(res,req.user.displayName,req.user.id);
 
 var data = { 'name' : req.user.displayName };
 req.session.passport.user = data;
-//console.log(req.user.displayName);
-//var data = {'data':req.user.accessToken};
-//'res.render('index', {data:data});
-
 res.setHeader('Cache-Control', 'public, max-age=31557600');
 res.render('index', {'user':data});
-//console.log(req.user.accessToken);
+
 });
 
 function checkDatabase(res,name,id){
@@ -355,14 +323,7 @@ function checkDatabase(res,name,id){
 					});
 			return;
 			}
-			//Otherwise the user alread exists
-			console.log("user already exists");
-			if(id == password){
-			//Correct authentication TODO
-			} else{
-			//Don't let them in, they have the wrong password TODO
-			}
-			});
+	});
 }
 
 
