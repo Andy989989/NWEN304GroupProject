@@ -74,20 +74,17 @@ console.log("Hashed password"+ hash);
 var user = users.put(name,hash);
 
 console.log("added the data to the database:"+name+":"+pass);
-
-if(user!=undefined){
-	var errorCheck = user.search("ERROR:"); 
-	if(errorCheck != -1){
+console.log(user);
+console.log("+++++++++++++++++");
+console.log(user.severity);
+if(user!=undefined || user[0].severity == 'ERROR'){
 	// if this equals -1 that means there is no error
 	// could change to get the currentn value of errror.
 
 	// 409 - duplicate data
 	console.log("There was a problem");
 	res.status(409).send("User Already exsists in the database");
-	}
 }
-
-
 
 //console.log(data);
 res.send('user created');
