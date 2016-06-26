@@ -86,8 +86,7 @@ if(user!=undefined){
 		console.log("There was a problem");
 		res.status(409).send("User Already exsists in the database");
 	}
-
-	//console.log(data);
-	res.send('user created');
 }
+//console.log(data);
+res.send('user created');
 }
