@@ -56,8 +56,8 @@ assuming this data is being sent from the client
 
 // error testing
 if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password') ){
-		res.statusCode = 400;
-    	return res.send('Error 400');
+	res.statusCode = 400;
+	return res.send('Error 400');
 }
 var name = req.body.username;
 var pass = req.body.password;
@@ -76,16 +76,17 @@ var user = users.put(name,hash);
 console.log("added the data to the database:"+name+":"+pass);
 console.log(user);
 console.log("+++++++++++++++++");
-if(user!=undefined || user[0].severity == 'ERROR'){
-	// if this equals -1 that means there is no error
-	// could change to get the currentn value of errror.
+if(user!=undefined){
+	if(user[0].severity == 'ERROR'){
+		// if this equals -1 that means there is no error
+		// could change to get the currentn value of errror.
 
-	// 409 - duplicate data
-	console.log("There was a problem");
-	res.status(409).send("User Already exsists in the database");
+		// 409 - duplicate data
+		console.log("There was a problem");
+		res.status(409).send("User Already exsists in the database");
+	}
+
+	//console.log(data);
+	res.send('user created');
 }
-
-//console.log(data);
-res.send('user created');
-
 }
