@@ -76,7 +76,6 @@ var user = users.put(name,hash);
 console.log("added the data to the database:"+name+":"+pass);
 console.log(user);
 console.log("+++++++++++++++++");
-console.log(user.severity);
 if(user!=undefined || user[0].severity == 'ERROR'){
 	// if this equals -1 that means there is no error
 	// could change to get the currentn value of errror.
