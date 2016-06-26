@@ -239,10 +239,12 @@ assuming this data is being sent from the client
 //var query = client.query('SELECT * from logins where userName = $1', [req.body.userName]);
 
 // error testing
-if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password') ){
-		res.statusCode = 400;
-    	return res.send('Error 400');
-}
+
+//if(!req.body.hasOwnProperty('username') || !req.body.hasOwnProperty('password') ){
+//		res.statusCode = 400;
+//    	return res.send('Error 400');
+//}
+
 var name = req.body.username;
 var pass = req.body.password;
 

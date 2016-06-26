@@ -31,7 +31,11 @@ exports.get = function(name, res, callback){
 			console.log(err);
 			return err;
 			}
+			if(rows.rows[0] == undefined){
+			callback(res, "Failed");
+			} else{
 			callback(res, rows.rows[0].password);
+			}
 			});
 }
 
@@ -82,6 +86,7 @@ exports.get_recommendations = function(name, geo, callback){
 		return "ERROR: Missing a valid value for name.";
 	}
 	if(geo == null || geo == undefined){
+		console.log("ERROR: Missing a valid geo value.");
 		return "ERROR: Missing a valid geo value.";
 	}
 	client.query("select previous_item_id from users where name='"+name+"'", function(err, rows, fields){
@@ -229,10 +234,10 @@ exports.add_to_kart = function(req, res, item_id){
 					update_the_kart(req, res, item_id);
 					});
 			} else{
-				//Person is in the table, so update, instead of adding.
-				update_the_kart(req, res, item_id);
+			//Person is in the table, so update, instead of adding.
+			update_the_kart(req, res, item_id);
 			}
-	});
+			});
 }
 
 exports.update_kart = function(req, res, item_id){
@@ -269,24 +274,26 @@ exports.get_kart = function(req, res){
  * detailing what went wrong.
  */
 function get_the_kart(req, res){
+	console.log("get the kart");
 	var name = req.user.name;
+
 	if(name == undefined || name == null || !ensure_only_letters_numbers_and_spaces(name)){
 		res.status(400).send("Missing valid value for name.");
 		return;
 	}
 	var ids = [];
 	var query = client.query("select item_ids from karts where name='"+name+"'", function(err){
-			if(err){
+		if(err){
 			res.status(404).send("Could not get items from kart.");
 			return;
-			}
-			});
+		}
+	});
 	query.on('row', function(row){
-			ids.push(row.item_ids);
-			});
+		ids.push(row.item_ids);
+	});
 	query.on('end', function(){
-			change_ids_to_items_and_render(ids, req, res);
-			});
+		change_ids_to_items_and_render(ids, req, res);
+	});
 }
 
 function change_ids_to_items_and_render(ids, req, res){
@@ -303,19 +310,20 @@ function change_ids_to_items_and_render(ids, req, res){
 		id_string += ids[i] + " or id=";
 	}
 	id_string = id_string.slice(0, -7);
+	console.log("change_ids_to_items_and_render, id_string = " + id_string);
 	var query = client.query("select * from products where "+id_string, function(err, rows, fields){
-			if(err){
+		if(err){
 			console.log(err);
 			return err;
-			}
-			});
+		}
+	});
 	var r = [];
 	query.on('row', function(row){
-			r.push(JSON.stringify(row));
-			});
+		r.push(JSON.stringify(row));
+	});
 	query.on('end', function(){
-			res.render('profile', {results: r, user: req.user, kart: true});
-			});
+		res.render('profile', {results: r, user: req.user, kart: true});
+	});
 }
 
 exports.buy_kart = function(req, res){
@@ -366,11 +374,12 @@ exports.delete_from_kart = function(req, res, item_id){
 		return missing;
 	}
 	var query = client.query("update karts set item_ids = array_remove(item_ids,"+item_id+") where name='"+name+"'", function(err, rows, fields){
-			if(err){
+		if(err){
+			console.log("delete_from_kart error");
 			return err;
-			}
+		}
 			get_the_kart(req, res);
-			});
+		});
 }
 
 /*
