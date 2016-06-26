@@ -46,11 +46,10 @@ $(document).ready(function(e) {
     				//url: ipAddr+"/test",
     				error: function(data,status) {
     					alert("failed Register: " + status);
-    					console.log(data);
     				},
     				success: function(data,status){
     					alert("succesful Register: " + status);
-    					console.log(data);
+						window.location.href = 'login';
     			}
     		});
 		}
